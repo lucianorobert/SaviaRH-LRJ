@@ -1,0 +1,131 @@
+{% extends 'partials/base.html' %}
+{% load widget_tweaks %}
+<html>
+<head>
+{% block title %}Datos bancarios{% endblock %}
+</head>
+<body>
+{% block content %}
+<hr>
+<hr>
+<!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
+<div class="row my-4">
+    <div class="col-md-4">
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == "error" %}
+                <script>
+                Swal.fire({
+                    "title":"Error",
+                    "text":"{{message}}",
+                    "icon":"error",
+                })
+                </script>
+                {% else %}
+                <script>
+                Swal.fire({
+                    "title":"Excelente",
+                    "text":"{{message}}",
+                    "icon":"success",
+                })
+                </script>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+    <!-- Aqui es el encabezado -->
+    <div class = "row mt-2 bg-white">
+        <form method=POST>
+        {% csrf_token %}
+        <div class="col-12">
+            <div class="card card-body">
+                <h5>Tabla datos bancarios</h5>
+                 <div class = "row mt-2 bg-white">
+                    <hr>
+                    <ul class="nav nav-pills">
+                        <li class="nav-item mx-2">
+                            <button type="submit" name="Excel" class="btn btn-outline-success" value='Reporte Excel'>
+                                <i class="fa-solid fa-file-excel fa-2xl"></i>
+                            </button>
+                        </li>
+                    <!--    <li class="nav-item mx-2">
+                            <button type="button" class="btn btn-outline-danger">
+                               <i class="fa-solid fa-file-pdf fa-2xl"></i>
+                            </button>
+                        </li> -->
+                        <li class="nav-item mx-2">
+                            <a type="button" class="btn btn-outline-info" href="{% url 'Formulario_datosbancarios' %}">
+                                <i class="fa-solid fa-user-plus"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        </form>
+    </div>
+<div class="card card-body">
+            <h5>Filtro datos bancarios</h5>
+            <hr>
+            <form method="GET" class="row g-3">
+                {% csrf_token %}
+                <label for="bancario_filter.form.nombres" class="col-sm-auto col-form-label text-right"><strong>Nombre:</strong></label>
+                <div class="col-auto">
+                       {% render_field bancario_filter.form.nombres class="form-control" %}
+                </div>
+                <label for="bancario_filter.form.no_de_cuenta" class="col-sm-auto col-form-label text-right"><strong>No. de cuenta:</strong></label>
+                <div class="col-auto">
+                       {% render_field bancario_filter.form.no_de_cuenta class="form-control" %}
+                </div>
+                <label for="bancario_filter.form.banco" class="col-sm-auto col-form-label text-right"><strong>Banco:</strong></label>
+                <div class="col-auto">
+                       {% render_field bancario_filter.form.banco class="form-control" %}
+                </div>
+                <div class="col-auto">
+                <button class="btn btn-outline-success" type="submit" value="Buscar"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+            </form>
+</div>
+
+<!-- Aquí empieza la generación de la tabla -->
+<div class = "row mt-2">
+    <div class="col-md-12">
+        <table class="table table-striped table-hover bg-white">
+            <thead class="text-black" style="background-color: #F5F5F5;">
+                <tr style="background-color:#2A628F;color:#ffffff;">
+                    <th scope="col">Nombre</th>
+                    <th scope="col">No. de cuenta</th>
+                    <th scope="col">No. de tarjeta</th>
+                    <th scope="col">Clabe interbancaria</th>
+                    <th scope="col">Banco</th>
+                    <th scope="col">Editar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bancario in bancarios %}
+                <tr>
+                    <td>{{bancario.status.perfil.nombres}} {{bancario.status.perfil.apellidos}}</td>
+                    <td>{{bancario.no_de_cuenta}}</td>
+                    <td>{{bancario.numero_de_tarjeta}}</td>
+                    <td>{{bancario.clabe_interbancaria}}</td>
+                    <td>{{bancario.banco}}</td>
+                    <td><a class="btn btn-outline-info" id="btnActualizar" type="button" href="{% url 'Bancarios_update' bancario.id %}"><i class="fa-solid fa-pen-to-square"></i></a>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!--Este es el modal-->
+<div class="modal fade" id ="dialog" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" id="document" role="document">
+
+    </div>
+</div>
+{% endblock %}
+
+</body>
+</html>

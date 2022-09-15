@@ -1,0 +1,71 @@
+{% extends 'partials/base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
+<div class="row my-4">
+    <div class="col-md-4">
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == "error" %}
+                <script>
+                Swal.fire({
+                    "title":"Error",
+                    "text":"{{message}}",
+                    "icon":"error",
+                })
+                </script>
+                {% else %}
+                <script>
+                Swal.fire({
+                    "title":"Excelente",
+                    "text":"{{message}}",
+                    "icon":"success",
+                })
+                </script>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+
+<hr>
+<hr>
+<div class="container">
+        <div class="columns is-mobile">
+            <div class="column is-half is-offset-one-quarter">
+                <h3 class="title is-size-3">Datos bonos del empleado</h3>
+                <hr>
+                <form method="POST">
+                    {% csrf_token %}
+                            <div class="row my-2">
+                                <label for="form.dias_disfrutados" class="col-auto col-form-label my-1"><strong>Empleado:</strong></label>
+                                <label for="form.dias_disfrutados" class="col-auto col-form-label my-1"><strong>{{bono.costo.status.perfil.nombres}} {{bono.costo.status.perfil.apellidos}}</strong></label>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.fecha_bono" class="col-auto col-form-label my-1"><strong>Fecha del bono:</strong></label>
+                                <div class="col-2">
+                                    {% render_field form.fecha_bono type="date" class="form-control" %}
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.monto" class="col-auto col-form-label my-1"><strong>Monto total de los bonos:</strong></label>
+                                <div class="col-2">
+                                    <div class="input-group mb-3">
+                                    <span class="input-group-text"><i class="fa-solid fa-dollar-sign"></i></span>
+                                    {{form.monto|add_class:"form-control"}}
+                                </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <button type="submit" name="btnSend" class="btn btn-success">
+                                <span class="glyphicon glyphicon-ok"></span> Guardar
+                            </button>
+                            <a href="{% url 'Tabla_bonos' %}" class="btn btn">Cancelar</a>
+                    </form>
+                </div>
+         </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends 'partials/base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
+<div class="row my-4">
+    <div class="col-md-4">
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == "error" %}
+                <script>
+                Swal.fire({
+                    "title":"Error",
+                    "text":"{{message}}",
+                    "icon":"error",
+                })
+                </script>
+                {% else %}
+                <script>
+                Swal.fire({
+                    "title":"Excelente",
+                    "text":"{{message}}",
+                    "icon":"success",
+                })
+                </script>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+
+<hr>
+<hr>
+ <div class="container">
+    <div class="row my-4">
+            <div class="col-md-4"></div>
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header text-black" style="background-color: #F5F5F5;">
+                        <strong>
+                            Información de Status
+                        </strong>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <span class="h4">{{estado.perfil.nombres}} {{estado.perfil.apellidos}}</span>
+
+                                <table class="table bg-white table-borderless">
+                                    <tbody>
+                                        <hr>
+                                        <tr>
+                                            <th scope="row">Registro Patronal</th>
+                                            <td>{{estado.registro_patronal}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">NSS</th>
+                                            <td>{{estado.nss}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">CURP</th>
+                                            <td>{{estado.curp}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">RFC</th>
+                                            <td>{{estado.rfc}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Profesión</th>
+                                            <td>{{estado.profesion}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">No. de cédula</th>
+                                            <td>{{estado.no_cedula}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Nivel del empleado</th>
+                                            <td>{{estado.nivel}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Tipo de contrato</th>
+                                            <td>{{estado.tipo_de_contrato}}</td>
+                                        </tr>
+                                         <tr>
+                                            <th scope="row">Último contrato vence</th>
+                                            <td>{{estado.ultimo_contrato_vence}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Tipo de sangre</th>
+                                            <td>{{estado.tipo_sangre}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Género</th>
+                                            <td>{{estado.sexo}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Teléfono</th>
+                                            <td>{{estado.telefono}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Domicilio</th>
+                                            <td>{{estado.domicilio}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Estado Civil</th>
+                                            <td>{{estado.estado_civil}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Fecha de planta anterior:</th>
+                                            <td>{{estado.fecha_planta_anterior}}</td>
+                                        </tr>
+                                         <tr>
+                                            <th scope="row">Fecha de planta actual:</th>
+                                            <td>{{estado.fecha_planta}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-md-4">
+                                <img class="img-thumbnail" src="{{estado.perfil.fotoURL}}"  alt="Imagen de Usuario">
+                            </div>
+                            <hr>
+                            <div class="col-md-2">
+                                <a href="{% url 'Status' %}" class="btn btn-outline-info"><i class="fa-solid fa-backward"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+
+
+
+{% endblock %}

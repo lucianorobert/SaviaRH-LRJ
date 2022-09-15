@@ -1,0 +1,211 @@
+{% extends 'partials/base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
+<div class="row my-4">
+    <div class="col-md-4">
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == "error" %}
+                <script>
+                Swal.fire({
+                    "title":"Error",
+                    "text":"{{message}}",
+                    "icon":"error",
+                })
+                </script>
+                {% else %}
+                <script>
+                Swal.fire({
+                    "title":"Excelente",
+                    "text":"{{message}}",
+                    "icon":"success",
+                })
+                </script>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+
+<hr>
+<hr>
+    <div class="container">
+        <div class="columns is-mobile">
+            <div class="column is-half is-offset-one-quarter">
+                <h3 class="title is-size-3">Formulario uniformes recibidos</h3>
+                <hr>
+                <div class='cart-row'>
+                    <table class="table table-ligth table-striped mx-1">
+                    <thead>
+                            <tr>
+                                <th scope="col">Fecha del cambio</th>
+                                <th scope="col">Fecha de entrega</th>
+                                <th scope="col">Uniformes entregados</th>
+                                <th scope="col">Camisolas</th>
+                                <th scope="col">Pantalones</th>
+                                <th scope="col">Camisa blanca</th>
+                                <th scope="col">Camisa azul</th>
+                                <th scope="col">Camisa beige</th>
+                                <th scope="col">Playera polo</th>
+                                <th scope="col">Overol</th>
+                                <th scope="col">Botas</th>
+                                <!--<th scope="col">Registro</th>-->
+                            </tr>
+                    </thead>
+                    <tbody>
+                    {% for registro in registros %}
+                            <tr>
+                                <th scope="col">{{registro.history_date}}</th>
+                                <th scope="col">{{registro.fecha_ultima_entrega }}</th>
+                                <th scope="col">{{registro.uniformes_entregados}}</th>
+                                <th scope="col">{{registro.camisola}}</th>
+                                <th scope="col">{{registro.pantalon}}</th>
+                                <th scope="col">{{registro.camisa_blanca}}</th>
+                                <th scope="col">{{registro.camisa_azul}}</th>
+                                <th scope="col">{{registro.camisa_beige}}</th>
+                                <th scope="col">{{registro.playera_polo}}</th>
+                                <th scope="col">{{registro.overol}}</th>
+                                <th scope="col">{{registro.botas}}</th>
+                                <!--<th scope="col">
+                                    <a type="button" class="btn btn-outline-info" href=""><i class="fa-solid fa-file-pdf fa-2xl"></i></a>
+                                </th>-->
+                            </tr>
+                    {% endfor %}
+                    </tbody>
+                    </table>
+                </div>
+            <form method="POST">
+                {% csrf_token %}
+                        <div class="row my-2">
+                            <label for="form.dias_disfrutados" class="col-auto col-form-label my-1"><strong>Empleado:</strong></label>
+                            <label for="form.dias_disfrutados" class="col-auto col-form-label my-1"><strong>{{ropa.status.perfil.nombres}} {{ropa.status.perfil.apellidos}}</strong></label>
+                        </div>
+                        <div class="row my-2">
+                            <label for="form.fecha_ultima_entrega" class="col-auto col-form-label my-1"><strong>Fecha última entrega:</strong></label>
+                            <div class="col-2">
+                                {% render_field form.fecha_ultima_entrega type="date" class="form-control" %}
+                            </div>
+                        </div>
+
+
+
+                        <div class="row my-2">
+                            <div class="form-check form-switch col-auto mx-4" id="camisola">
+                                <input class="form-check-input" type="checkbox" role="switch" id="SwitchCamisola" numero = "0">
+                                <label class="form-check-label" for="flexSwitchCheckDefault"><strong>Camisolas</strong></label>
+                            </div>
+                            <label for="form.camisola" class="col-auto col-form-label lbl_check d-none" id="LabelCamisola" numero = "0"><strong>Cantidad entregada:</strong></label>
+                                <div class="col-2">
+                                    {{form.camisola|add_class:"form-control txt_check d-none"|attr:"numero = 0"}}
+                                </div>
+                        </div>
+                        <div class="row my-2">
+                            <div class="form-check form-switch col-auto mx-4" id="pantalon">
+                                <input class="form-check-input" type="checkbox" role="switch" id="SwitchPantalon" numero="1">
+                                <label class="form-check-label" for="flexSwitchCheckDefault"><strong>Pantalones</strong></label>
+                            </div>
+                            <label for="form.pantalon" class="col-auto col-form-label lbl_check d-none" id="LabelPantalon" numero = "1"><strong>Cantidad entregada:</strong></label>
+                                <div class="col-2">
+                                    {{form.pantalon|add_class:"form-control txt_check d-none"|attr:"numero=1"}}
+                                </div>
+                        </div>
+                        <div class="row my-2">
+                            <div class="form-check form-switch col-auto mx-4" id="camisa_blanca">
+                                <input class="form-check-input" type="checkbox" role="switch" id="SwitchCamisa_blanca" numero="2">
+                                <label class="form-check-label" for="flexSwitchCheckDefault"><strong>Camisa administrativa blanca</strong></label>
+                            </div>
+                            <label for="form.camisa_blanca" class="col-auto col-form-label lbl_check d-none" id="LabelCamisa_blanca" numero="2"><strong>Cantidad entregada:</strong></label>
+                                <div class="col-2">
+                                    {{form.camisa_blanca|add_class:"form-control txt_check d-none"| attr:"numero=2"}}
+                                </div>
+                        </div>
+                        <div class="row my-2">
+                            <div class="form-check form-switch col-auto mx-4" id="camisa_azul">
+                                <input class="form-check-input" type="checkbox" role="switch" id="SwitchCamisa_azul" numero="3">
+                                <label class="form-check-label" for="flexSwitchCheckDefault"><strong>Camisa administrativa azul</strong></label>
+                            </div>
+                            <label for="form.camisa_azul" class="col-auto col-form-label lbl_check d-none" id="LabelCamisa_azul" numero="3"><strong>Cantidad entregada:</strong></label>
+                                <div class="col-2">
+                                    {{form.camisa_azul|add_class:"form-control txt_check d-none" | attr:"numero=3"}}
+                                </div>
+                        </div>
+                        <div class="row my-2">
+                            <div class="form-check form-switch col-auto mx-4" id="camisa_beige">
+                                <input class="form-check-input" type="checkbox" role="switch" id="SwitchCamisa_beige" numero="4">
+                                <label class="form-check-label" for="flexSwitchCheckDefault"><strong>Camisa administrativa beige</strong></label>
+                            </div>
+                            <label for="form.camisa_beige" class="col-auto col-form-label lbl_check d-none" id="LabelCamisa_beige" numero="4"><strong>Cantidad entregada:</strong></label>
+                                <div class="col-2">
+                                    {{form.camisa_beige|add_class:"form-control txt_check d-none" | attr:"numero=4"}}
+                                </div>
+                        <div class="row my-2">
+                            <div class="form-check form-switch col-auto mx-4" id="playera_polo">
+                                <input class="form-check-input" type="checkbox" role="switch" id="SwitchPlayera_polo">
+                                <label class="form-check-label" for="flexSwitchCheckDefault"><strong>Playera administrativa Polo</strong></label>
+                            </div>
+                            <label for="form.playera_polo" class="col-auto col-form-label lbl_check d-none" id="LabelPlayera_polo"><strong>Cantidad entregada:</strong></label>
+                                <div class="col-2">
+                                    {{form.playera_polo|add_class:"form-control txt_check d-none"}}
+                                </div>
+                        </div>
+                        <div class="row my-2">
+                            <div class="form-check form-switch col-auto mx-4" id="overol">
+                                <input class="form-check-input" type="checkbox" role="switch" id="SwitchOverol">
+                                <label class="form-check-label" for="flexSwitchCheckDefault"><strong>Overol</strong></label>
+                            </div>
+                            <label for="form.overol" class="col-auto col-form-label lbl_check d-none" id="LabelGasolina"><strong>Cantidad entregada:</strong></label>
+                                <div class="col-2">
+                                    {{form.overol|add_class:"form-control txt_check d-none"}}
+                                </div>
+                        </div>
+                        <div class="row my-2">
+                            <div class="form-check form-switch col-auto mx-4" id="botas">
+                                <input class="form-check-input" type="checkbox" role="switch" id="SwitchBotas">
+                                <label class="form-check-label" for="flexSwitchCheckDefault"><strong>Botas</strong></label>
+                            </div>
+                            <label for="form.botas" class="col-auto col-form-label lbl_check d-none" id="LabelMantto"><strong>Cantidad entregada:</strong></label>
+                                <div class="col-2">
+                                    {{form.botas|add_class:"form-control txt_check d-none"}}
+                                </div>
+                            </div>
+
+
+
+                            <hr>
+                            <button type="submit" name="btnSend" class="btn btn-success">
+                                <span class="glyphicon glyphicon-ok"></span> Guardar
+                            </button>
+                            <a href="{% url 'Tabla_uniformes' %}" class="btn btn">Cancelar</a>
+                    </div>
+                  </form>
+            </div>
+        </div>
+    </div>
+<script>
+var switches = document.querySelectorAll('.form-check-input');
+var lbl_check = document.querySelectorAll('.lbl_check');
+var txt_check = document.querySelectorAll('.txt_check');
+//console.log(lbl_check)
+
+for (let i=0; i<switches.length; i++){
+    switches[i].addEventListener("change", function(element){
+        //console.log('ladelfor:'+switches[i].checked);
+
+        if (switches[i].checked){
+            lbl_check[i].removeAttribute('class');
+            txt_check[i].removeAttribute('class');
+            lbl_check[i].setAttribute('class', 'col-auto col-form-label');
+            txt_check[i].setAttribute('class', 'form-control');
+        } else {
+            lbl_check[i].removeAttribute('class');
+            txt_check[i].removeAttribute('class');
+            lbl_check[i].setAttribute('class','col-auto col-form-label d-none');
+            txt_check[i].setAttribute('class','form-control d-none');
+        }
+    });
+ }
+</script>
+{% endblock %}

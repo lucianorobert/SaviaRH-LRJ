@@ -1,0 +1,98 @@
+{% extends 'partials/base.html'%}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+{% block title %}Dashboard App{% endblock %}
+{% block content %}
+<!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
+<div class="row my-4">
+    <div class="col-md-4">
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == "error" %}
+                <script>
+                Swal.fire({
+                    "title":"Error",
+                    "text":"{{message}}",
+                    "icon":"error",
+                })
+                </script>
+                {% else %}
+                <script>
+                Swal.fire({
+                    "title":"Excelente",
+                    "text":"{{message}}",
+                    "icon":"success",
+                })
+                </script>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+</head>
+<hr>
+<hr>
+<body>
+<div class="container">
+    <div class="row mt-4">
+        <div class="col-md-2">
+            <div class="card">
+                <div class="card-header bg-light text-dark">
+                    <strong>
+                        SAVIA X
+                    </strong>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <img src="https://www.pythonanywhere.com/user/vicjosh/files/home/vicjosh/mysite/templates/partials/SAVIA_Logo1.png" alt="SAVIA" width="160" height="170">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-light text-dark">
+                    <strong>
+                        Estadísticas
+                    </strong>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <a class="text-decoration-none text-dark" href="">
+                                <div class="card my-card shadow text-center p-3">
+                                    <h4>Empleados <i class="fa-solid fa-users"></i></h4>
+                                    <h3>{{cantidad}}</h3>
+                                </div>
+                            </a>
+                        </div>
+                    <!--    <div class="col-md-4">
+                            <a class="text-decoration-none text-dark" href="">
+                                <div class="card my-card shadow text-center p-3">
+                                    <h4>Products <i class="fa-solid fa-box"></i></h4>
+                                    <h3>4</h3>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a class="text-decoration-none text-dark" href="">
+                                <div class="card my-card shadow text-center p-3">
+                                    <h4>Order <i class="fa-solid fa-truck-fast"></i></h4>
+                                    <h3>4</h3>
+                                </div>
+                            </a>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+{% endblock %}
+
+</html>

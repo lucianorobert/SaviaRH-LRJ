@@ -1,0 +1,17 @@
+{% extends 'partials/base.html'%}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+     {% block title %}Admin Tablas{% endblock %}
+     {% block content %}
+</head>
+<body>
+<h1>Tablas de configuración</h1>
+<h2>Tabla de vacaciones</h2>
+ <p><a href="{% url 'Tabla_dias_vacaciones' %}"><button type="button" class="btn btn-primary btn-lg btn-block">Tabla dias de vacaciones</button></a></p>
+ <h2>Tabla de ISR:</h2>
+  <p><a href="{% url 'Tabla_isr' %}"><button type="button" class="btn btn-primary btn-lg btn-block">Tabla ISR</button></a></p>
+
+</body>
+{% endblock %}
+</html>

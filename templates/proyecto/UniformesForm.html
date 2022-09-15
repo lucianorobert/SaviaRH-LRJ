@@ -1,0 +1,101 @@
+{% extends 'partials/base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
+<div class="row my-4">
+    <div class="col-md-4">
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == "error" %}
+                <script>
+                Swal.fire({
+                    "title":"Error",
+                    "text":"{{message}}",
+                    "icon":"error",
+                })
+                </script>
+                {% else %}
+                <script>
+                Swal.fire({
+                    "title":"Excelente",
+                    "text":"{{message}}",
+                    "icon":"success",
+                })
+                </script>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+
+<hr>
+<hr>
+    <div class="container">
+        <div class="columns is-mobile">
+            <h3 class="title is-size-2">Formulario:Uniformes Empleado</h3>
+            <hr>
+            <form method="POST">
+                    {% csrf_token %}
+                        <div class="row my-2">
+                        <label class="col-auto col-form-label" empleados='{{empleados}}'><strong>Empleado:</strong></label>
+                        <div class="col-sm-6">
+                            <div class="input-group">
+                            <span class="input-group-text my-1" style="height:31px"><i class="fa-solid fa-user"></i></span>
+                            <div class="selector">
+                                <select class="form-select form-select-sm my-1" id="empleados">
+                                <option id="default_sel">      </option>
+                                {% for empleado in empleados %}
+                                <option id="js" target="{{empleado.id}}">
+                                {{empleado.perfil.nombres}} {{empleado.perfil.apellidos}}
+                                </option>
+                                {% endfor %}
+                                </select>
+                            </div>
+                            </div>
+                        </div>
+                            <div class="row my-2">
+                                <label for="form.status" class="col-auto col-form-label my-1 d-none"><strong>Empleado:</strong></label>
+                                <div class="col-3 d-none">
+                                    <div class="input-group mb-3">
+                                    <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+                                    {{form.status|add_class:"form-control"}}
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.uniformes_entregados" class="col-auto col-form-label my-1"><strong>Uniformes por entregar:</strong></label>
+                                <div class="col-2">
+                                    <div class="input-group mb-3">
+                                    <span class="input-group-text"><i class="fa-solid fa-calendar-plus"></i></span>
+                                    {{form.uniformes_entregados|add_class:"form-control"}}
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.fecha_ultima_entrega" class="col-auto col-form-label my-1"><strong>Fecha de la orden:</strong></label>
+                                <div class="col-2">
+                                    {% render_field form.fecha_ultima_entrega type="date" class="form-control" %}
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+        </div>
+        <hr>
+        <button id="btnSave" type="submit" name="btnSend" class="btn btn-success">Guardar</button>
+         <a href="{% url 'Tabla_uniformes' %}" class="btn btn">Cancelar</a>
+    </div>
+
+  </form>
+<script>
+document.getElementById("empleados").addEventListener("change", function(element){
+    var select = document.getElementById("empleados");
+    var current_option = select.options[select.selectedIndex];
+    var target = current_option.getAttribute('target')
+    var other_select = document.getElementById('id_status')
+    other_select.value = target
+    console.log(current_option)
+});
+
+
+</script>
+{% endblock %}

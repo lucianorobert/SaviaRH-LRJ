@@ -1,0 +1,94 @@
+{% extends 'partials/base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
+<div class="row my-4">
+    <div class="col-md-4">
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == "error" %}
+                <script>
+                Swal.fire({
+                    "title":"Error",
+                    "text":"{{message}}",
+                    "icon":"error",
+                })
+                </script>
+                {% else %}
+                <script>
+                Swal.fire({
+                    "title":"Excelente",
+                    "text":"{{message}}",
+                    "icon":"success",
+                })
+                </script>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+
+<hr>
+<hr>
+    <div class="container">
+        <div class="columns is-mobile">
+            <div class="column is-half is-offset-one-quarter">
+                <h3 class="title is-size-3">Formulario: Vacaciones del Empleado</h3>
+                <hr>
+                <div class='cart-row'>
+                    <table class="table table-ligth table-striped mx-1">
+                    <thead>
+                            <tr>
+                                <th scope="col">Fecha</th>
+                                <th scope="col">Días disfrutados</th>
+                                <th scope="col">Días pendientes</th>
+                                <!--<th scope="col">Registro</th>-->
+                            </tr>
+                    </thead>
+                    <tbody>
+                    {% for registro in registros %}
+                            <tr>
+                                <th scope="col">{{registro.history_date}}</th>
+                                <th scope="col">{{registro.dias_disfrutados}}</th>
+                                <th scope="col">{{registro.total_pendiente}}</th>
+                                <!--<th scope="col">
+                                    <a type="button" class="btn btn-outline-info" href=""><i class="fa-solid fa-file-pdf fa-2xl"></i></a>
+                                </th>-->
+                            </tr>
+                    {% endfor %}
+                    </tbody>
+                    </table>
+                </div>
+                <form method="POST">
+                    {% csrf_token %}
+                            <div class="row my-2">
+                                <label for="form.dias_disfrutados" class="col-auto col-form-label my-1"><strong>Empleado:</strong></label>
+                                <label for="form.dias_disfrutados" class="col-auto col-form-label my-1"><strong>{{descanso.status.perfil.nombres}} {{descanso.status.perfil.apellidos}}</strong></label>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.dias_disfrutados" class="col-auto col-form-label my-1"><strong>Días disfrutados:</strong></label>
+                                <div class="col-2">
+                                    <div class="input-group mb-3">
+                                    <span class="input-group-text"><i class="fa-solid fa-calendar-plus"></i></span>
+                                    {{form.dias_disfrutados|add_class:"form-control"}}
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+
+                            <button type="submit" name="btnSend" class="btn btn-success">
+                                <span class="glyphicon glyphicon-ok"></span> Guardar
+                            </button>
+                            <a href="{% url 'Tabla_vacaciones_empleados' %}" class="btn btn">Cancelar</a>
+
+                </form>
+            </div>
+        </div>
+    </div>
+<script>
+var dias = document.getElementById("id_dias_disfrutados");
+dias.value = "";
+</script>
+{% endblock %}

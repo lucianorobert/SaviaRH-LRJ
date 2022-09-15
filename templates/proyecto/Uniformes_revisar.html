@@ -1,0 +1,107 @@
+{% extends 'partials/base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
+<div class="row my-4">
+    <div class="col-md-4">
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == "error" %}
+                <script>
+                Swal.fire({
+                    "title":"Error",
+                    "text":"{{message}}",
+                    "icon":"error",
+                })
+                </script>
+                {% else %}
+                <script>
+                Swal.fire({
+                    "title":"Excelente",
+                    "text":"{{message}}",
+                    "icon":"success",
+                })
+                </script>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+
+<hr>
+<hr>
+ <div class="container">
+    <div class="row my-4">
+            <div class="col-md-4"></div>
+
+                <div class="card"></div>
+                    <div class="card-header text-black" style="background-color: #F5F5F5;">
+                        <strong>
+                            Información de Uniformes
+                        </strong>
+                    </div>
+                    <hr>
+                    <div class="card-body">
+                        <div class="row">
+                                <span class="h4">{{ropa.status.perfil.nombres}} {{ropa.status.perfil.apellidos}}</span>
+
+                                <table class="table bg-white table-borderless">
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row">Fecha ultima entrega:</th>
+
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Uniformes entregados:</th>
+                                            <td><strong>   </strong></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Cantidad de camisolas:</th>
+
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Cantidad de pantalones:</th>
+
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Cantidad de camisas blancas:</th>
+
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Cantidad de camisas azules:</th>
+
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Cantidad de camisas beige:</th>
+
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Cantidad de playeras polo:</th>
+
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Cantidad de overoles:</th>
+
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Cantidad de botas:</th>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                            <hr>
+                            <div class="col-md-2">
+                                <a href="{% url 'Tabla_uniformes' %}" class="btn btn-outline-info"><i class="fa-solid fa-backward"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+        </div>
+</div>
+
+
+
+{% endblock %}

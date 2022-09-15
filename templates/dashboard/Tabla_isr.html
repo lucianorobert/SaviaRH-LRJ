@@ -1,0 +1,64 @@
+{% extends 'partials/base.html' %}
+<html>
+<head>
+{% block title %}Tabla ISR{% endblock %}
+</head>
+<body>
+{% block content %}
+    <!-- Aqui es el encabezado -->
+    <div class = "row mt-2 bg-white">
+        <div class="col-12">
+            <div class="card card-body">
+                <h5>Información Tabla ISR</h5>
+                {% csrf_token %}
+                <form method="GET">
+                </form>
+                <form method=POST>
+                    {% csrf_token %}
+                </form>
+            </div>
+        </div>
+    </div>
+
+<!-- Aquí empieza la generación de la tabla -->
+<div class = "row mt-2">
+    <div class="col-md-12">
+        <table class="table table-striped table-hover bg-white">
+            <thead class="text-black" style="background-color: #F5F5F5;">
+                <tr>
+                    <th scope="col">Limite inferior</th>
+                    <th scope="col">Limite superior</th>
+                    <th scope="col">Cuota fija</th>
+                    <th scope="col">% para aplicarse sobre el excedente del limite inferior</th>
+                    <th scope="col">Para ingresos de</th>
+                    <th scope="col">Hasta ingresos de</th>
+                    <th scope="col">Cantidad de subsidio para el empleo mensual</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for objeto in objetos %}
+                <tr>
+                    <td>{{objeto.LimInf.A}}</td>
+                    <td>{{objeto.LimSup.B}}</td>
+                    <td>{{objeto.Cuota.C}}</td>
+                    <td>{{objeto.Excedente.D}}</td>
+                    <td>{{objeto.PIngresos.E}}</td>
+                    <td>{{objeto.HIngresos.F}}</td>
+                    <td>{{objeto.Subsidio.G}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!--Este es el modal-->
+<div class="modal fade" id ="dialog" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" id="document" role="document">
+
+    </div>
+</div>
+{% endblock %}
+
+</body>
+</html>

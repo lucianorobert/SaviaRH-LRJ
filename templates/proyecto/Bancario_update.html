@@ -1,0 +1,88 @@
+{% extends 'partials/base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
+<div class="row my-4">
+    <div class="col-md-4">
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == "error" %}
+                <script>
+                Swal.fire({
+                    "title":"Error",
+                    "text":"{{message}}",
+                    "icon":"error",
+                })
+                </script>
+                {% else %}
+                <script>
+                Swal.fire({
+                    "title":"Excelente",
+                    "text":"Realizado con exito",
+                    "icon":"success",
+                })
+                </script>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+
+<hr>
+<hr>
+    <div class="container">
+        <div class="columns is-mobile">
+            <div class="column is-half is-offset-two-quarter">
+                <h2 class="title is-size-2">Datos Bancarios</h2>
+                <hr>
+                <form method="POST">
+                    {% csrf_token %}
+                            <div class="row my-2">
+                                <label for="form.dias_disfrutados" class="col-auto col-form-label my-1"><strong>Empleado:</strong></label>
+                                <label for="form.dias_disfrutados" class="col-auto col-form-label my-1"><strong>{{item.status.perfil.nombres}} {{item.status.perfil.apellidos}}</strong></label>
+                            </div>
+                            <div class="row my-1">
+                                <label for="form.no_de_cuenta" class="col-auto col-form-label my-1"><strong>Número de cuenta:</strong></label>
+                                <div class="col-2">
+                                    {{form.no_de_cuenta|add_class:"form-control"}}
+                                </div>
+                            </div>
+
+                            <div class="row my-1">
+                                <label for="form.numero_de_tarjeta" class="col-auto col-form-label my-1"><strong>Número de tarjeta:</strong></label>
+                                <div class="col-3">
+                                    <div class="input-group mb-3 my-1">
+                                        <span class="input-group-text" id="basic-addon1" style="height:40px"><i class="fa-brands fa-cc-visa"></i></span>
+                                    {{form.numero_de_tarjeta|add_class:"form-control my-1"}}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row my-1">
+                                <label for="form.clabe_interbancaria" class="col-auto col-form-label my-1"><strong>Clabe interbancaria:</strong></label>
+                                <div class="col-2">
+                                    {{form.clabe_interbancaria|add_class:"form-control"}}
+                                </div>
+                            </div>
+                            <div class="row my-1">
+                                <label for="form.banco" class="col-auto col-form-label my-1"><strong>Banco:</strong></label>
+                                <div class="col-2">
+                                    <div class="input-group mb-3 my-1">
+                                        <span class="input-group-text" id="basic-addon1" style="height:40px"><i class="fa-solid fa-building-columns"></i></span>
+                                    {{form.banco|add_class:"form-control"}}
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <button type="submit" name="btnSend" class="btn btn-success">
+                                <span class="glyphicon glyphicon-ok"></span> Guardar
+                            </button>
+                            <a href="{% url 'Tabla_datosbancarios' %}" class="btn btn">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

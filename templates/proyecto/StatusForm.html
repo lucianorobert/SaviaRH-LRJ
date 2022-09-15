@@ -1,0 +1,198 @@
+{% extends 'partials/base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
+<div class="row my-4">
+    <div class="col-md-4">
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == "error" %}
+                <script>
+                Swal.fire({
+                    "title":"Error",
+                    "text":"{{message}}",
+                    "icon":"error",
+                })
+                </script>
+                {% else %}
+                <script>
+                Swal.fire({
+                    "title":"Excelente",
+                    "text":"Realizado con exito",
+                    "icon":"success",
+                })
+                </script>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+
+<hr>
+<hr>
+    <div class="container">
+        <div class="columns is-mobile">
+            <div class="column is-half is-offset-one-quarter">
+                <h3 class="title is-size-3">Formulario: Status del empleado</h3>
+                <hr>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="row my-2">
+                        <label class="col-auto col-form-label" empleados='{{empleados}}'><strong>Empleado:</strong></label>
+                        <div class="col-sm-6">
+                            <div class="input-group">
+                            <span class="input-group-text" id="basic-addon1" style="height:35px"><i class="fa-solid fa-user"></i></span>
+                                <div class="selector">
+                                    <select class="form-select form-select-sm " style="height:35px" id="empleados">
+                                        <option id="default_sel">      </option>
+                                        {% for empleado in empleados %}
+                                        <option id="js" target="{{empleado.id}}">
+                                        {{empleado.nombres}} {{empleado.apellidos}}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                            <div class="row my-2">
+                                <label for="form.perfil" class="col-auto col-form-label my-1 d-none"><strong>Empleado</strong></label>
+                                <div class="col-4">
+                                    {{form.perfil|add_class:"form-control d-none"}}
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.registro_patronal" class="col-auto col-form-label my-1"><strong>Registro patronal:</strong></label>
+                                <div class="col-2">
+                                    {{form.registro_patronal|add_class:"form-control"}}
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.nss" class="col-auto col-form-label my-1"><strong>NSS:</strong></label>
+                                <div class="col-3">
+                                    {{form.nss|add_class:"form-control"}}
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.curp" class="col-auto col-form-label my-1"><strong>Curp:</strong></label>
+                                <div class="col-3">
+                                    {{form.curp|add_class:"form-control"}}
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.rfc" class="col-auto col-form-label my-1"><strong>RFC:</strong></label>
+                                <div class="col-3">
+                                    {{form.rfc|add_class:"form-control"}}
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <div class="col-1">
+                                    <label for="form.profesion" class="col-auto col-form-label my-1"><strong>Profesión:</strong></label>
+                                </div>
+                                <div class="col-3">
+                                    <div class="input-group">
+                                    <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-helmet-safety"></i></span>
+                                    {{form.profesion|add_class:"form-control"}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.no_cedula" class="col-auto col-form-label my-1"><strong>No. de cedula:</strong></label>
+                                <div class="col-3">
+                                    {{form.no_cedula|add_class:"form-control"}}
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.nivel" class="col-auto col-form-label my-1"><strong>Nivel del empleado:</strong></label>
+                                <div class="col-3">
+                                    <div class="input-group">
+                                    <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-arrow-up-short-wide"></i></span>
+                                    {{form.nivel|add_class:"form-select"}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.tipo_de_contrato" class="col-auto col-form-label my-1"><strong>Tipo de contrato:</strong></label>
+                                <div class="col-3">
+                                    {{form.tipo_de_contrato|add_class:"form-select"}}
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.ultimo_contrato_vence" class="col-auto col-form-label my-1"><strong>Ultimo contrato vence:</strong></label>
+                                <div class="col-2">
+                                    {% render_field form.ultimo_contrato_vence type="date" class="form-control" %}
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.tipo_sangre" class="col-auto col-form-label my-1"><strong>Tipo de sangre:</strong></label>
+                                <div class="col-3">
+                                    {{form.tipo_sangre|add_class:"form-select"}}
+                                </div>
+                            </div>
+                            <div class="row my-2">
+
+                                <label for="form.sexo" class="col-auto col-form-label my-1"><strong>Género:</strong></label>
+                                <div class="col-3">
+                                    <div class="input-group">
+                                    <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-mars-and-venus"></i></span>
+                                    {{form.sexo|add_class:"form-select"}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.telefono" class="col-auto col-form-label my-1"><strong>Teléfono:</strong></label>
+                                <div class="col-3">
+                                    {{form.telefono|add_class:"form-control"}}
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.domicilio" class="col-auto col-form-label my-1"><strong>Domicilio:</strong></label>
+                                <div class="col-5">
+                                    <div class="input-group">
+                                    <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-location-dot"></i></span>
+                                    {{form.domicilio|add_class:"form-control"}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.estado_civil" class="col-auto col-form-label my-1"><strong>Estado civil:</strong></label>
+                                <div class="col-3">
+                                    {{form.estado_civil|add_class:"form-select"}}
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.fecha_planta_anterior" class="col-auto col-form-label my-1"><strong>Fecha de planta anterior:</strong></label>
+                                <div class="col-2">
+                                    {% render_field form.fecha_planta_anterior type="date" class="form-control" %}
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.fecha_planta" class="col-auto col-form-label my-1"><strong>Fecha de planta:</strong></label>
+                                <div class="col-2">
+                                    {% render_field form.fecha_planta type="date" class="form-control" %}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="text-end">
+                                <button type="submit" name="btnSend" class="btn btn-success">
+                                    <span class="glyphicon glyphicon-ok"></span> Guardar
+                                </button>
+                                <a href="{% url 'Status' %}" class="btn btn">Cancelar</a>
+                            </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+<script>
+document.getElementById("empleados").addEventListener("change", function(element){
+    var select = document.getElementById("empleados");
+    var current_option = select.options[select.selectedIndex];
+    var target = current_option.getAttribute('target')
+    var other_select = document.getElementById('id_perfil')
+    other_select.value = target
+    console.log(current_option)
+});
+</script>
+{% endblock %}

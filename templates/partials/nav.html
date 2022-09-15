@@ -1,0 +1,69 @@
+{% load static %}
+
+<head>
+    <!--Static Files-->
+    <!--<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" /> -->
+     <!--FotAwesome CDN-->
+    <script src="https://kit.fontawesome.com/437c06e9e5.js" crossorigin="anonymous"></script>
+</head>
+<nav class="navbar fixed-top navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href={% url "index" %}>
+            <img src="https://www.pythonanywhere.com/user/vicjosh/files/home/vicjosh/mysite/templates/partials/SAVIA_Logo1.png" alt="SAVIA" width="50" height="50">
+            </a>
+            <ul class="nav nav-pills" >
+                <li class="nav-item">
+                    <a class="nav-link text-white" aria-current="page" href={% url "index" %}>Dashboard</a>
+                </li>
+            </ul>
+            <ul class="nav justify-content-end">
+                <li class="nav-item">
+                    <a class="btn btn-secondary" href="{% url 'user-logout' %}">Logout</a>
+                </li>
+            </ul>
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                    <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Menú</h5>
+                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <div>
+                        <h6 class="dropdown-header">Usuarios</h6>
+                        <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{% url 'Perfil' %}">Perfiles</a>
+                            <a class="dropdown-item" href="{% url 'Status' %}">Status</a>
+                            <!--<a class="dropdown-item" href="{% url 'Tabla_isr' %}">Tabla datos ISR</a>-->
+                            <!--<a class="dropdown-item" href="{% url 'Tabla_dias_vacaciones' %}">Tabla de días de vacaciones disponibles</a>-->
+                            <div class="dropdown-divider"></div>
+                            <h6 class="dropdown-header">Tablas de datos</h6>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{% url 'Tabla_datosbancarios' %}">Datos bancarios</a>
+                            <a class="dropdown-item" href="{% url 'Tabla_costo' %}">Costos</a>
+                            <a class="dropdown-item" href="{% url 'Tabla_bonos' %}">Bonos</a>
+                            <a class="dropdown-item" href="{% url 'Tabla_vacaciones_empleados' %}">Vacaciones</a>
+                            <a class="dropdown-item" href="{% url 'Tabla_uniformes' %}">Uniformes</a>
+                            <a class="dropdown-item" href="{% url 'Tabla_economicos' %}">Días económicos</a>
+                        <div class="dropdown-divider"></div>
+                    </div>
+                </div>
+            </div>
+    <!--
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <a class="navbar-brand text-white" href="#">
+                    <img src="https://www.pythonanywhere.com/user/UlisesHuesca/files/home/UlisesHuesca/inventoryproject/templates/partials/SAVIA_Logo.png" alt="SAVIA" width="36" height="30">
+                </a>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active text-white" aria-current="page" href="">Registro</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="">Login</a>
+                    </li>
+                </ul>
+            </div>
+    -->
+        </div>
+</nav>

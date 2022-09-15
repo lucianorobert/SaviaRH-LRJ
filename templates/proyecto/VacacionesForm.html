@@ -1,0 +1,92 @@
+{% extends 'partials/base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
+<div class="row my-4">
+    <div class="col-md-4">
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == "error" %}
+                <script>
+                Swal.fire({
+                    "title":"Error",
+                    "text":"{{message}}",
+                    "icon":"error",
+                })
+                </script>
+                {% else %}
+                <script>
+                Swal.fire({
+                    "title":"Excelente",
+                    "text":"Realizado con exito",
+                    "icon":"success",
+                })
+                </script>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+
+<hr>
+<hr>
+    <div class="container">
+        <div class="columns is-mobile">
+            <div class="column is-half is-offset-one-quarter">
+                <h3 class="title is-size-3">Formulario vacaciones del empleado</h3>
+                <form method="POST">
+                    {% csrf_token %}
+                            <div class="row my-2">
+                            <label class="col-auto col-form-label" empleados="{{empleados}}"><strong>Empleado:</strong></label>
+                            <div class="col-sm-6">
+                                <div class="input-group">
+                                <span class="input-group-text my-1" style="height:31px"><i class="fa-solid fa-user"></i></span>
+                                <div class="selector">
+                                    <select class="form-select form-select-sm my-1" id="empleados">
+                                    <option id="default_sel">      </option>
+                                    {% for empleado in empleados %}
+                                    <option id="js" target="{{empleado.id}}">
+                                    {{empleado.perfil.nombres}} {{empleado.perfil.apellidos}}
+                                    </option>
+                                    {% endfor %}
+                                    </select>
+                                </div>
+                                </div>
+                            </div>
+
+                            <div class="row my-2">
+                                <label for="form.status" class="col-auto col-form-label my-1 d-none"><strong>Empleado:</strong></label>
+                                <div class="col-3">
+                                    {{form.status|add_class:"form-control d-none"}}
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.dias_disfrutados" class="col-auto col-form-label my-1"><strong>Días disfrutados:</strong></label>
+                                <div class="col-2">
+                                    <div class="input-group mb-3">
+                                    <span class="input-group-text"><i class="fa-solid fa-calendar-plus"></i></span>
+                                    {{form.dias_disfrutados|add_class:"form-control"}}
+                                </div>
+                            </div>
+                    </div>
+                </div>
+                <hr>
+                <button id="btnSave" type="submit" name="btnSend" class="btn btn-success">Guardar</button>
+                <a href="{% url 'Tabla_vacaciones_empleados' %}" class="btn btn">Cancelar</a>
+            </div>
+        </div>
+    </div>
+ </form>
+<script>
+  document.getElementById("empleados").addEventListener("change", function(element){
+    var select = document.getElementById("empleados");
+    var current_option = select.options[select.selectedIndex];
+    var target = current_option.getAttribute('target')
+    var other_select = document.getElementById('id_status')
+    other_select.value = target
+    console.log(current_option)
+});
+</script>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends 'partials/base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
+<div class="row my-4">
+    <div class="col-md-4">
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == "error" %}
+                <script>
+                Swal.fire({
+                    "title":"Error",
+                    "text":"{{message}}",
+                    "icon":"error",
+                })
+                </script>
+                {% else %}
+                <script>
+                Swal.fire({
+                    "title":"Excelente",
+                    "text":"{{message}}",
+                    "icon":"success",
+                })
+                </script>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+
+<hr>
+<hr>
+    <div class="container">
+        <div class="columns is-mobile">
+            <div class="column is-half is-offset-one-quarter">
+                <h3 class="title is-size-3">Formulario: Perfil del Empleado</h3>
+                <hr>
+                        <!-- El action y el multipart es para permitir cargar imagenes -->
+                <form method='POST' action='{{ action_url }}' enctype='multipart/form-data'>
+                    {% csrf_token %}
+                            <div class="row my-2">
+                                <label for="form.foto" class="col-auto col-form-label my-1"><strong>Foto:</strong></label>
+                                <div class="col-4">
+                                    {{form.foto|add_class:"form-control"}}
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.numero_de_trabajador" class="col-auto col-form-label my-1"><strong>Numero del empleado:</strong></label>
+                                <div class="col-1">
+                                    {{form.numero_de_trabajador|add_class:"form-control"}}
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.empresa" class="col-auto col-form-label my-1"><strong>Empresa:</strong></label>
+                                <div class="col-3">
+                                    <div class="input-group">
+                                    <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-industry"></i></span>
+                                    {{form.empresa|add_class:"form-select"}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.nombres" class="col-auto col-form-label my-1"><strong>Nombres:</strong></label>
+                                <div class="col-2">
+                                    {{form.nombres|add_class:"form-control"}}
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.apellidos" class="col-auto col-form-label my-1"><strong>Apellidos:</strong></label>
+                                <div class="col-2">
+                                    {{form.apellidos|add_class:"form-control"}}
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.fecha_nacimiento" class="col-auto col-form-label my-1"><strong>Fecha de nacimiento::</strong></label>
+                                <div class="col-2">
+                                    {% render_field form.fecha_nacimiento type="date" class="form-control" %}
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <div class="col-2">
+                                    <label for="form.correo_electronico" class="col-auto col-form-label my-1"><strong>Correo electrónico:</strong></label>
+                                </div>
+                                <div class="col-3">
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-at"></i></span>
+                                        {{form.correo_electronico|add_class:"form-control"}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.proyecto" class="col-auto col-form-label my-1"><strong>Proyecto:</strong></label>
+                                <div class="col-3">
+                                    {{form.proyecto|add_class:"form-control"}}
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.subproyecto" class="col-auto col-form-label my-1"><strong>Subproyecto:</strong></label>
+                                <div class="col-3">
+                                    {{form.subproyecto|add_class:"form-control"}}
+                                </div>
+                            </div>
+                            <hr>
+                            <button type="submit" name="btnSend" class="btn btn-success">
+                                <span class="glyphicon glyphicon-ok"></span> Guardar
+                            </button>
+                            <a href="{% url 'Perfil' %}" class="btn btn">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
