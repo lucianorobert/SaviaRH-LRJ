@@ -79,6 +79,7 @@ class Banco(models.Model):
 
 class RegistroPatronal(models.Model):
     patronal = models.CharField(max_length=50,null=True)
+    empresa = models.ForeignKey(Empresa, on_delete = models.CASCADE, null=True)
     complete = models.BooleanField(default=False)
     def __str__(self):
         return f'{self.patronal}'
@@ -175,7 +176,7 @@ class Status(models.Model):
 class DatosBancarios(models.Model):
     status = models.ForeignKey(Status, on_delete = models.CASCADE, null=True)
     no_de_cuenta = models.CharField(max_length=50,null=True)
-    numero_de_tarjeta = models.CharField(max_length=50,null=True)
+    numero_de_tarjeta = models.CharField(max_length=18,null=True,blank=True)
     clabe_interbancaria = models.CharField(max_length=50,null=True)
     banco = models.ForeignKey(Banco, on_delete = models.CASCADE, null=True)
     complete = models.BooleanField(default=False)
@@ -242,7 +243,7 @@ class Costo(models.Model):
     def __str__(self):
         if self.status ==None:
             return "Campo vacio"
-        return f'{self.status.perfil.nombres} {self.status.perfil.apellidos}'
+        return f'{self.status.perfil.numero_de_trabajador} {self.status.perfil.nombres} {self.status.perfil.apellidos}'
 
 class Bonos(models.Model):
     costo = models.ForeignKey(Costo, on_delete = models.CASCADE, null=True)
@@ -313,6 +314,7 @@ class Vacaciones(models.Model):
     dias_de_vacaciones = models.IntegerField(null=True, default=0)
     dias_disfrutados = models.IntegerField(null=True, default=0)
     total_pendiente = models.IntegerField(null=True, default=0)
+    comentario = models.CharField(max_length=50,null=True)
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
     complete = models.BooleanField(default=False)
@@ -326,11 +328,13 @@ class Vacaciones(models.Model):
 class Economicos(models.Model):
     status = models.ForeignKey(Status, on_delete = models.CASCADE, null=True)
     periodo = models.CharField(max_length=50,null=True)
-    dias_pendientes = models.IntegerField(null=True, default=0)
     dias_disfrutados = models.IntegerField(null=True, default=0)
+    dias_pendientes = models.IntegerField(null=True, default=0)
+    fecha = models.DateField(null=True)
+    comentario = models.CharField(max_length=100,null=True)
     created_at=models.DateTimeField(auto_now_add=True)
-    updated_at=models.DateTimeField(auto_now=True)
     complete = models.BooleanField(default=False)
+    complete_dias = models.BooleanField(default=False)
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
     def __str__(self):
         if self.status == None:
@@ -355,5 +359,22 @@ class Status_Batch(models.Model):
     def __str__(self):
         return f'File id:{self.id}'
 
+class Costos_Batch(models.Model):
+    file_name = models.FileField(upload_to='product_bash')
+    uploaded = models.DateField(auto_now_add=True)
+    activated = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return f'File id:{self.id}'
+
+class Bancarios_Batch(models.Model):
+    file_name = models.FileField(upload_to='product_bash')
+    uploaded = models.DateField(auto_now_add=True)
+    activated = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return f'File id:{self.id}'
 
 

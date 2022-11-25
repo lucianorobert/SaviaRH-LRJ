@@ -32,8 +32,9 @@
 
 <hr>
 <hr>
-    <div class="container">
-        <div class="columns is-mobile">
+<div class="container card card-body">
+    <div class="columns is-mobile">
+            <div class="column is-half is-offset-one-quarter">
             <h3 class="title is-size-2">Formulario: Costo Empleado</h3>
             <hr>
             <form method="POST">
@@ -77,13 +78,7 @@
                                 </datalist>
                             </div>
                         </div>
-                        <div class="row my-2">
-                            <label for="form.seccion" class="col-auto col-form-label my-1"><strong>Sección a la que pertenece:</strong></label>
-                            <div class="col-3">
-                                {{ form.seccion|add_class:"form-control my-1"}}
-                            </div>
-                            </div>
-                        </div>
+
 
                         <div class="row my-2">
                             <label for="form.neto_catorcenal_sin_deducciones" class="col-auto col-form-label my-1"><strong>Neto catorcenal sin deducciones:</strong></label>
@@ -248,9 +243,9 @@
                         <button id="btnSave" type="submit" name="btnSend" class="btn btn-success">Guardar</button>
                         <a href="{% url 'Tabla_costo' %}" class="btn btn">Cancelar</a>
 
-                 </div>
-            </div>
-        </div>
+    </div>  </div>
+</div>
+
   </form>
 <script>
 

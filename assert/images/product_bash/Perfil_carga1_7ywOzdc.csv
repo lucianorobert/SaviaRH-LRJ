@@ -1,0 +1,10 @@
+numero_de_trabajador,empresa,distrito,nombres,apellidos,fecha_nacimiento,correo_electronico,proyecto,subproyecto
+4034,SPP,MATRIZ,Jesus,Muñoz Sandoval,14/11/1990,jesus1428.m@gmail.com,Sub. Administrativa,RH
+657,SPP,MATRIZ,Natalia Alejandra,Garcia Bautista,01/08/1994,natalejandra01@hotmil.com,Sub. Administrativa,RH
+641,VORDCAB,MATRIZ,Celeste,Hernandez Carmona,21/10/1993,celeste254_@hotmail.com,Sub. Administrativa,RH
+151,SPP,MATRIZ,Guadalupe,Murillo Sigero ,16/12/1977,gmurillo77s@hotmail.com,Sub. Administrativa,Evaluación proveedores
+135,VORDCAB,MATRIZ,Maria Isabel,Azamar Tinoco ,29/12/1971,ulises_huesc@hotmail.com,Fijos,Intendencia
+640,VORDCAB,MATRIZ,Francisco,Cano Lara ,02/04/1974,fcocano74@gmail.com,Dirección General,ESTAFF DG
+654,VORDCAB,MATRIZ,Hugo,Castellanos Bonilla,24/05/1985,cebeache@gmail.com,Sub. Finanzas y ventas,Ventas
+123,VORDCAB,MATRIZ,Susana,Contreras Gallegos,18/07/1986,susana.contreras202@gmail.com,Sub. Administrativa,Sistemas
+173,VORDCAB,MATRIZ,Arturo ,Flores Liahut,18/05/1989,aelihut@gmail.com,Sub. Administrativa,Compras

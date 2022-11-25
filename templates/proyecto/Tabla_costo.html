@@ -60,6 +60,11 @@
                                 <i class="fa-solid fa-user-plus"></i>
                             </a>
                         </li>
+                        <li class="nav-item mx-2">
+                            <a type="button" class="btn btn-outline-light" style="background-color:#9a9b9d" data-bs-toggle="modal" data-bs-target='#dialog' hx-target="#document" hx-get="{% url 'Upload_costos' %}">
+                                <i class="fa-solid fa-file-arrow-up"> CARGA MASIVA</i>
+                            </a>
+                        </li>
                     </ul>
                 </div>
                 <hr>
@@ -262,6 +267,11 @@ switches[i].addEventListener("change", function(element){
 })
 };
 
+var myModal = document.getElementById('dialog')
+
+myModal.addEventListener('hidden.bs.modal', function (event) {
+//    location.reload();
+})
 </script>
 {% endblock %}
 

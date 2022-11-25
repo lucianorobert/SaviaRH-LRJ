@@ -34,7 +34,7 @@
 <hr>
 <hr>
 
-    <div class="container">
+<div class="container card card-body">
         <div class="columns is-mobile">
             <div class="column is-half is-offset-one-quarter">
                 <h3 class="title is-size-3">Formulario días económicos del empleado</h3>
@@ -64,12 +64,15 @@
                                 </div>
                             </div>
                             <div class="row my-2">
-                                <label for="form.dias_disfrutados" class="col-auto col-form-label my-1"><strong>Días disfrutados:</strong></label>
+                                <label for="form.fecha" class="col-auto col-form-label my-1"><strong>Fecha:</strong></label>
                                 <div class="col-2">
-                                    <div class="input-group mb-3">
-                                    <span class="input-group-text"><i class="fa-solid fa-calendar-plus"></i></span>
-                                    {{form.dias_disfrutados|add_class:"form-control"}}
+                                    {% render_field form.fecha type="date" class="form-control" %}
                                 </div>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.comentario" class="col-auto col-form-label my-1"><strong>Comentario:</strong></label>
+                                <div class="col-7">
+                                    {{form.comentario|add_class:"form-control"}}
                                 </div>
                             </div>
                         </div>
@@ -78,6 +81,7 @@
             <button id="btnSave" type="submit" name="btnSend" class="btn btn-success">Guardar</button>
             <a href="{% url 'Tabla_economicos' %}" class="btn btn">Cancelar</a>
     </div>
+</div>
 </form>
 <script>
   document.getElementById("empleados").addEventListener("change", function(element){

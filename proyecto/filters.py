@@ -17,13 +17,13 @@ class PerfilFilter(django_filters.FilterSet):
 class StatusFilter(django_filters.FilterSet):
     numero_de_trabajador = django_filters.NumberFilter(field_name='perfil__numero_de_trabajador')
     empresa = django_filters.CharFilter(field_name='perfil__empresa__empresa', lookup_expr='icontains')
-    #nombres = django_filters.CharFilter(field_name='perfil__nombres', lookup_expr='icontains')
+    distrito = django_filters.CharFilter(field_name='perfil__distrito__distrito', lookup_expr='icontains')
     nombres = CharFilter(method ='nombres_filter', label="Search")
     profesion = django_filters.CharFilter(field_name='profesion', lookup_expr='icontains')
 
     class Meta:
         model = Status
-        fields = ['numero_de_trabajador','empresa','nombres','profesion','tipo_de_contrato',]
+        fields = ['numero_de_trabajador','empresa','nombres','profesion','tipo_de_contrato','distrito']
 
     def nombres_filter(self, queryset, name, value):
         return queryset.filter(Q(perfil__nombres__icontains = value) | Q(perfil__apellidos__icontains = value))
