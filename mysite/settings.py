@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-r9fy(pk86$+m$yra4u*dua2%u(8xp9e-t^(3q3ibft-oj6c+zk'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -142,10 +142,10 @@ MEDIA_ROOT = (BASE_DIR/'static/images')
 MEDIA_URL = '/images/'
 
 STATICFILES_DIRS = [
-    BASE_DIR / 'static'
+    BASE_DIR /'static'
     ]
 
-STATIC_ROOT = (BASE_DIR/"assert/")
+STATIC_ROOT = (BASE_DIR/'assert/')
 
 LOGIN_REDIRECT_URL ='index'
 

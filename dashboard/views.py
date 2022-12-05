@@ -82,6 +82,7 @@ def render_report(request,pk):
         'registros':costo,
         'meses':meses,
         'meses_cost':meses_cost,
+        'costo_ver':costo_ver,
         }
 
 

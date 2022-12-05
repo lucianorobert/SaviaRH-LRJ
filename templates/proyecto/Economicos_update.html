@@ -33,59 +33,38 @@
 
 <hr>
 <hr>
-
-    <div class="container">
+<div class="container card card-body">
         <div class="columns is-mobile">
             <div class="column is-half is-offset-one-quarter">
                 <h3 class="title is-size-3">Datos días económicos del empleado</h3>
                 <hr>
-                <div class='cart-row'>
-                    <table class="table table-ligth table-striped mx-1">
-                    <thead>
-                            <tr>
-                                <th scope="col">Fecha de cambio</th>
-                                <th scope="col">Días disfrutados</th>
-                                <th scope="col">Días pendientes</th>
-                                <!--<th scope="col">Registro</th>-->
-                            </tr>
-                    </thead>
-                    <tbody>
-                    {% for registro in registros %}
-                            <tr>
-                                <th scope="col">{{registro.history_date}}</th>
-                                <th scope="col">{{registro.dias_disfrutados}}</th>
-                                <th scope="col">{{registro.dias_pendientes}}</th>
-                                <!--<th scope="col">
-                                    <a type="button" class="btn btn-outline-info" href=""><i class="fa-solid fa-file-pdf fa-2xl"></i></a>
-                                </th>-->
-                            </tr>
-                    {% endfor %}
-                    </tbody>
-                    </table>
-                </div>
                 <form method="POST">
                     {% csrf_token %}
                             <div class="row my-2">
                                 <label for="form.dias_disfrutados" class="col-auto col-form-label my-1"><strong>Empleado:</strong></label>
-                                <label for="form.dias_disfrutados" class="col-auto col-form-label my-1"><strong>{{economico.status.perfil.nombres}} {{economico.status.perfil.apellidos}}</strong></label>
+                                <label for="form.dias_disfrutados" class="col-auto col-form-label my-1"><strong>{{status.perfil.nombres}} {{status.perfil.apellidos}}</strong></label>
                             </div>
                             <div class="row my-2">
-                                <label for="form.dias_disfrutados" class="col-auto col-form-label my-1"><strong>Días disfrutados:</strong></label>
+                            <div class="row my-2">
+                                <label for="form.fecha" class="col-auto col-form-label my-1"><strong>Fecha:</strong></label>
                                 <div class="col-2">
-                                    <div class="input-group mb-3">
-                                    <span class="input-group-text"><i class="fa-solid fa-calendar-plus"></i></span>
-                                    {{form.dias_disfrutados|add_class:"form-control"}}
-                                    </div>
+                                    {% render_field form.fecha type="date" class="form-control" %}
                                 </div>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.comentario" class="col-auto col-form-label my-1"><strong>Comentario:</strong></label>
+                                <div class="col-7">
+                                    {{form.comentario|add_class:"form-control"}}
+                                </div>
+                            </div>
                             </div>
                             <hr>
                             <button type="submit" name="btnSend" class="btn btn-success">
                                 <span class="glyphicon glyphicon-ok"></span> Guardar
                             </button>
                             <a href="{% url 'Tabla_economicos' %}" class="btn btn">Cancelar</a>
-                    </div>
-                  </form>
             </div>
+                </form>
         </div>
-    </div>
+</div>
 {% endblock %}

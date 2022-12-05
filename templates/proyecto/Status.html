@@ -86,10 +86,10 @@
                 <div class="col-auto">
                        {% render_field status_filter.form.nombres class="form-control" %}
                 </div>
-            <!---    <label for="status_filter.form.perfil__empresa" class="col-sm-auto col-form-label text-right"><strong>Empresa:</strong></label>
+                <label for="status_filter.form.perfil__distrito" class="col-sm-auto col-form-label text-right"><strong>Distrito:</strong></label>
                 <div class="col-auto">
-                       {% render_field status_filter.form.empresa class="form-control" %}
-                </div> ----->
+                       {% render_field status_filter.form.distrito class="form-control" %}
+                </div>
                 <label for="status_filter.form.profesion" class="col-sm-auto col-form-label text-right"><strong>Profesión:</strong></label>
                 <div class="col-auto">
                        {% render_field status_filter.form.profesion class="form-control" %}
@@ -168,7 +168,7 @@
     var myModal = document.getElementById('dialog')
 
     myModal.addEventListener('hidden.bs.modal', function (event) {
-        location.reload();
+    //    location.reload();
     })
 </script>
 {% endblock %}

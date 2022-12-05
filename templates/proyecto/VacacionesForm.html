@@ -32,7 +32,7 @@
 
 <hr>
 <hr>
-    <div class="container">
+<div class="container card card-body">
         <div class="columns is-mobile">
             <div class="column is-half is-offset-one-quarter">
                 <h3 class="title is-size-3">Formulario vacaciones del empleado</h3>
@@ -70,9 +70,18 @@
                                     {{form.dias_disfrutados|add_class:"form-control"}}
                                 </div>
                             </div>
-                    </div>
-                </div>
-                <hr>
+                        </div>
+                            <div class="row my-2">
+                                <label for="form.comentario" class="col-auto col-form-label my-1"><strong>Comentario:</strong></label>
+                                <div class="col-3">
+                                    <div class="input-group">
+                                     <span class="input-group-text" id="basic-addon1"><i class="fa-regular fa-comment"></i></span>
+                                    {{form.comentario|add_class:"form-control"}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <hr>
                 <button id="btnSave" type="submit" name="btnSend" class="btn btn-success">Guardar</button>
                 <a href="{% url 'Tabla_vacaciones_empleados' %}" class="btn btn">Cancelar</a>
             </div>

@@ -1,0 +1,1 @@
+[{"model": "proyecto.contrato", "pk": 1, "fields": {"contrato": "Planta", "complete": true}}, {"model": "proyecto.contrato", "pk": 2, "fields": {"contrato": "Eventual", "complete": true}}]

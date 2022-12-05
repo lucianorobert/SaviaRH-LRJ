@@ -32,9 +32,9 @@
 
 <hr>
 <hr>
- <div class="container">
-    <div class="row my-4">
-            <div class="col-md-4"></div>
+<div class="container card card-body">
+    <div class="columns is-mobile">
+        <div class="column is-half is-offset-one-quarter">
 
                 <div class="card"></div>
                     <div class="card-header text-black" style="background-color: #F5F5F5;">
@@ -46,15 +46,17 @@
                     <div class="card-body">
                         <div class="row">
                                 <span class="h4">{{costo.status.perfil.nombres}} {{costo.status.perfil.apellidos}}</span>
-
+                        <form method=POST>
+                        {% csrf_token %}
+                        <li class="nav-item mx-2">
+                            <button type="submit" name="Pdf" class="btn btn-outline-danger" value='Reporte Pdf'>
+                                <i class="fa-solid fa-file-pdf fa-2xl"></i>
+                            </button>
+                        </li>
+                        <hr>
+                        </form>
                                 <table class="table bg-white table-borderless">
                                     <tbody>
-                                        <tr>
-                                            <th scope="row">Sección</th>
-                                            <td>{{costo.seccion}}</td>
-                                            <th scope="row">Complemento salario mensual</th>
-                                            <td>{{costo.complemento_salario_mensual}}</td>
-                                        </tr>
                                         <tr>
                                             <th scope="row">Puesto</th>
                                             <td>{{costo.puesto}}</td>
@@ -184,8 +186,8 @@
                             </div>
                         </div>
                     </div>
-
         </div>
+    </div>
 </div>
 
 

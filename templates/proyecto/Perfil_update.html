@@ -32,17 +32,17 @@
 
 <hr>
 <hr>
-    <div class="container">
+<div class="container card card-body">
         <div class="columns is-mobile">
             <div class="column is-half is-offset-one-quarter">
-                <h3 class="title is-size-3">Empleado perfil datos</h3>
+                <h3 class="title is-size-3">Empleado datos de perfil</h3>
                 <hr>
                 <!-- El action y el multipart es para permitir cargar imagenes -->
                 <form method='POST' action='{{ action_url }}' enctype='multipart/form-data'>
                     {% csrf_token %}
                             <div class="row my-2">
                                 <label for="form.PerfilForm" class="col-auto col-form-label my-1"><strong>Empleado:</strong></label>
-                                <label for="form.PerfilForm" class="col-auto col-form-label my-1"><strong>{{empleado.nombres}} {{empleado.apellidos}}</strong></label>
+                                <label id="empleado" subproyecto="{{empleado.subproyecto.id}}" for="form.PerfilForm" class="col-auto col-form-label my-1"><strong>{{empleado.nombres}} {{empleado.apellidos}}</strong></label>
                             </div>
                             <div class="row my-2">
                                 <label for="form.foto" class="col-auto col-form-label my-1"><strong>Foto:</strong></label>
@@ -98,13 +98,29 @@
                                     {{form.proyecto|add_class:"form-control"}}
                                 </div>
                             </div>
+
                             <div class="row my-2">
+                            <label for="form.subproyecto" class="col-auto col-form-label my-1"><strong>Subproyecto: </strong></label>
+                                <div class="col-sm-3">
+                                    <div class="selector input-group mb-3">
+                                        <select class="form-select form-select-sm" style="font-size:1rem" id="subproyecto">
+                                            <option id="default_sel">--------</option>
+                                            {% for subproyecto in subproyectos %}
+                                            <option class="js" proyecto="{{subproyecto.proyecto.id}}">
+                                            {{subproyecto.subproyecto}}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row my-2 d-none">
                                 <label for="form.subproyecto" class="col-auto col-form-label my-1"><strong>Subproyecto:</strong></label>
                                 <div class="col-3">
                                     {{form.subproyecto|add_class:"form-control"}}
                                 </div>
-                                </div>
                             </div>
+                        </div>
                         </div>
                     </div>
                     <hr>
@@ -114,4 +130,40 @@
                     <a href="{% url 'Perfil' %}" class="btn btn">Cancelar</a>
                 </form>
         </div>
+<script>
+    var empleado = document.getElementById('empleado');
+    subproyecto = empleado.getAttribute('subproyecto');
+    var selec_sub = document.getElementById('id_subproyecto')
+    subproyecto = selec_sub.options[selec_sub.selectedIndex];
+    var seleccion_sub = document.getElementById('subproyecto');
+    seleccion_sub.selectedIndex = selec_sub.selectedIndex;
+
+    document.getElementById("id_proyecto").addEventListener("change", function(element){
+    var select = document.getElementById('id_proyecto');
+    var current_option = select.options[select.selectedIndex].value;
+    var seleccion = document.getElementById('subproyecto');
+    var seleccion2 = document.getElementById('id_subproyecto');
+
+    opciones = document.getElementsByClassName("js")
+
+    seleccion.selectedIndex = 0;
+    seleccion2.selectedIndex = 0;
+
+    for (var i=0; i < opciones.length; i++){
+
+        if (opciones[i].getAttribute('proyecto') != current_option){
+             opciones[i].setAttribute('class','js d-none')
+        } else {
+            opciones[i].setAttribute('class','js')
+        }
+    }
+    });
+
+    document.getElementById("subproyecto").addEventListener("change", function(element){
+        var select = document.getElementById('subproyecto');
+        var current_option = select.options[select.selectedIndex].value;
+        var other_selector = document.getElementById('id_subproyecto');
+        other_selector.selectedIndex = select.selectedIndex
+    });
+    </script>
 {% endblock %}

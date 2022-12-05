@@ -1,6 +1,6 @@
 from django import forms
 from proyecto.models import Perfil, Status, Costo, DatosBancarios, Bonos, Uniformes, Vacaciones, Economicos, DatosISR, TablaVacaciones, Empleados_Batch, Catorcenas, Proyecto, SubProyecto
-from proyecto.models import Status_Batch, Uniforme
+from proyecto.models import Status_Batch, Uniforme, Costos_Batch, Bancarios_Batch
 class PerfilForm(forms.ModelForm):
     class Meta:
         model = Perfil
@@ -19,22 +19,6 @@ class PerfilUpdateForm(forms.ModelForm):
         fields = ['foto','empresa','distrito','nombres',
                 'apellidos','fecha_nacimiento','correo_electronico','proyecto','subproyecto',]
 
-    #Sobreescribiendo el método __init__ y configurando el queryset para que esté vacío
-    def __init__(self, *args, **kwargs):
-        distrito = kwargs.pop('distrito')
-        super().__init__(*args, **kwargs)
-        self.fields['subproyecto'].queryset = SubProyecto.objects.none()
-        self.fields['proyecto'].queryset = Proyecto.objects.filter(distrito=distrito)
-
-        if 'proyecto' in self.data:
-            try:
-                proyecto_id = int(self.data.get('proyecto'))
-                self.fields['subproyecto'].queryset = SubProyecto.objects.filter(proyecto_id=proyecto_id).order_by('nombre')
-            except (ValueError, TypeError):
-                pass  # invalid input from the client; ignore and fallback to empty subproyecto queryset
-        #elif self.instance.pk:
-        #    self.fields['subproyecto'].queryset = self.instance.proyecto.subproyecto_set.order_by('nombre')
-
 class StatusForm(forms.ModelForm):
     class Meta:
         model = Status
@@ -52,7 +36,7 @@ class StatusUpdateForm(forms.ModelForm):
 class CostoForm(forms.ModelForm):
     class Meta:
         model = Costo
-        fields = ['status','seccion','puesto','amortizacion_infonavit','fonacot','neto_catorcenal_sin_deducciones',
+        fields = ['status','puesto','amortizacion_infonavit','fonacot','neto_catorcenal_sin_deducciones',
                 'complemento_salario_catorcenal','sueldo_diario','sdi','apoyo_de_pasajes','imms_obrero_patronal',
                 'apoyo_vist_familiar','estancia','renta','apoyo_estudios','amv','gasolina','campamento',]
 
@@ -60,7 +44,7 @@ class CostoForm(forms.ModelForm):
 class CostoUpdateForm(forms.ModelForm):
     class Meta:
         model = Costo
-        fields = ['seccion','puesto','amortizacion_infonavit','fonacot','neto_catorcenal_sin_deducciones',
+        fields = ['puesto','amortizacion_infonavit','fonacot','neto_catorcenal_sin_deducciones',
                 'complemento_salario_catorcenal','sueldo_diario','sdi','apoyo_de_pasajes','imms_obrero_patronal',
                 'apoyo_vist_familiar','estancia','renta','apoyo_estudios','amv','gasolina','campamento',]
 
@@ -99,22 +83,22 @@ class UniformeForm(forms.ModelForm):
 class VacacionesForm(forms.ModelForm):
     class Meta:
         model = Vacaciones
-        fields = ['status','dias_disfrutados',]
+        fields = ['status','dias_disfrutados','comentario']
 
 class VacacionesUpdateForm(forms.ModelForm):
     class Meta:
         model = Vacaciones
-        fields = ['dias_disfrutados',]
+        fields = ['dias_disfrutados','comentario']
 
 class EconomicosForm(forms.ModelForm):
     class Meta:
         model = Economicos
-        fields = ['status','dias_disfrutados',]
+        fields = ['status','fecha','comentario',]
 
 class EconomicosUpdateForm(forms.ModelForm):
     class Meta:
         model = Economicos
-        fields = ['dias_disfrutados',]
+        fields = ['fecha','comentario',]
 
 class IsrForm(forms.ModelForm):
     class Meta:
@@ -135,6 +119,16 @@ class Empleados_BatchForm(forms.ModelForm):
 class Status_BatchForm(forms.ModelForm):
     class Meta:
         model = Status_Batch
+        fields= ['file_name']
+
+class Costos_BatchForm(forms.ModelForm):
+    class Meta:
+        model = Costos_Batch
+        fields= ['file_name']
+
+class Bancarios_BatchForm(forms.ModelForm):
+    class Meta:
+        model = Bancarios_Batch
         fields= ['file_name']
 
 class CatorcenasForm(forms.ModelForm):

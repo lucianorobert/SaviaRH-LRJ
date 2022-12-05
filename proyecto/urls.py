@@ -36,6 +36,7 @@ urlpatterns = [
     path('Costo/update/<int:pk>/', views.CostoUpdate, name='Costo_update'),
     path('Costo/revisar/<int:pk>/', views.Costo_revisar, name='Costo_revisar'),
     path('Costo/History/<int:pk>/', views.HistoryCosto, name='Costo_history'),
+    path('upload_Costos', views.upload_batch_costos, name='Upload_costos'),
 
     path('Tabla_Vacaciones', views.Tabla_dias_vacaciones, name='Tabla_dias_vacaciones'),
     path('Formulario_Vacaciones', views.FormularioVacaciones, name='Formulario_vacaciones'),
@@ -46,6 +47,8 @@ urlpatterns = [
 
     path('Formulario_DatosBancarios', views.FormularioDatosBancarios, name='Formulario_datosbancarios'),
     path('Tabla_DatosBancarios', views.Tabla_Datosbancarios, name='Tabla_datosbancarios'),
+    path('upload_Bancarios', views.upload_batch_bancarios, name='Upload_bancarios'),
+
     path('Formulario_Bonos', views.FormularioBonos, name='Formulario_bonos'),
     path('Tabla_Bonos', views.TablaBonos, name='Tabla_bonos'),
 
@@ -65,6 +68,7 @@ urlpatterns = [
     path('Tabla_Economicos', views.Tabla_Economicos, name='Tabla_economicos'),
 
     path('Economicos/update/<int:pk>/', views.EconomicosUpdate, name='Economicos_update'),
+    path('Economicos/revisar/<int:pk>/', views.EconomicosRevisar, name='Economicos_revisar'),
     #path('ajax/load-subproyectos/', views.load_subproyectos, name='ajax_load_subproyectos'),  # <-- rutina en Ajax
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

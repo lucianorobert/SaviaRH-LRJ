@@ -1,0 +1,9 @@
+numero_de_trabajador,registro_patronal,nss,curp,rfc,telefono,profesion,no_cedula,nivel,tipo_de_contrato,ultimo_contrato_vence,tipo_sangre,sexo,domicilio,estado_civil,fecha_planta_anterior,fecha_planta
+657,F7936050101,6199441848,GABN940801MVZRTT00,GABN940801UE3,2283098749,Psicologa,,5,Planta,31/08/2022,B+,Mujer,"Isauro Acosta 58, Colonia Centro C.P. 91000",Soltero,01/04/2022,01/04/2022
+641,F7937560108,32109312408,HECC931021MVZRRL07,HECC931021267,2281947185,Contador,,4,Planta,31/12/2022,O+,Mujer,"Jacarandas 08, Colonia Bosques del recuerdo",Soltero,01/09/2022,01/09/2022
+151,F7936050101,83937717839,MUSG771216MTCRGD05,MUSG7712169RA,2281948217,Administradora,,2,Planta,31/12/2022,O+,Mujer,"Lerdo de Tejeda 254, Colonia Centro",Casado,07/05/2018,07/05/2018
+135,F7937560108,65137102524,AATI711229MVZZNS09,AATI711229PW5,2283551647,,,6,Planta,30/09/2022,O+,Mujer,"Tulipanes 17, Colonia Floresta",Casado,06/11/2017,06/11/2018
+640,F7937560108,65987416305,CALF740402HVZNRR04,CALF740402HV8,2280581010,,,6,Planta,31/07/2022,O+,Hombre,"Benito Juarez 12, Loc. Coacoazintla",Casado,01/10/2020,01/10/2020
+654,F7937560108,65088512614,CABH850524HDFSNG03,CABH850524I62,2282431121,Administrador,,3,Planta,30/09/2022,O+,Hombre,"Priv. Municipal 118, Col 7 de Noviembre",Casado,01/09/2021,01/09/2021
+123,F7937560108,65108626162,COGS860718MVZNLS07,COGS860718PI8,8333128601,Ingeniero,,3,Planta,30/09/2022,A+,Mujer,"6a de Zamora No 202, Colonia Centro ",Casado,01/03/2019,01/03/2019
+173,F7937560108,65128915538,FOLA890518HDFLHR09,FOLA890518IQ6,7821628859,Ingeniero,7370114,2,Planta,30/09/2022,O+,Hombre,"6 de Septiembre 1955, Colonia Flores Magon ",Casado,21/05/2018,21/05/2018

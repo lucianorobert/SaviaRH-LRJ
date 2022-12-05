@@ -32,8 +32,9 @@
 
 <hr>
 <hr>
-    <div class="container">
+<div class="container card card-body">
         <div class="columns is-mobile">
+            <div class="column is-half is-offset-one-quarter">
             <h3 class="title is-size-2">Historico de Costo</h3>
             <hr>
             <span class="h4">{{costo.status.perfil.nombres}} {{costo.status.perfil.apellidos}}</span>
@@ -118,7 +119,7 @@
             <a href="{% url 'Tabla_costo' %}" class="btn btn-outline-info"><i class="fa-solid fa-backward"></i></a>
         </div>
     </div>
-
+</div>
 
   <script>
     var registros = document.querySelectorAll('.register');
