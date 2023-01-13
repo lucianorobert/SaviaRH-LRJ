@@ -63,28 +63,42 @@
                                 </div>
                             </div>
                             <div class="row my-2">
-                                <label for="form.dias_disfrutados" class="col-auto col-form-label my-1"><strong>Días disfrutados:</strong></label>
+                                <label for="form.fecha_inicio" class="col-auto col-form-label my-1"><strong>Primer día de vacaciones:</strong></label>
                                 <div class="col-2">
                                     <div class="input-group mb-3">
                                     <span class="input-group-text"><i class="fa-solid fa-calendar-plus"></i></span>
-                                    {{form.dias_disfrutados|add_class:"form-control"}}
+                                    {% render_field form.fecha_inicio type="date" class="form-control" %}
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <label for="form.fecha_fin" class="col-auto col-form-label my-1"><strong>Ultimo día de vacaciones:</strong></label>
+                                <div class="col-2">
+                                    <div class="input-group mb-3">
+                                    <span class="input-group-text"><i class="fa-solid fa-calendar-plus"></i></span>
+                                    {% render_field form.fecha_fin type="date" class="form-control" %}
                                 </div>
                             </div>
                         </div>
                             <div class="row my-2">
                                 <label for="form.comentario" class="col-auto col-form-label my-1"><strong>Comentario:</strong></label>
-                                <div class="col-3">
+                                <div class="col-7">
                                     <div class="input-group">
                                      <span class="input-group-text" id="basic-addon1"><i class="fa-regular fa-comment"></i></span>
                                     {{form.comentario|add_class:"form-control"}}
                                     </div>
                                 </div>
                             </div>
+                            <div class="row my-2">
+                                <label for="form.dia_inhabil" class="col-auto col-form-label my-1"><strong>Día de la semana que no labora:</strong></label>
+                                <div class="col-3">
+                                    {{form.dia_inhabil|add_class:"form-control"}}
+                                </div>
+                            </div>
                         </div>
                     <hr>
-                <button id="btnSave" type="submit" name="btnSend" class="btn btn-success">Guardar</button>
-                <a href="{% url 'Tabla_vacaciones_empleados' %}" class="btn btn">Cancelar</a>
             </div>
+            <button id="btnSave" type="submit" name="btnSend" class="btn btn-success">Guardar</button>
+            <a href="{% url 'Tabla_vacaciones_empleados' %}" class="btn btn">Cancelar</a>
         </div>
     </div>
  </form>

@@ -1,6 +1,7 @@
 #from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.http import FileResponse
+from django.contrib.auth.decorators import login_required
 
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch,cm,mm
@@ -11,7 +12,7 @@ from reportlab.lib.colors import Color, black, blue, red, white
 from reportlab.platypus import BaseDocTemplate, Frame, Paragraph, NextPageTemplate, PageBreak, PageTemplate,Table, SimpleDocTemplate,TableStyle
 from reportlab.lib.styles import getSampleStyleSheet
 import os
-from proyecto.models import Perfil
+from proyecto.models import Perfil, Vacaciones, Economicos, UserDatos, Uniforme
 #from django.contrib.auth.decorators import login_required
 #from .filters import ArticulosparaSurtirFilter
 from django.http import HttpResponse
@@ -27,26 +28,42 @@ from openpyxl.drawing.image import Image
 from openpyxl.chart import PieChart, LineChart, Reference
 from openpyxl.chart.axis import DateAxis
 from collections import Counter
-from proyecto.models import Costo, Bonos
+from proyecto.models import Costo, Bonos, Status
 from django.db.models import Sum
 from django.core.mail import send_mail
 from django.conf import settings
 import locale
 locale.setlocale( locale.LC_ALL, '' )
 
-
+@login_required(login_url='user-login')
 def index(request):
-
+    usuario = UserDatos.objects.get(user__id=request.user.id)
     perfiles = Perfil.objects.filter(complete = True)
     cantidad = perfiles.count()
+    status = Status.objects.filter(complete = True)
+    cantidad2 = status.count()
+    costo = Costo.objects.filter(complete = True)
+    cantidad3 = costo.count()
+    vacaciones = Vacaciones.objects.filter(status__perfil__numero_de_trabajador=usuario.numero_de_trabajador).last()
+    economicos = Economicos.objects.filter(status__perfil__numero_de_trabajador=usuario.numero_de_trabajador).last()
+    uniformes = Uniforme.objects.filter(orden__status__perfil__numero_de_trabajador=usuario.numero_de_trabajador)
+    cantidad_uniformes=0
+    for uniforme in uniformes:
+        cantidad = uniforme.cantidad
+        cantidad_uniformes = cantidad_uniformes+cantidad
 
     context = {
         'cantidad': cantidad,
+        'cantidad2': cantidad2,
+        'cantidad3': cantidad3,
+        'vacaciones': vacaciones,
+        'economicos': economicos,
+        'cantidad_uniformes': cantidad_uniformes,
     }
 
-    return render(request, 'dashboard/inform_list.html', context)
+    return render(request, 'dashboard/dashboard.html', context)
 
-
+@login_required(login_url='user-login')
 def mensaje(request):
     if request.method == 'POST':
         subject=request.POST["asunto"]
@@ -59,7 +76,7 @@ def mensaje(request):
 
     return render(request, 'dashboard/Mensaje.html')
 
-
+@login_required(login_url='user-login')
 def render_report(request,pk):
     costo_ver = Costo.objects.get(id = pk)
     costo = Costo.history.filter(~Q(sueldo_mensual_neto=None)|~Q(sueldo_mensual_neto=0), id=pk)

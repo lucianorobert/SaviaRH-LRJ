@@ -1,0 +1,102 @@
+{% extends 'partials/base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
+<div class="row my-4">
+    <div class="col-md-4">
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == "error" %}
+                <script>
+                Swal.fire({
+                    "title":"Error",
+                    "text":"{{message}}",
+                    "icon":"error",
+                })
+                </script>
+                {% else %}
+                <script>
+                Swal.fire({
+                    "title":"Excelente",
+                    "text":"{{message}}",
+                    "icon":"success",
+                })
+                </script>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+
+<hr>
+<hr>
+{% if status_fijo.id == datos.status.id %}
+    <div>
+{% else %}
+    &nbsp;
+    <div style="text-align: center;">
+    <i class="fa-solid fa-circle-exclamation fa-4x"></i>
+    <h2 style="margin-top: 0.5em;">404</h2>
+    <h2 style="margin-top: 0.25em;">Page not found</h2>
+    <p>Si tiene los permisos para acceder a esta información <br> comuníquese con los Administradores del sistema.</p> 
+    <a href="{% url 'index' %}" class="btn btn-outline-info"><i class="fa-solid fa-backward"></i>  Inicio</a>
+    <div class="d-none">
+{% endif %}
+    <div class="container">
+        <div class="row my-4">
+            <div class="col-md-4"></div>
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header text-black" style="background-color: #F5F5F5;">
+                        <strong>
+                            Datos bancarios del usuario
+                        </strong>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <span class="h4">{{datos.status.perfil.nombres}} {{datos.status.perfil.apellidos}}</span>
+                                <hr>
+                                <table class="table bg-white table-borderless">
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row">Número de empleado</th>
+                                            <td>{{datos.status.perfil.numero_de_trabajador}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">No. de cuenta</th>
+                                            <td>{{datos.no_de_cuenta}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">No. de tarjeta</th>
+                                            <td>{{datos.numero_de_tarjeta}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Clabe interbancaria</th>
+                                            <td>{{datos.clabe_interbancaria}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Banco</th>
+                                            <td>{{datos.banco}}</td>
+                                        </tr>                                    
+                                    </tbody>
+                                </table>
+                            </div>
+                            <hr>
+                            <!--{% if usuario.tipo.admin == False %}
+                                <div class="d-none">
+                            {% else %}
+                                <div>
+                            {% endif %}
+                                <a href="{% url 'Perfil' %}" class="btn btn-outline-info"><i class="fa-solid fa-backward"></i></a>
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+
+{% endblock %}

@@ -1,28 +1,26 @@
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.http import FileResponse
-
+from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.contrib import messages
 import locale
 locale.setlocale( locale.LC_ALL, '' )
 
-from .models import DatosISR, Costo, TablaVacaciones, Perfil, Status, Uniformes, DatosBancarios, Bonos, Vacaciones, Economicos, Puesto, Empleados_Batch, RegistroPatronal, Banco
+from .models import DatosISR, Costo, TablaVacaciones, Perfil, Status, Uniformes, DatosBancarios, Bonos, Vacaciones, Economicos, Puesto, Empleados_Batch, RegistroPatronal, Banco, TablaFestivos
 from .models import Status_Batch, Empresa, Distrito, Nivel, Contrato, Sangre, Sexo, Civil, UserDatos, Catorcenas, Uniforme, Tallas, Ropa, SubProyecto, Proyecto,Costos_Batch, Bancarios_Batch
 import csv
 import json
-#from django.contrib.auth.decorators import login_required
-#from .filters import ArticulosparaSurtirFilter
+
 from django.http import HttpResponse
 import datetime
 from datetime import timedelta, date
 from django.db.models.functions import Concat
 #PDF generator
 from django.db.models import Q
-from collections import Counter
 from .forms import CostoForm, BonosForm, VacacionesForm, EconomicosForm, UniformesForm, DatosBancariosForm, PerfilForm, StatusForm, IsrForm,PerfilUpdateForm
-from .forms import CostoUpdateForm, BancariosUpdateForm, BonosUpdateForm, VacacionesUpdateForm, EconomicosUpdateForm, StatusUpdateForm, CatorcenasForm
-from .forms import Dias_VacacionesForm, Empleados_BatchForm, Status_BatchForm, PerfilDistritoForm, UniformeForm, Costos_BatchForm, Bancarios_BatchForm
+from .forms import CostoUpdateForm, BancariosUpdateForm, BonosUpdateForm, VacacionesUpdateForm, EconomicosUpdateForm, StatusUpdateForm, CatorcenasForm, EconomicosFormato
+from .forms import Dias_VacacionesForm, Empleados_BatchForm, Status_BatchForm, PerfilDistritoForm, UniformeForm, Costos_BatchForm, Bancarios_BatchForm, VacacionesFormato
 from .filters import BonosFilter, Costo_historicFilter, PerfilFilter, StatusFilter, BancariosFilter, CostoFilter, VacacionesFilter, UniformesFilter, EconomicosFilter
 from .filters import CatorcenasFilter
 from decimal import Decimal
@@ -32,11 +30,10 @@ from openpyxl.styles import NamedStyle, Font, PatternFill
 from openpyxl.utils import get_column_letter
 from django.db.models.functions import Concat
 from django.db.models import Value
-from django.forms import inlineformset_factory
-from itertools import chain
+
 
 from reportlab.pdfgen import canvas
-from reportlab.lib.units import inch,cm,mm
+from reportlab.lib.units import cm
 from reportlab.lib.pagesizes import letter,A4,landscape
 import io
 from reportlab.lib import colors
@@ -46,13 +43,15 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.utils import ImageReader
 import os
 
+@login_required(login_url='user-login')
 def Principal(request):
     return render(request, 'proyecto/Principal.html')
 
+@login_required(login_url='user-login')
 def Index(request):
     return render(request, 'proyecto/Inicio.html')
 
-
+@login_required(login_url='user-login')
 def Tabla_isr(request):
 
     isrs= DatosISR.objects.all()
@@ -63,6 +62,7 @@ def Tabla_isr(request):
 
     return render(request, 'proyecto/Tabla_isr.html',context)
 
+@login_required(login_url='user-login')
 def Tabla_catorcenas(request):
 
     catorcenas = Catorcenas.objects.filter(complete=True)
@@ -76,6 +76,7 @@ def Tabla_catorcenas(request):
 
     return render(request, 'proyecto/Tabla_catorcenas.html',context)
 
+@login_required(login_url='user-login')
 def FormularioCatorcenas(request):
     catorcena,created=Catorcenas.objects.get_or_create(complete=False)
     form = CatorcenasForm()
@@ -92,6 +93,7 @@ def FormularioCatorcenas(request):
 
     return render(request, 'proyecto/CatorcenasForm.html',context)
 
+@login_required(login_url='user-login')
 def CatorcenasUpdate(request, pk):
 
     item = Catorcenas.objects.get(id=pk)
@@ -120,6 +122,7 @@ def CatorcenasUpdate(request, pk):
 
     return render(request, 'proyecto/Catorcenas_update.html',context)
 
+@login_required(login_url='user-login')
 def IsrUpdate(request, pk):
 
     item = DatosISR.objects.get(id=pk)
@@ -139,6 +142,7 @@ def IsrUpdate(request, pk):
 
     return render(request, 'proyecto/Isr_update.html',context)
 
+@login_required(login_url='user-login')
 def Dias_VacacionesUpdate(request, pk):
 
     item = TablaVacaciones.objects.get(id=pk)
@@ -161,7 +165,7 @@ def Dias_VacacionesUpdate(request, pk):
 
     return render(request, 'proyecto/Dias_vacaciones_update.html',context)
 
-
+@login_required(login_url='user-login')
 def Tabla_dias_vacaciones(request):
     año = datetime.date.today().year
     descansos= TablaVacaciones.objects.all()
@@ -172,7 +176,8 @@ def Tabla_dias_vacaciones(request):
 
     return render(request, 'proyecto/Tabla_dias_vacaciones.html',context)
 
-def Perfil_vista(request): # Ya esta
+@login_required(login_url='user-login')
+def Perfil_vista(request): 
     user_filter = UserDatos.objects.get(user=request.user)
 
     if user_filter.distrito.distrito == 'Matriz':
@@ -191,6 +196,7 @@ def Perfil_vista(request): # Ya esta
 
     return render(request, 'proyecto/Perfil.html',context)
 
+@login_required(login_url='user-login')
 def FormularioPerfil(request):
     user_filter = UserDatos.objects.get(user=request.user)
     empleado,created=Perfil.objects.get_or_create(complete=False)
@@ -228,7 +234,7 @@ def FormularioPerfil(request):
 
     return render(request, 'proyecto/PerfilForm.html',context)
 
-
+@login_required(login_url='user-login')
 def PerfilUpdate(request, pk):
     empleado = Perfil.objects.get(id=pk)
     ahora = datetime.date.today()
@@ -260,6 +266,7 @@ def PerfilUpdate(request, pk):
 
     return render(request, 'proyecto/Perfil_update.html',context)
 
+@login_required(login_url='user-login')
 def Perfil_revisar(request, pk):
 
     empleado = Perfil.objects.get(id=pk)
@@ -272,8 +279,8 @@ def Perfil_revisar(request, pk):
 
     return render(request, 'proyecto/Perfil_revisar.html',context)
 
-
-def Status_vista(request): #Ya esta
+@login_required(login_url='user-login')
+def Status_vista(request): 
     user_filter = UserDatos.objects.get(user=request.user)
 
     if user_filter.distrito.distrito == 'Matriz':
@@ -281,7 +288,6 @@ def Status_vista(request): #Ya esta
     else:
         status = Status.objects.filter(perfil__distrito = user_filter.distrito, complete=True).order_by("perfil__numero_de_trabajador")
 
-    #status= Status.objects.filter(complete=True)
     status_filter = StatusFilter(request.GET, queryset=status)
     status = status_filter.qs
     if request.method =='POST' and 'Excel' in request.POST:
@@ -293,6 +299,7 @@ def Status_vista(request): #Ya esta
 
     return render(request, 'proyecto/Status.html',context)
 
+@login_required(login_url='user-login')
 def FormularioStatus(request):
     user_filter = UserDatos.objects.get(user=request.user)
 
@@ -301,7 +308,6 @@ def FormularioStatus(request):
     else:
         empleados = Perfil.objects.filter(distrito=user_filter.distrito,complete=True, complete_status=False)
 
-    #empleados = Perfil.objects.filter(complete=True, complete_status=False)
     estado,created=Status.objects.get_or_create(complete=False)
     form = StatusForm()
     ahora = datetime.date.today()
@@ -339,6 +345,7 @@ def FormularioStatus(request):
 
     return render(request, 'proyecto/StatusForm.html',context)
 
+@login_required(login_url='user-login')
 def StatusUpdate(request, pk):
     estado = Status.objects.get(id=pk)
     ahora = datetime.date.today()
@@ -363,6 +370,7 @@ def StatusUpdate(request, pk):
 
     return render(request, 'proyecto/Status_update.html',context)
 
+@login_required(login_url='user-login')
 def Status_revisar(request, pk):
 
     estado = Status.objects.get(id=pk)
@@ -372,9 +380,11 @@ def Status_revisar(request, pk):
 
     return render(request, 'proyecto/Status_revisar.html',context)
 
+@login_required(login_url='user-login')
 def Admininistrar_tablas(request):
     return render(request, 'proyecto/Administrar_tablas.html')
 
+@login_required(login_url='user-login')
 def FormularioBonos(request):
     user_filter = UserDatos.objects.get(user=request.user)
 
@@ -388,7 +398,6 @@ def FormularioBonos(request):
     catorcenas = Catorcenas.objects.filter(complete=True)
     bono,created=Bonos.objects.get_or_create(complete=False)
     form = BonosForm()
-    #empleados = Costo.objects.filter(complete=True)
     if request.method == 'POST':
         form = BonosForm(request.POST,instance=bono)
         form.save(commit=False)
@@ -414,6 +423,7 @@ def FormularioBonos(request):
 
     return render(request, 'proyecto/BonosForm.html',context)
 
+@login_required(login_url='user-login')
 def BonosUpdate(request, pk):
     bono = Bonos.objects.get(id=pk)
     catorcenas = Catorcenas.objects.filter(complete=True)
@@ -438,6 +448,7 @@ def BonosUpdate(request, pk):
 
     return render(request, 'proyecto/Bonos_update.html',context)
 
+@login_required(login_url='user-login')
 def Tabla_uniformes(request):
     user_filter = UserDatos.objects.get(user=request.user)
 
@@ -459,6 +470,7 @@ def Tabla_uniformes(request):
 
     return render(request, 'proyecto/Tabla_uniformes.html',context)
 
+@login_required(login_url='user-login')
 def Orden_uniformes(request, pk):
     status = Status.objects.get(id=pk)
     orden, created=Uniformes.objects.get_or_create(complete=False, status= status)
@@ -466,9 +478,6 @@ def Orden_uniformes(request, pk):
     form = UniformesForm(instance=orden)
     form_uniforme = UniformeForm()
     uniformes_pedidos = Uniforme.objects.filter(orden=orden)
-
-    #for item in uniformes_pedidos:
-    #    total_uniformes = total_uniformes + item.cantidad
 
     if request.method == 'POST' and  "crear" in request.POST:
         form = UniformesForm(request.POST, instance=orden)
@@ -497,7 +506,7 @@ def Orden_uniformes(request, pk):
 
     return render(request, 'proyecto/Uniformes_ordenes.html',context)
 
-
+@login_required(login_url='user-login')
 def update_uniformes(request, pk):
     data= json.loads(request.body)
     action = data['action']
@@ -523,36 +532,27 @@ def update_uniformes(request, pk):
 
     return JsonResponse('Item updated, action executed: '+data["action"], safe=False)
 
-#def Uniformes_revisar(request, pk):
-
-#    ropa = Uniformes.objects.get(status.id=pk)
-#    orden = Uniforme.objects.filter(id=pk)
-
-#    context = {'ropa':ropa,'orden':orden}
-
-#    return render(request, 'proyecto/Uniformes_revisar.html',context)
-
-
+@login_required(login_url='user-login')
 def Uniformes_revisar_completados(request, pk):
 
     ropas = Uniformes.objects.filter(status_id=pk)
     perfil = Status.objects.get(id=pk)
-    #uniformes = Uniforme.objects.filter(orden__status_id=pk)
 
     context = {'ropas':ropas,'perfil':perfil,}
 
     return render(request, 'proyecto/Uniformes_revisar_completados.html',context)
 
+@login_required(login_url='user-login')
 def Uniformes_revisar_ordenes(request, pk):
 
     ordenes = Uniforme.objects.filter(orden_id=pk)
     pedido = Uniformes.objects.get(id=pk)
-    #uniformes = Uniforme.objects.filter(orden__status_id=pk)
 
     context = {'ordenes':ordenes,'pedido':pedido,}
 
     return render(request, 'proyecto/Uniformes_revisar_ordenes.html',context)
 
+@login_required(login_url='user-login')
 def FormularioDatosBancarios(request):
     user_filter = UserDatos.objects.get(user=request.user)
 
@@ -562,7 +562,6 @@ def FormularioDatosBancarios(request):
         perfil = Perfil.objects.filter(distrito = user_filter.distrito)
         empleados= Status.objects.filter(perfil__id__in=perfil.all(),complete = True, complete_bancarios=False)
 
-    #empleados= Status.objects.filter(complete = True, complete_bancarios=False)
     bancario,created=DatosBancarios.objects.get_or_create(complete=False)
     form = DatosBancariosForm()
 
@@ -584,6 +583,7 @@ def FormularioDatosBancarios(request):
 
     return render(request, 'proyecto/DatosBancariosForm.html',context)
 
+@login_required(login_url='user-login')
 def BancariosUpdate(request, pk):
 
     item = DatosBancarios.objects.get(id=pk)
@@ -603,6 +603,7 @@ def BancariosUpdate(request, pk):
 
     return render(request, 'proyecto/Bancario_update.html',context)
 
+@login_required(login_url='user-login')
 def FormularioCosto(request):
     user_filter = UserDatos.objects.get(user=request.user)
 
@@ -613,7 +614,6 @@ def FormularioCosto(request):
         empleados= Status.objects.filter(perfil__id__in=perfil.all(),complete = True, complete_costo = False)
 
     tablas= DatosISR.objects.all()
-    #empleados= Status.objects.filter(complete= True, complete_costo = False)
     costo,created=Costo.objects.get_or_create(complete=False)
     form = CostoForm()
     puestos = Puesto.objects.all()
@@ -699,7 +699,6 @@ def FormularioCosto(request):
                                                                     costo.impuesto_marginal= costo.excedente * costo.tasa
                                                                     costo.impuesto= costo.impuesto_marginal + costo.cuota_fija
                                                                     costo.isr= costo.impuesto
-                                                                    #dato.otros_bonos= dato.bonos.bonos_ct_ocho + dato.bonos.bonos_ct_nueve
                                                                     costo.total_apoyosbonos_empleadocomp= costo.apoyo_vist_familiar + costo.estancia + costo.renta + costo.apoyo_estudios + costo.amv + costo.campamento + costo.gasolina
 
                                                                     costo.total_apoyosbonos_agregcomis = costo.campamento #Modificar falta suma
@@ -727,6 +726,7 @@ def FormularioCosto(request):
 
     return render(request, 'proyecto/CostoForm.html',context)
 
+@login_required(login_url='user-login')
 def CostoUpdate(request, pk):
     tablas= DatosISR.objects.all()
     costo = Costo.objects.get(id=pk)
@@ -736,11 +736,6 @@ def CostoUpdate(request, pk):
     puestos = Puesto.objects.all()
 
     comision=Decimal(0.09)
-
-    #if costo.bonototal == None:
-    #    costo.bonototal =0
-    #else:
-    #    costo.bonototal=costo.bonototal
     quincena=Decimal(14.00)
     mes=Decimal(30.40)
     impuesto_est=Decimal(0.0315)
@@ -836,6 +831,7 @@ def CostoUpdate(request, pk):
 
     return render(request, 'proyecto/Costo_update.html',context)
 
+@login_required(login_url='user-login')
 def Costo_revisar(request, pk):
 
     costo = Costo.objects.get(id=pk)
@@ -904,6 +900,78 @@ def Costo_revisar(request, pk):
 
     return render(request, 'proyecto/Costo_revisar.html',context)
 
+@login_required(login_url='user-login')
+def Empleado_Costo(request, pk):
+
+    empleado = Status.objects.get(id=pk)
+    costo = Costo.objects.get(status__id=empleado.id)
+
+    mes = datetime.date.today().month
+    comision=Decimal(0.09)
+
+    bonos_dato = Bonos.objects.filter(costo = costo).filter(fecha_bono__month = mes)
+    sum_bonos = bonos_dato.aggregate(Sum('monto'))
+    bonototal = sum_bonos['monto__sum']
+    if bonototal == None:
+        bonototal = 0
+    costo.total_apoyosbonos_agregcomis = costo.campamento + bonototal
+    costo.comision_complemeto_salario_bonos= (costo.complemento_salario_mensual + costo.campamento + bonototal)*comision #Falta suma dentro de la multiplicacion
+    costo.total_costo_empresa = costo.sueldo_mensual_neto + costo.complemento_salario_mensual + costo.apoyo_de_pasajes + costo.impuesto_estatal + costo.imms_obrero_patronal + costo.sar + costo.cesantia + costo.infonavit + costo.isr + costo.total_apoyosbonos_empleadocomp + costo.total_apoyosbonos_agregcomis + costo.comision_complemeto_salario_bonos
+    costo.ingreso_mensual_neto_empleado= costo.sueldo_mensual_neto + costo.complemento_salario_mensual + costo.apoyo_de_pasajes + costo.total_apoyosbonos_empleadocomp + costo.total_apoyosbonos_agregcomis
+
+    costo.amortizacion_infonavit=locale.currency(costo.amortizacion_infonavit, grouping=True)
+    costo.fonacot=locale.currency(costo.fonacot, grouping=True)
+    costo.neto_catorcenal_sin_deducciones=locale.currency(costo.neto_catorcenal_sin_deducciones, grouping=True)
+    costo.complemento_salario_catorcenal=locale.currency(costo.complemento_salario_catorcenal, grouping=True)
+    costo.sueldo_diario=locale.currency(costo.sueldo_diario, grouping=True)
+    costo.sdi=locale.currency(costo.sdi, grouping=True)
+    costo.apoyo_de_pasajes=locale.currency(costo.apoyo_de_pasajes, grouping=True)
+    costo.imms_obrero_patronal=locale.currency(costo.imms_obrero_patronal, grouping=True)
+    costo.apoyo_vist_familiar=locale.currency(costo.apoyo_vist_familiar, grouping=True)
+    costo.estancia=locale.currency(costo.estancia, grouping=True)
+    costo.renta=locale.currency(costo.renta, grouping=True)
+    costo.apoyo_estudios=locale.currency(costo.apoyo_estudios, grouping=True)
+    costo.amv=locale.currency(costo.amv, grouping=True)
+    costo.gasolina=locale.currency(costo.gasolina, grouping=True)
+    costo.campamento=locale.currency(costo.campamento, grouping=True)
+    costo.total_deduccion=locale.currency(costo.total_deduccion, grouping=True)
+    costo.neto_pagar=locale.currency(costo.neto_pagar, grouping=True)
+    costo.sueldo_mensual_neto=locale.currency(costo.sueldo_mensual_neto, grouping=True)
+    costo.complemento_salario_mensual=locale.currency(costo.complemento_salario_mensual, grouping=True)
+    costo.sueldo_mensual=locale.currency(costo.sueldo_mensual, grouping=True)
+    costo.sueldo_mensual_sdi=locale.currency(costo.sueldo_mensual_sdi, grouping=True)
+    costo.total_percepciones_mensual=locale.currency(costo.total_percepciones_mensual, grouping=True)
+    costo.impuesto_estatal=locale.currency(costo.impuesto_estatal, grouping=True)
+    costo.sar=locale.currency(costo.sar, grouping=True)
+    costo.cesantia=locale.currency(costo.cesantia, grouping=True)
+    costo.infonavit=locale.currency(costo.infonavit, grouping=True)
+    costo.isr=locale.currency(costo.isr, grouping=True)
+    costo.lim_inferior=locale.currency(costo.lim_inferior, grouping=True)
+    costo.excedente =locale.currency(costo.excedente, grouping=True)
+    costo.tasa=locale.currency(costo.tasa, grouping=True)
+    costo.impuesto_marginal=locale.currency(costo.impuesto_marginal, grouping=True)
+    costo.cuota_fija=locale.currency(costo.cuota_fija, grouping=True)
+    costo.impuesto=locale.currency(costo.impuesto, grouping=True)
+    costo.subsidio=locale.currency(costo.subsidio, grouping=True)
+    costo.total_apoyosbonos_empleadocomp=locale.currency(costo.total_apoyosbonos_empleadocomp, grouping=True)
+    if bonototal == None:
+        costo.bonototal =locale.currency(0, grouping=True)
+    else:
+        costo.bonototal=locale.currency(bonototal, grouping=True)
+    costo.total_apoyosbonos_agregcomis=locale.currency(costo.total_apoyosbonos_agregcomis, grouping=True)
+    costo.comision_complemeto_salario_bonos=locale.currency(costo.comision_complemeto_salario_bonos, grouping=True)
+    costo.total_costo_empresa=locale.currency(costo.total_costo_empresa, grouping=True)
+    costo.ingreso_mensual_neto_empleado=locale.currency(costo.ingreso_mensual_neto_empleado, grouping=True)
+    if request.method =='POST' and 'Pdf' in request.POST:
+        return reporte_pdf_costo_detalles(costo)
+
+    context = {
+        'costo':costo,
+        }
+
+    return render(request, 'proyecto/Costo_revisar.html',context)
+
+@login_required(login_url='user-login')
 def TablaCosto(request):
     año = datetime.date.today().year
 
@@ -988,6 +1056,7 @@ def TablaCosto(request):
 
     return render(request, 'proyecto/Tabla_costo.html',context)
 
+@login_required(login_url='user-login')
 def TablaBonos(request):
     año = datetime.date.today().year
     user_filter = UserDatos.objects.get(user=request.user)
@@ -1016,7 +1085,33 @@ def TablaBonos(request):
 
     return render(request, 'proyecto/BonosTabla.html',context)
 
+@login_required(login_url='user-login')
+def Empleado_Bonos(request, pk):
+    año = datetime.date.today().year
 
+    bonos= Bonos.objects.filter(costo__status__id=pk,complete=True).order_by("fecha_bono")
+    perfil = bonos.last()
+
+    bono_filter = BonosFilter(request.GET, queryset=bonos)
+    bonos = bono_filter.qs
+
+    if request.method =='POST' and 'Excel' in request.POST:
+        return convert_excel_bonos(bonos)
+
+    for bono in bonos:
+        if bono.monto == None:
+            bono.monto = 0
+        else:
+            bono.monto=locale.currency(bono.monto, grouping=True)
+    context= {
+        'bonos':bonos,
+        'bono_filter':bono_filter,
+        'perfil':perfil,
+        }
+
+    return render(request, 'proyecto/Empleado_bonos.html',context)
+
+@login_required(login_url='user-login')
 def FormularioVacaciones(request):
     user_filter = UserDatos.objects.get(user=request.user)
 
@@ -1038,13 +1133,24 @@ def FormularioVacaciones(request):
         form = VacacionesForm(request.POST,instance=descanso)
         form.save(commit=False)
         #Aqui se busca el ultimo dato creado que en este caso es el año anterior y se le suma a los dias pendientes
-        #if Vacaciones.objects.filter(status.id = descanso.status.id).last():
-        #    pendientes = Vacaciones.objects.filter(status.id = descanso.status.id).last()
-        #    pendientes = pendientes.total_pendiente
-        #else:
-        #    pendientes = 0
-
-        descanso.dias_disfrutados = descanso.dias_disfrutados
+        if Vacaciones.objects.filter(status__id = descanso.status.id).last():
+            pendientes = Vacaciones.objects.filter(status__id = descanso.status.id).last()
+            pendientes = pendientes.total_pendiente
+        else:
+            pendientes = 0
+        tabla_festivos = TablaFestivos.objects.all()
+        delta = timedelta(days=1)
+        day_count = (descanso.fecha_fin - descanso.fecha_inicio + delta ).days
+        cuenta = day_count
+        inhabil = descanso.dia_inhabil.numero
+        for fecha in (descanso.fecha_inicio + timedelta(n) for n in range(day_count)):
+            if fecha.isoweekday() == inhabil:
+                cuenta -= 1 
+            else:
+                for dia in tabla_festivos:
+                    if fecha == dia.dia_festivo: 
+                        cuenta -= 1
+        descanso.dias_disfrutados = cuenta
         descanso.fecha_planta_anterior = descanso.status.fecha_planta_anterior
         descanso.fecha_planta = descanso.status.fecha_planta
         if descanso.fecha_planta_anterior:
@@ -1059,7 +1165,7 @@ def FormularioVacaciones(request):
             if antiguedad >= tabla.years:
                 descanso.dias_de_vacaciones = tabla.days
         #Aqui se agregan los dias pendientes anteriores
-        descanso.dias_de_vacaciones = descanso.dias_de_vacaciones
+        descanso.dias_de_vacaciones = descanso.dias_de_vacaciones + pendientes
 
         if descanso.dias_disfrutados < 0:
             messages.error(request, '(Dias disfrutados) La cantidad capturada debe ser mayor o igual 0')
@@ -1086,44 +1192,38 @@ def FormularioVacaciones(request):
 
     return render(request, 'proyecto/VacacionesForm.html',context)
 
+@login_required(login_url='user-login')
 def VacacionesUpdate(request, pk):
-    tablas= TablaVacaciones.objects.all()
     descanso = Vacaciones.objects.get(id=pk)
     registros = descanso.history.filter(~Q(dias_disfrutados = None))
-    trabajador = descanso.status
-    descansos= Vacaciones.objects.filter(status=trabajador)
-    periodo=1
-    ahora = datetime.date.today()
-    year = 365
 
     dias_anteriores = descanso.dias_disfrutados
     if request.method == 'POST':
         form = VacacionesUpdateForm(request.POST, instance=descanso)
         descanso = form.save(commit=False)
-        #trabajador = descanso.status
 
-        dias = descansos.aggregate(Sum('dias_disfrutados'))
-        suma_dias = dias['dias_disfrutados__sum']
+        suma_dias = descanso.dias_disfrutados #Que ya estan tomados viene del formulario
         if suma_dias == None:
-            suma_dias =0
-        dias_totales = descanso.dias_disfrutados + suma_dias
-        descanso.dias_disfrutados = dias_totales
+            suma_dias = 0
 
-        descanso.fecha_planta_anterior = trabajador.fecha_planta_anterior
-        descanso.fecha_planta = trabajador.fecha_planta
+        tabla_festivos = TablaFestivos.objects.all()
+        delta = timedelta(days=1)
+        day_count = (descanso.fecha_fin - descanso.fecha_inicio + delta ).days
+        cuenta = day_count
+        inhabil = descanso.dia_inhabil.numero
+        for fecha in (descanso.fecha_inicio + timedelta(n) for n in range(day_count)):
+            if fecha.isoweekday() == inhabil:
+                cuenta -= 1 
+            else:
+                for dia in tabla_festivos:
+                    if fecha == dia.dia_festivo: 
+                        cuenta -= 1 #Dias que tomare de vacaciones
 
-        if descanso.fecha_planta_anterior:
-            days = descanso.fecha_planta_anterior
-        else:
-            days = descanso.fecha_planta
-        antiguedad = ahora - days
-        busqueda = antiguedad.days/year
-        if busqueda <= periodo:
-            busqueda = periodo
-        for tabla in tablas:
-            if busqueda >= tabla.years:
-                descanso.dias_de_vacaciones = tabla.days
-        if descanso.dias_disfrutados < 0 and descanso.dias_disfrutados:
+        descanso.dias_disfrutados = cuenta + suma_dias #Dias que tomara mas los que ya tomo
+        descanso.fecha_planta_anterior = descanso.status.fecha_planta_anterior
+        descanso.fecha_planta = descanso.status.fecha_planta
+
+        if descanso.dias_disfrutados < 0:
             messages.error(request, '(Dias disfrutados) La cantidad capturada debe ser mayor a 0')
         else:
             if descanso.dias_disfrutados > descanso.dias_de_vacaciones:
@@ -1133,9 +1233,8 @@ def VacacionesUpdate(request, pk):
                     messages.error(request, 'No se puede ingresar un valor 0 o un valor negativo')
                 else:
                     periodofecha = descanso.created_at.year
-                    str(periodo)
                     descanso.periodo = periodofecha
-                    descanso.total_pendiente = descanso.dias_de_vacaciones - dias_totales
+                    descanso.total_pendiente = descanso.dias_de_vacaciones - descanso.dias_disfrutados
                     if descanso.total_pendiente == None:
                         descanso.total_pendiente = 0
                     if form.is_valid():
@@ -1144,7 +1243,6 @@ def VacacionesUpdate(request, pk):
                         return redirect('Tabla_vacaciones_empleados')
     else:
         form = VacacionesUpdateForm()
-
     context = {
         'form':form,
         'descanso':descanso,
@@ -1153,13 +1251,65 @@ def VacacionesUpdate(request, pk):
 
     return render(request, 'proyecto/Vacaciones_update.html',context)
 
+@login_required(login_url='user-login')
+def VacacionesRevisar(request, pk):
+    tablas= TablaVacaciones.objects.all()
+    periodo=1
+    year = 365
+    usuario = Vacaciones.objects.get(id=pk)
+    vacaciones = Vacaciones.objects.filter(status=usuario.status).order_by("-created_at")
+    vaca = vacaciones.last()
+
+    resultado=0
+    total = 0 #Días disfrutados
+    for vacacion in vacaciones:
+        total += vacacion.dias_disfrutados
+    datos = Vacaciones.objects.filter(status=usuario.status).order_by("created_at")
+    for dato in datos:
+        if dato.status.fecha_planta_anterior:
+            days = dato.status.fecha_planta_anterior
+        else:
+            days = dato.status.fecha_planta
+        antiguedad = dato.created_at.year - days.year
+        if antiguedad <= periodo:
+            antiguedad = periodo
+        for tabla in tablas:
+            if antiguedad >= tabla.years:
+                dato.dias_de_vacaciones = tabla.days
+        #for dato in datos:
+        if total > 0:
+            if total >= dato.total_pendiente:
+                total -= dato.dias_de_vacaciones
+                dato.total_pendiente = 0
+                dato.dias_disfrutados = dato.dias_de_vacaciones
+            elif total < dato.total_pendiente :
+                if total > dato.dias_de_vacaciones:
+                    total -= dato.dias_de_vacaciones
+                    dato.total_pendiente = 0
+                    dato.dias_disfrutados = dato.dias_de_vacaciones
+                else:
+                    dato.total_pendiente = dato.dias_de_vacaciones- total 
+                    dato.dias_disfrutados = total
+                    total = 0
+        else:
+            dato.dias_disfrutados=0
+            dato.total_pendiente = dato.dias_de_vacaciones
+        resultado += dato.total_pendiente
+    context = {
+        'vaca':vaca,
+        'vacaciones':vacaciones,
+        'datos':datos,
+        'dato':dato,
+        'resultado':resultado,
+        }
+
+    return render(request, 'proyecto/Vacaciones_revisar.html',context)
+
+@login_required(login_url='user-login')
 def Tabla_Vacaciones(request): #Ya esta
 #Aqui se quitan de las tablas los datos de las vacaciones anteriores, en el formulario se mandan a llamar para añadir los días pendientes
-
     año_actual = datetime.date.today().year
     fecha_inicio = date(año_actual, 1, 1)
-    #año_anterior = fecha_inicio - timedelta(days=1)
-    #año_anterior = año_anterior.year
     fecha_actual = datetime.date.today()
     if fecha_actual == fecha_inicio:
         datos = Vacaciones.objects.filter(complete = True)
@@ -1189,6 +1339,7 @@ def Tabla_Vacaciones(request): #Ya esta
 
     return render(request, 'proyecto/TablaVacaciones.html',context)
 
+@login_required(login_url='user-login')
 def FormularioEconomicos(request):
     user_filter = UserDatos.objects.get(user=request.user)
 
@@ -1198,7 +1349,6 @@ def FormularioEconomicos(request):
         perfil = Perfil.objects.filter(distrito = user_filter.distrito)
         empleados= Status.objects.filter(perfil__id__in=perfil.all(),complete= True, complete_economicos = False)
 
-    #empleados= Status.objects.filter(complete= True, complete_economicos = False)
     economico,created=Economicos.objects.get_or_create(complete=False)
     form = EconomicosForm()
     total_dias_economicos=3
@@ -1207,18 +1357,12 @@ def FormularioEconomicos(request):
     if request.method == 'POST' and 'btnSend' in request.POST:
         form = EconomicosForm(request.POST,instance=economico)
         form.save(commit=False)
-        #trabajador = economico.status
-        #last_user = Economicos.objects.filter(status=trabajador).last()
-        #dias = economicos.filter(status=trabajador).aggregate(Sum('dias_disfrutados'))
-        #suma_dias = dias['dias_disfrutados__sum']
-        #if suma_dias == None:
-        #    suma_dias =0
+
         economico.dias_disfrutados = dias_disfrutados
         economico.dias_pendientes = total_dias_economicos - economico.dias_disfrutados
         periodo = economico.created_at.year
         str(periodo)
         economico.periodo=periodo
-        #economico.dias_pendientes=total_dias_economicos-economico.dias_disfrutados
         empleado = Status.objects.get(id = economico.status.id)
         if form.is_valid():
             messages.success(request, 'Datos capturados con exíto')
@@ -1233,6 +1377,7 @@ def FormularioEconomicos(request):
 
     return render(request, 'proyecto/EconomicosForm.html',context)
 
+@login_required(login_url='user-login')
 def EconomicosUpdate(request, pk):
     status = Status.objects.get(id=pk)
     economico,created=Economicos.objects.get_or_create(complete=False)
@@ -1244,45 +1389,49 @@ def EconomicosUpdate(request, pk):
         form = EconomicosUpdateForm(request.POST,instance=economico)
         form.save(commit=False)
         last_economico = Economicos.objects.filter(status=status).last()
-        economico.status=status
-        economico.dias_disfrutados = dias_disfrutados + last_economico.dias_disfrutados
-        economico.dias_pendientes = total_dias_economicos - economico.dias_disfrutados
-        periodo = economico.created_at.year
-        str(periodo)
-        economico.periodo=periodo
-        orden = Economicos.objects.filter(status = status.id).last()
-        orden.complete_dias=True
-        if economico.dias_disfrutados == total_dias_economicos:
-            economico.complete_dias=True
+        if last_economico.fecha == economico.fecha - timedelta(days=1):
+            messages.error(request,'Los días económicos no pueden ser seguidos')
         else:
-            economico.complete_dias=False
-        if form.is_valid():
-            messages.success(request, 'Se capturaron con exíto los datos')
-            economico.complete=True
-            orden.save()
-            form.save()
-            return redirect('Tabla_economicos')
+            economico.status=status
+            economico.dias_disfrutados = dias_disfrutados + last_economico.dias_disfrutados
+            economico.dias_pendientes = total_dias_economicos - economico.dias_disfrutados
+            periodo = economico.created_at.year
+            str(periodo)
+            economico.periodo=periodo
+            orden = Economicos.objects.filter(status = status.id).last()
+            orden.complete_dias=True
+            if economico.dias_disfrutados == total_dias_economicos:
+                economico.complete_dias=True
+            else:
+                economico.complete_dias=False
+            if form.is_valid():
+                messages.success(request, 'Se capturaron con exíto los datos')
+                economico.complete=True
+                orden.save()
+                form.save()
+                return redirect('Tabla_economicos')
 
     context = {'form':form,'economico':economico,'status':status,}
 
     return render(request, 'proyecto/Economicos_update.html',context)
 
+@login_required(login_url='user-login')
 def Tabla_Economicos(request): #Ya esta
 #Aqui se quitan de las tablas los datos de las economicos anteriores
     #empleado = Status.objects.get(id = descanso.status.id)
-    año_actual = datetime.date.today().year
     dias_pendientes=3
-    #fecha_inicio = date(año_actual, 1, 1)
+    año_actual = datetime.date.today().year
+    fecha_inicio = date(año_actual, 1, 1)
     #año_anterior = fecha_inicio - timedelta(days=1)
     #año_anterior = año_anterior.year
-    #fecha_actual = datetime.date.today()
-    #if fecha_actual == fecha_inicio:
-    #    datos = Economicos.objects.filter(complete = True)
-    #    for dato in datos:
-    #        if año_actual != dato.created_at.year:
-    #            status = Status.objects.get(id = dato.status.id)
-    #            status.complete_economicos = False
-    #            status.save()
+    fecha_actual = datetime.date.today()
+    if fecha_actual == fecha_inicio:
+        datos = Economicos.objects.filter(complete = True)
+        for dato in datos:
+            if año_actual != dato.created_at.year:
+                status = Status.objects.get(id = dato.status.id)
+                status.complete_economicos = False
+                status.save()
     user_filter = UserDatos.objects.get(user=request.user)
 
     if user_filter.distrito.distrito == 'Matriz':
@@ -1310,10 +1459,11 @@ def Tabla_Economicos(request): #Ya esta
 
     return render(request, 'proyecto/Tabla_economicos.html',context)
 
+@login_required(login_url='user-login')
 def EconomicosRevisar(request, pk):
     economicos = Economicos.objects.filter(status__id=pk)
     empleado = economicos.last()
-
+    
     if request.method =='POST' and 'Pdf' in request.POST:
         return reporte_pdf_economico_detalles(economicos,empleado)
 
@@ -1324,6 +1474,7 @@ def EconomicosRevisar(request, pk):
 
     return render(request, 'proyecto/Economicos_revisar.html',context)
 
+@login_required(login_url='user-login')
 def Tabla_Datosbancarios(request):
     user_filter = UserDatos.objects.get(user=request.user)
 
@@ -1332,8 +1483,6 @@ def Tabla_Datosbancarios(request):
     else:
         perfil = Perfil.objects.filter(distrito = user_filter.distrito,complete=True)
         bancarios = DatosBancarios.objects.filter(status__perfil__id__in=perfil.all(), complete=True).order_by("status__perfil__numero_de_trabajador")
-
-    #bancarios= DatosBancarios.objects.filter(complete=True)
     bancario_filter = BancariosFilter(request.GET, queryset=bancarios)
     bancarios = bancario_filter.qs
 
@@ -1347,6 +1496,19 @@ def Tabla_Datosbancarios(request):
 
     return render(request, 'proyecto/Tabla_Datosbancarios.html',context)
 
+@login_required(login_url='user-login')
+def Empleado_Datosbancarios(request, pk):
+
+    empleado = Status.objects.get(id=pk)
+    datos = DatosBancarios.objects.get(status__id=empleado.id)
+
+    context = {
+        'datos':datos,
+        }
+
+    return render(request, 'proyecto/Empleado_Datosbancarios.html',context)
+
+@login_required(login_url='user-login')
 def HistoryCosto(request, pk):
     costos = Costo.objects.get(id=pk)
     registros = costos.history.filter(~Q(amortizacion_infonavit = None))
@@ -1365,6 +1527,7 @@ def HistoryCosto(request, pk):
     context = {'costos':costos, 'registros':registros,'myfilter':myfilter,}
 
     return render(request, 'proyecto/Costo_history.html',context)
+
 
 def convert_excel_costo(bancario):
     response= HttpResponse(content_type = "application/ms-excel")
@@ -1441,6 +1604,7 @@ def convert_excel_costo(bancario):
     wb.save(response)
 
     return(response)
+
 
 def convert_excel_bancarios(bancarios):
     response= HttpResponse(content_type = "application/ms-excel")
@@ -1971,7 +2135,7 @@ def convert_excel_status(status):
 
     return(response)
 
-
+@login_required(login_url='user-login')
 def upload_batch_empleados(request):
 
     form = Empleados_BatchForm(request.POST or None, request.FILES or None)
@@ -1980,7 +2144,7 @@ def upload_batch_empleados(request):
         form.save()
         form = Empleados_BatchForm()
         empleados_list = Empleados_Batch.objects.get(activated = False)
-        f = open(empleados_list.file_name.path, 'r')
+        f = open(empleados_list.file_name.path, 'r', encoding='latin1')
         reader = csv.reader(f)
         next(reader) #Advance past the reader
 
@@ -2021,6 +2185,7 @@ def upload_batch_empleados(request):
 
     return render(request,'proyecto/upload_batch_empleados.html', context)
 
+@login_required(login_url='user-login')
 def upload_batch_status(request):
 
     form = Status_BatchForm(request.POST or None, request.FILES or None)
@@ -2029,14 +2194,20 @@ def upload_batch_status(request):
         form.save()
         form = Status_BatchForm()
         status_list = Status_Batch.objects.get(activated = False)
-        f = open(status_list.file_name.path, 'r')
+        f = open(status_list.file_name.path, 'r', encoding='latin1')
         reader = csv.reader(f)
         next(reader) #Advance past the reader
 
         for row in reader:
             ultimo_contrato = datetime.datetime.strptime(row[10], "%d/%m/%Y").date()
-            planta = datetime.datetime.strptime(row[16], "%d/%m/%Y").date()
-            planta_anterior = datetime.datetime.strptime(row[15], "%d/%m/%Y").date()
+            if row[16] == '':
+                planta = None
+            else:
+                planta = datetime.datetime.strptime(row[16], "%d/%m/%Y").date()
+            if row[15] == '':
+                planta_anterior = None
+            else:
+                planta_anterior = datetime.datetime.strptime(row[15], "%d/%m/%Y").date()
             if Perfil.objects.filter(numero_de_trabajador = row[0]):
                 perfil = Perfil.objects.get(numero_de_trabajador = row[0])
                 if Status.objects.filter(perfil__numero_de_trabajador = row[0]):
@@ -2087,6 +2258,7 @@ def upload_batch_status(request):
 
     return render(request,'proyecto/upload_batch_status.html', context)
 
+@login_required(login_url='user-login')
 def upload_batch_costos(request):
     tablas= DatosISR.objects.all()
     quincena=Decimal(14.00)
@@ -2187,6 +2359,7 @@ def upload_batch_costos(request):
 
     return render(request,'proyecto/upload_batch_costos.html', context)
 
+@login_required(login_url='user-login')
 def upload_batch_bancarios(request):
 
     form = Bancarios_BatchForm(request.POST or None, request.FILES or None)
@@ -2632,3 +2805,434 @@ def reporte_pdf_economico_detalles(economicos,empleado):
     buf.seek(0)
 
     return FileResponse(buf, as_attachment=True, filename='EconomicoDetalle.pdf')
+
+@login_required(login_url='user-login')
+def FormatoVacaciones(request):
+    usuario = UserDatos.objects.get(user__id=request.user.id)
+    dato = Vacaciones.objects.filter(status__perfil__numero_de_trabajador=usuario.numero_de_trabajador).last()
+    datos = Vacaciones.objects.filter(status__perfil__numero_de_trabajador=usuario.numero_de_trabajador)
+    context= {
+        'usuario':usuario,
+        'dato':dato,
+        'datos':datos,
+        }
+
+    return render(request, 'proyecto/Formato_vacaciones.html',context)
+
+@login_required(login_url='user-login')
+def FormFormatoVacaciones(request):
+    usuario = UserDatos.objects.get(user__id=request.user.id)
+    datos = Vacaciones.objects.filter(status__perfil__numero_de_trabajador=usuario.numero_de_trabajador).last()
+    if not datos:
+        usuario_fijo = Perfil.objects.filter(numero_de_trabajador=usuario.numero_de_trabajador).first()
+        status = Status.objects.get(perfil=usuario_fijo)
+        datos = 0
+    else:
+        datos = datos
+        status =  Status.objects.get(id=datos.status.id)
+        
+    #if request.method =='POST' and 'Pdf' in request.POST:
+    #    return PdfFormatoVacaciones(usuario)
+    form = VacacionesFormato()
+    if request.method == 'POST' and 'btnSend' in request.POST:
+        form = VacacionesFormato(request.POST,)
+        form.save(commit=False)
+        inicio = form.cleaned_data.get("fecha_inicio")
+        fin = form.cleaned_data.get("fecha_fin")
+        dia_inhabil = form.cleaned_data.get("dia_inhabil")
+        if inicio > fin:
+            messages.error(request,'La primera fecha no puede ser posterior a la segunda')
+        else:
+            if dia_inhabil == None:
+                messages.error(request,'Debe agregar el día que no  labora') 
+            else:
+                if form.is_valid():
+                    return redirect('Formato_vacaciones') and PdfFormatoVacaciones(usuario,datos,status,form,)
+    context= {
+        'usuario':usuario,
+        'datos':datos,
+        'form':form,
+        'status':status,
+        }
+
+    return render(request, 'proyecto/Formato_VacacionesForm.html',context)
+
+def PdfFormatoVacaciones(usuario, datos, status, form,):
+    costo = Costo.objects.get(status=status.id)
+    inicio = form.cleaned_data.get("fecha_inicio")
+    fin = form.cleaned_data.get("fecha_fin")
+    dia_inhabil = form.cleaned_data.get("dia_inhabil")
+    ######
+    tabla_festivos = TablaFestivos.objects.all()
+    delta = timedelta(days=1)
+    day_count = (fin - inicio + delta ).days
+    cuenta = day_count
+    inhabil = dia_inhabil.numero
+    for fecha in (inicio + timedelta(n) for n in range(day_count)):
+        if fecha.isoweekday() == inhabil:
+            cuenta -= 1 
+        else:
+            for dia in tabla_festivos:
+                if fecha == dia.dia_festivo: 
+                    cuenta -= 1
+    diferencia = str(cuenta)
+    #Para ubicar el dia de regreso en un dia habil (Puede caer en día festivo)
+    fin = fin + timedelta(days=1)
+    if fin.isoweekday() == inhabil:
+        fin = fin + timedelta(days=1)
+    now = date.today()
+    año1 = str(inicio.year)
+    año2= str(fin.year)
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf, pagesize=letter)
+
+    #Colores utilizados
+    azul = Color(0.16015625,0.5,0.72265625)
+    rojo = Color(0.59375, 0.05859375, 0.05859375)
+    
+    c.setFillColor(black)
+    c.setLineWidth(.2)
+    c.setFont('Helvetica-Bold',16)
+    c.drawCentredString(305,765,'GRUPO VORCAB SA DE CV')
+
+    c.setFont('Helvetica-Bold',11)
+    c.drawCentredString(305,750,'SOLICITUD DE VACACIONES')
+
+    c.drawString(40,690,'NOMBRE:')
+    c.line(95,688,325,688)
+    espacio = ' '
+    nombre_completo = str(status.perfil.nombres + espacio + status.perfil.apellidos)
+    c.drawString(100,690,nombre_completo)
+    c.drawString(40,670,'PUESTO:')
+    c.line(95,668,325,668)
+    c.drawString(100,670,costo.puesto.puesto)
+
+    c.drawString(335,670,'TELEFONO PARTICULAR:')
+    c.line(475,668,580,668)
+    c.drawString(485,670,status.telefono)
+
+    if cuenta < 3:
+        altura=200
+        margen=20
+        c.drawCentredString(305,502,'OBSERVACIONES')
+        c.rect(50,500, 510, 12)
+        c.rect(50,435, 510, 65)
+    else:
+        altura=0
+        margen=0
+    c.drawString(40,620-margen,'FECHA DE PLANTA:')
+    dia = str(status.fecha_planta.day)
+    mes = str(status.fecha_planta.month)
+    año = str(status.fecha_planta.year)
+
+    c.rect(185,598-margen, 150, 55)
+    c.line(185,618-margen,335,618-margen)
+    c.line(185,638-margen,335,638-margen)
+    c.line(230,650-margen,230,598-margen)
+    c.line(290,650-margen,290,598-margen)
+    c.drawCentredString(210,620-margen,dia)
+    c.drawCentredString(260,620-margen,mes)
+    c.drawCentredString(310,620-margen,año)
+    c.drawString(40,600-margen,'FECHA DE SOLICITUD:')
+    c.drawCentredString(210,600-margen,str(now.day))
+    c.drawCentredString(260,600-margen,str(now.month))
+    c.drawCentredString(310,600-margen,str(now.year))
+    c.drawString(200,640-margen,'DIA')
+    c.drawString(250,640-margen,'MES')
+    c.drawString(300,640-margen,'AÑO')
+    c.drawString(400,600-margen,'FIRMA DEL SOLICITANTE')
+    c.rect(390,598-margen, 155, 55)
+    c.line(390,610-margen,545,610-margen)
+
+    c.drawString(40,560-altura,'PERIODO VACACIONAL CORRESPONDIENTE:')
+    c.drawCentredString(425,560-altura, año1)
+    c.drawCentredString(450,560-altura, '/')
+    c.drawCentredString(475,560-altura, año2)
+    c.rect(35,558-altura, 255, 12)
+    c.rect(360,558-altura, 190, 12)
+    #form = VacacionesFormato(request.POST,)
+    c.drawString(40,540-altura,'NO. DE DIAS DE VACACIONES:')
+    c.drawCentredString(450,540-altura,diferencia)
+    c.rect(35,538-altura, 175, 12)
+    c.rect(360,538-altura, 190, 12)
+    c.drawString(40,520-altura,'CON GOCE DE SUELDO:')
+    c.rect(35,518-altura, 140, 12)
+    c.drawString(380,520-altura,'SI')
+    c.rect(360,518-altura, 50, 12)
+    c.drawString(425,520-altura,'NO')
+    c.rect(410,518-altura, 50, 12)
+    c.drawString(40,500-altura,'FECHA QUE DESEA SALIR DE VACACIONES:')
+    c.drawCentredString(450,500-altura,str(inicio))
+    c.rect(35,498-altura, 250, 12)
+    c.rect(360,498-altura, 190, 12)
+    c.drawString(40,480-altura,'FECHA DE REGRESO A LABORES:')
+    c.drawCentredString(450,480-altura,str(fin))
+    c.rect(35,478-altura, 195, 12)
+    c.rect(360,478-altura, 190, 12)
+    if cuenta >= 3:
+        c.drawCentredString(300,440,'Entrega-Recepción')
+        c.setFont('Helvetica',11)
+        c.drawString(40,400,'DATOS DE QUIEN RECIBE:')
+        c.drawString(40,380,'Nombre:')
+        c.line(90,378,375,378)
+        c.drawString(385,380,'Area:')
+        c.line(420,378,560,378)
+        c.drawString(40,360,'Puesto:')
+        c.line(90,358,375,358)
+        c.drawString(40,340,'Sector:')
+        c.line(90,338,375,338)
+        c.setFont('Helvetica-Bold',14)
+        c.drawString(40,290,'SITUACIÓN DE TRABAJOS ENCOMENDADOS:')
+        c.setFillColor(black)
+        #Tabla y altura guia
+        data =[]
+        high = 150
+        data.append(['''No.''','''DENOMINACIÓN ASUNTO''','''ESTADO''',])
+        #for economico in economicos: #Salen todos los datos
+        #    creado = economico.created_at.date()
+        #    data.append([economico.periodo,economico.fecha,economico.dias_disfrutados,economico.dias_pendientes,creado,])
+        data.append(["","","",])
+        data.append(["","","",])
+        data.append(["","","",])
+        data.append(["","","",])
+        data.append(["","","",])
+        data.append(["","","",])
+        high = high - 20
+            #Propiedades de la tabla
+        width, height = letter
+        table = Table(data, colWidths=[1.5 * cm, 11 * cm, 7 * cm,], repeatRows=1)
+        table.setStyle(TableStyle([ #estilos de la tabla
+            #ENCABEZADO
+            ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+            ('TEXTCOLOR',(0,0),(-1,0), black),
+            ('FONTSIZE',(0,0),(-1,0), 12),
+            ('BACKGROUND',(0,0),(-1,0), white),
+            #CUERPO
+            ('TEXTCOLOR',(0,1),(-1,-1), colors.black),
+            ('FONTSIZE',(0,1),(-1,-1), 16),
+            ('GRID',(0,0),(-1,-1),0.5,colors.grey),
+            ]))
+        table.setStyle(TableStyle([
+            ('GRID',(0,0),(-1,-1),0.5,colors.grey),
+            ]))
+        table.wrapOn(c, width, height)
+        table.drawOn(c, 25, high)
+        c.showPage()
+        c.setFont('Helvetica-Bold',12)
+        c.drawString(40,720,'INFORMACIÓN ADICIONAL:')
+        data2 =[]
+        high = 425
+        data2.append(['''No.''','''TEMAS''','''  ''',])
+        data2.append(["1","Información sobre personal a su cargo","",])
+        data2.append(["2","Documentos","",])
+        data2.append(["3","Arqueo de caja o cuenta bancaria a su cargo (cuando aplique)","",])
+        data2.append(["4","Proyectos pendientes","",])
+        data2.append(["5","Estado de las operaciones a su cargo","",])
+        data2.append(["6","Deudas con la empresa","",])
+        data2.append(["7","Saldos por comprobar a contabilidad","",])
+        data2.append(["8","Activos asignados","",])
+        data2.append(["9","Otros","",])
+        c.drawString(40,375,'ANEXOS:')
+        c.line(40,353,570,353)
+        c.line(40,333,570,333)
+        c.line(40,313,570,313)
+        c.line(40,293,570,293)
+        c.line(40,273,570,273)
+        c.drawCentredString(200,170,'ENTREGUE (NOMBRE Y FIRMA)')
+        c.line(105,185,295,185)
+        c.drawCentredString(400,170,'RECIBI (NOMBRE Y FIRMA)')
+        c.line(320,185,480,185)
+        table = Table(data2, colWidths=[1.5 * cm, 11 * cm, 7 * cm,], repeatRows=1)
+        table.setStyle(TableStyle([ #estilos de la tabla
+            #ENCABEZADO
+            ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+            ('TEXTCOLOR',(0,0),(-1,0), black),
+            ('FONTSIZE',(0,0),(-1,0), 13),
+            ('BACKGROUND',(0,0),(-1,0), white),
+            #CUERPO
+            ('TEXTCOLOR',(0,1),(-1,-1), colors.black),
+            ('FONTSIZE',(0,1),(-1,-1), 10),
+            ('GRID',(0,0),(-1,-1),0.5,colors.grey),
+            ]))
+        table.setStyle(TableStyle([
+            ('GRID',(0,0),(-1,-1),0.5,colors.grey),
+            ]))
+        table.wrapOn(c, width, height)
+        table.drawOn(c, 25, high)
+    c.drawCentredString(200,70,'FIRMA DE GERENCIA')
+    c.rect(120,68, 160, 70)
+    c.line(120,80,280,80)
+    c.drawCentredString(400,70,'FIRMA DE JEFE INMEDIATO')
+    c.rect(300,68, 195, 70)
+    c.line(300,80,495,80)
+    c.save()
+    c.showPage()
+    buf.seek(0)
+    return FileResponse(buf, as_attachment=True, filename='Formato_Vacaciones.pdf')
+
+@login_required(login_url='user-login')
+def FormatoEconomicos(request):
+    usuario = UserDatos.objects.get(user__id=request.user.id)
+    dato = Economicos.objects.filter(status__perfil__numero_de_trabajador=usuario.numero_de_trabajador).last()
+    datos = Economicos.objects.filter(status__perfil__numero_de_trabajador=usuario.numero_de_trabajador)
+    if request.method =='POST' and 'Pdf' in request.POST:
+        return PdfFormatoEconomicos(usuario)
+    context= {
+        'usuario':usuario,
+        'dato':dato,
+        'datos':datos,
+        }
+
+    return render(request, 'proyecto/Formato_economicos.html',context)
+
+@login_required(login_url='user-login')
+def FormFormatoEconomicos(request):
+    usuario = UserDatos.objects.get(user__id=request.user.id)
+    datos = Economicos.objects.filter(status__perfil__numero_de_trabajador=usuario.numero_de_trabajador).last()
+    if not datos:
+        usuario_fijo = Perfil.objects.filter(numero_de_trabajador=usuario.numero_de_trabajador).first()
+        status = Status.objects.get(perfil=usuario_fijo)
+        datos = 0
+    else:
+        status =  Status.objects.get(id=datos.status.id)
+    form = EconomicosFormato()
+    if request.method == 'POST' and 'btnSend' in request.POST:
+        form = EconomicosFormato(request.POST,)
+        form.save(commit=False)
+        fecha = form.cleaned_data.get("fecha")
+        if datos.fecha == fecha - timedelta(days=1):
+            messages.error(request,'Los días económicos no pueden ser seguidos')
+        else:
+            if form.is_valid():
+                #messages.success(request, 'Formato generado con exíto')
+                return redirect('Formato_economicos') and PdfFormatoEconomicos(usuario,datos,status,form,) 
+    context= {
+        'usuario':usuario,
+        'datos':datos,
+        'form':form,
+        }
+
+    return render(request, 'proyecto/Formato_EconomicosForm.html',context)
+
+def PdfFormatoEconomicos(usuario,datos,status,form,):
+    costo = Costo.objects.get(status=status.id)
+    now = date.today()
+    fecha = form.cleaned_data.get("fecha")
+    periodo = str(fecha.year)
+    economico = 0
+    if not Economicos.objects.filter(status=status):
+        economico = 0
+    else:
+        last_economico = Economicos.objects.filter(status=status).last()
+        economico = last_economico.dias_disfrutados
+    #Para ubicar el dia de regreso en un dia habil (Puede caer en día festivo)
+    #if status.regimen.regimen == 'L-V':
+    #    inhabil1 = 6
+    #    inhabil2 = 7
+    #elif status.regimen.regimen == 'L-S':
+    #    inhabil1 = 7
+    #    inhabil2 = None
+    regreso = fecha + timedelta(days=1)
+    #if regreso.isoweekday() == inhabil1:
+    #    regreso = regreso + timedelta(days=1)
+    #if regreso.isoweekday() == inhabil2:
+    #    regreso = regreso + timedelta(days=1)
+
+    
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf, pagesize=letter)
+
+    #Colores utilizados
+    azul = Color(0.16015625,0.5,0.72265625)
+    rojo = Color(0.59375, 0.05859375, 0.05859375)
+
+    c.setFillColor(black)
+    c.setLineWidth(.2)
+    c.setFont('Helvetica-Bold',16)
+    c.drawCentredString(305,765,'GRUPO VORCAB SA DE CV')
+    c.setFont('Helvetica-Bold',11)
+    c.drawCentredString(305,750,'SOLICITUD DE DIA ECONOMICO')
+
+    c.drawString(40,690,'NOMBRE:')
+    c.line(95,688,325,688)
+    espacio = ' ' 
+    nombre_completo = str(status.perfil.nombres + espacio + status.perfil.apellidos)
+    c.drawString(100,690,nombre_completo)
+    c.drawString(40,670,'PUESTO:')
+    c.line(95,668,325,668)
+    c.drawString(100,670,costo.puesto.puesto)
+    c.drawString(335,670,'TELEFONO PARTICULAR:')
+    c.line(475,668,580,668)
+    c.drawString(485,670,status.telefono)
+    c.drawString(40,620,'FECHA DE PLANTA:')
+    dia = str(status.fecha_planta.day)
+    mes = str(status.fecha_planta.month)
+    año = str(status.fecha_planta.year)
+    #rect(x, y, alto, ancho, stroke=1, fill=0)
+    c.rect(185,600, 150, 50)
+    c.line(185,618,335,618)
+    c.line(185,638,335,638)
+    c.line(230,650,230,600)
+    c.line(290,650,290,600)
+    c.drawCentredString(210,620,dia)
+    c.drawCentredString(260,620,mes)
+    c.drawCentredString(310,620,año)
+    c.drawString(40,600,'FECHA DE SOLICITUD:')
+    c.drawCentredString(210,605,str(now.day))
+    c.drawCentredString(260,605,str(now.month))
+    c.drawCentredString(310,605,str(now.year))
+    c.drawString(200,640,'DIA')
+    c.drawString(250,640,'MES')
+    c.drawString(300,640,'AÑO')
+    c.drawString(400,600,'FIRMA DEL SOLICITANTE')
+    c.rect(390,598, 155, 50)
+    c.line(390,610,545,610)
+    c.drawString(40,540,'PERIODO CORRESPONDIENTE:')
+    c.drawCentredString(450,540, periodo)
+    c.rect(35,538, 255, 12)
+    c.rect(360,538, 190, 12)
+    c.drawCentredString(385,520,'1')
+    c.drawCentredString(435,520,'2')
+    c.drawCentredString(485,520,'3')
+
+    c.drawString(40,500,'NO. DE DIA ECONOMICO:')
+    c.rect(35,498, 175, 12)
+    c.rect(360,498, 150, 12)
+    c.line(410,510,410,498)
+    c.line(460,510,460,498)
+    c.setFillColorRGB(0.8, 0.8, 0.8)  # Color de relleno
+    if economico == 0:
+        c.rect(360,498, 50, 12, stroke = 1, fill = 1)
+    elif economico == 1:
+        c.rect(410,498, 50, 12, stroke = 1, fill = 1)  
+    elif economico == 2:
+        c.rect(460,498, 50, 12, stroke = 1, fill = 1)
+    c.setFillColor(black)
+    c.drawString(40,480,'CON GOCE DE SUELDO:')
+    c.rect(35,478, 140, 12)
+    c.drawString(380,480,'SI')
+    c.rect(360,478, 50, 12)
+    c.drawString(425,480,'NO')
+    c.rect(410,478, 50, 12)
+    c.drawString(40,460,'FECHA QUE DESEA SALIR DEL PERMISO:')
+    c.drawCentredString(450,460,str(fecha))
+    c.rect(35,458, 250, 12)
+    c.rect(360,458, 190, 12)
+    c.drawString(40,440,'FECHA DE REGRESO A LABORES:')
+    c.drawCentredString(450,440,str(regreso))
+    c.rect(35,438, 195, 12)
+    c.rect(360,438, 190, 12)
+    c.drawCentredString(305,370,'OBSERVACIONES')
+    c.rect(40,368, 530, 12)
+    c.rect(40,300, 530, 68)
+    c.drawCentredString(170,125,'FIRMA GERENCIA')
+    c.rect(70,123, 200, 12)
+    c.rect(70,135, 200, 50)
+    c.drawCentredString(440,125,'FIRMA DE JEFE INMEDIATO')
+    c.rect(330,123, 210, 12)
+    c.rect(330,135, 210, 50)
+    c.save()
+    c.showPage()
+    buf.seek(0)
+
+    return FileResponse(buf, as_attachment=True, filename='Formato_Economico.pdf')

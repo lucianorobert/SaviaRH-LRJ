@@ -83,17 +83,27 @@ class UniformeForm(forms.ModelForm):
 class VacacionesForm(forms.ModelForm):
     class Meta:
         model = Vacaciones
-        fields = ['status','dias_disfrutados','comentario']
+        fields = ['status','fecha_inicio','fecha_fin','comentario', 'dia_inhabil',]
+
+class VacacionesFormato(forms.ModelForm):
+    class Meta:
+        model = Vacaciones
+        fields = ['fecha_inicio','fecha_fin', 'dia_inhabil',]
 
 class VacacionesUpdateForm(forms.ModelForm):
     class Meta:
         model = Vacaciones
-        fields = ['dias_disfrutados','comentario']
+        fields = ['fecha_inicio','fecha_fin','comentario', 'dia_inhabil']
 
 class EconomicosForm(forms.ModelForm):
     class Meta:
         model = Economicos
         fields = ['status','fecha','comentario',]
+
+class EconomicosFormato(forms.ModelForm):
+    class Meta:
+        model = Economicos
+        fields = ['fecha',]
 
 class EconomicosUpdateForm(forms.ModelForm):
     class Meta:

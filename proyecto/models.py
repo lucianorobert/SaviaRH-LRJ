@@ -12,6 +12,12 @@ class TablaVacaciones(models.Model):
     def __str__(self):
         return f'Años: {self.years}, dias de vacaciones: {self.days}'
 
+class TablaFestivos(models.Model):
+    dia_festivo = models.DateField(null=True)
+    complete = models.BooleanField(default=False)
+    def __str__(self):
+        return f'{self.dia_festivo}'
+
 class Empresa(models.Model):
     empresa = models.CharField(max_length=50,null=True)
     complete = models.BooleanField(default=False)
@@ -102,9 +108,17 @@ class DatosISR(models.Model):
             return "Campo vacio"
         return f'{self.liminf} - {self.limsup} - {self.cuota} - {self.excedente} - {self.p_ingresos} - {self.g_ingresos} - {self.subsidio}'
 
+class TipoPerfil(models.Model):
+    nombre = models.CharField(max_length=50,null=True)
+    admin = models.BooleanField(null=True, default=False)
+    def __str__(self):
+        return f'{self.nombre}, admin: {self.admin} '
+        
 class UserDatos(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     distrito = models.ForeignKey(Distrito, on_delete = models.CASCADE, null=True)
+    tipo = models.ForeignKey(TipoPerfil, on_delete = models.CASCADE, null=True)
+    numero_de_trabajador = models.IntegerField(null=True)
     def __str__(self):
         return f'{self.user}, distrito: {self.distrito} '
 
@@ -143,6 +157,13 @@ class Nivel(models.Model):
     complete = models.BooleanField(default=False)
     def __str__(self):
         return f'{self.nivel}'
+
+class Dia_vacacion(models.Model):
+    nombre = models.CharField(max_length=50,null=True)
+    numero = models.IntegerField(null=True)
+    complete = models.BooleanField(default=False)
+    def __str__(self):
+        return f'{self.nombre}'
 
 class Status(models.Model):
     perfil = models.ForeignKey(Perfil, on_delete = models.CASCADE, null=True)
@@ -307,11 +328,13 @@ class Uniforme(models.Model):
     def __str__(self):
         return f'Ropa: {self.ropa} Talla: {self.talla} Cantidad: {self.cantidad}'
 
-
 class Vacaciones(models.Model):
     status = models.ForeignKey(Status, on_delete = models.CASCADE, null=True)
     periodo = models.CharField(max_length=50,null=True)
     dias_de_vacaciones = models.IntegerField(null=True, default=0)
+    dia_inhabil = models.ForeignKey(Dia_vacacion, on_delete = models.CASCADE, blank=True, null=True)
+    fecha_inicio = models.DateField(null=True)
+    fecha_fin = models.DateField(null=True)
     dias_disfrutados = models.IntegerField(null=True, default=0)
     total_pendiente = models.IntegerField(null=True, default=0)
     comentario = models.CharField(max_length=50,null=True)
