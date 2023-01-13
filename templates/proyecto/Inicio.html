@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-     {% block title %}Proyecto App{% endblock %}
+     {% block title %}Sistema RH{% endblock %}
      {% block content %}
 <hr>
 <hr>
@@ -10,9 +10,8 @@
 <hr>
 </head>
 <body>
-<h1>Inicio PROYECTO</h1>
-<h2>Para regresar a la pagina principal:</h2>
- <p><a href="http://vicjosh.pythonanywhere.com/"><button type="button" class="btn btn-primary btn-lg btn-block">Pagina principal</button></a></p>
+<h1>Sistema RH</h1>
+ <p><a href={% url "index" %}><button type="button" class="btn btn-primary btn-lg btn-block">Dashboard</button></a></p>
 </body>
 {% endblock %}
 </html>

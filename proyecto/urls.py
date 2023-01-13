@@ -37,6 +37,7 @@ urlpatterns = [
     path('Costo/revisar/<int:pk>/', views.Costo_revisar, name='Costo_revisar'),
     path('Costo/History/<int:pk>/', views.HistoryCosto, name='Costo_history'),
     path('upload_Costos', views.upload_batch_costos, name='Upload_costos'),
+    path('Empleado/Costo/<int:pk>/', views.Empleado_Costo, name='Empleado_costo'),
 
     path('Tabla_Vacaciones', views.Tabla_dias_vacaciones, name='Tabla_dias_vacaciones'),
     path('Formulario_Vacaciones', views.FormularioVacaciones, name='Formulario_vacaciones'),
@@ -44,15 +45,18 @@ urlpatterns = [
 
     path('Vacaciones/update/<int:pk>/', views.VacacionesUpdate, name='Vacaciones_update'),
     path('Vacaciones_dias/update/<int:pk>/', views.Dias_VacacionesUpdate, name='Dias_Vacaciones_update'),
+    path('Vacaciones/revisar/<int:pk>/', views.VacacionesRevisar, name='Vacaciones_revisar'),
 
     path('Formulario_DatosBancarios', views.FormularioDatosBancarios, name='Formulario_datosbancarios'),
     path('Tabla_DatosBancarios', views.Tabla_Datosbancarios, name='Tabla_datosbancarios'),
     path('upload_Bancarios', views.upload_batch_bancarios, name='Upload_bancarios'),
+    path('Empleado/Datos_bancarios/<int:pk>/', views.Empleado_Datosbancarios, name='Empleado_bancarios'),
 
     path('Formulario_Bonos', views.FormularioBonos, name='Formulario_bonos'),
     path('Tabla_Bonos', views.TablaBonos, name='Tabla_bonos'),
 
     path('Bonos/update/<int:pk>/', views.BonosUpdate, name='Bonos_update'),
+    path('Empleado/Bonos/<int:pk>/', views.Empleado_Bonos, name='Empleado_bonos'),
 
     path('DatosBancarios/update/<int:pk>/', views.BancariosUpdate, name='Bancarios_update'),
 
@@ -67,6 +71,11 @@ urlpatterns = [
     path('Formulario_Economicos', views.FormularioEconomicos, name='Formulario_economicos'),
     path('Tabla_Economicos', views.Tabla_Economicos, name='Tabla_economicos'),
 
+    path('Formato/Vacaciones', views.FormatoVacaciones, name='Formato_vacaciones'),
+    path('Formulario/Formato/Vacaciones', views.FormFormatoVacaciones, name='Formularioformato_vacaciones'),
+    path('Formato/Economicos', views.FormatoEconomicos, name='Formato_economicos'),
+    path('Formulario/Formato/Economicos', views.FormFormatoEconomicos, name='Formularioformato_economicos'),
+    
     path('Economicos/update/<int:pk>/', views.EconomicosUpdate, name='Economicos_update'),
     path('Economicos/revisar/<int:pk>/', views.EconomicosRevisar, name='Economicos_revisar'),
     #path('ajax/load-subproyectos/', views.load_subproyectos, name='ajax_load_subproyectos'),  # <-- rutina en Ajax

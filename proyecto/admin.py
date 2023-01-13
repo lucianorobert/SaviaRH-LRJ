@@ -12,9 +12,12 @@ from .models import Civil
 from .models import Banco
 from .models import DatosISR
 from .models import Nivel
-from .models import TablaVacaciones
+from .models import Dia_vacacion
+from .models import TablaVacaciones 
+from .models import TablaFestivos
 from .models import RegistroPatronal
 from .models import UserDatos
+from .models import TipoPerfil
 from .models import Tallas
 from .models import Ropa
 from .models import Uniforme
@@ -65,12 +68,15 @@ admin.site.register(Civil)
 admin.site.register(Banco)
 #Tabla niveles del empleado
 admin.site.register(Nivel)
+admin.site.register(Dia_vacacion)
 #Tabla ISR
 admin.site.register(DatosISR)
 #Tabla vacaciones
 admin.site.register(TablaVacaciones)
+admin.site.register(TablaFestivos)
 admin.site.register(RegistroPatronal, PatronalAdmin)
 admin.site.register(UserDatos)
+admin.site.register(TipoPerfil)
 admin.site.register(Tallas, TallaAdmin)
 admin.site.register(Ropa)
 admin.site.register(Uniforme)
