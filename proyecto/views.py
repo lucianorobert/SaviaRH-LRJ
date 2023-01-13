@@ -1516,11 +1516,11 @@ def HistoryCosto(request, pk):
     registros=myfilter.qs
     if request.method == 'POST':
 
-        costo.impuesto_estatal=locale.currency(costo.impuesto_estatal, grouping=True)
-        costo.sar=locale.currency(costo.sar, grouping=True)
-        costo.cesantia=locale.currency(costo.cesantia, grouping=True)
-        costo.infonavit=locale.currency(costo.infonavit, grouping=True)
-        costo.isr=locale.currency(costo.isr, grouping=True)
+        #costo.impuesto_estatal=locale.currency(costo.impuesto_estatal, grouping=True)
+        #costo.sar=locale.currency(costo.sar, grouping=True)
+        #costo.cesantia=locale.currency(costo.cesantia, grouping=True)
+        #costo.infonavit=locale.currency(costo.infonavit, grouping=True)
+        #costo.isr=locale.currency(costo.isr, grouping=True)
 
 
 
