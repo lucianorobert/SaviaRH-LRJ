@@ -86,10 +86,13 @@
                 <div class="col-auto">
                        {% render_field status_filter.form.nombres class="form-control" %}
                 </div>
+                {% if usuario.distrito.distrito == "Matriz" %}
                 <label for="status_filter.form.perfil__distrito" class="col-sm-auto col-form-label text-right"><strong>Distrito:</strong></label>
                 <div class="col-auto">
                        {% render_field status_filter.form.distrito class="form-control" %}
                 </div>
+                {% else %}
+                {% endif %}
                 <label for="status_filter.form.profesion" class="col-sm-auto col-form-label text-right"><strong>Profesión:</strong></label>
                 <div class="col-auto">
                        {% render_field status_filter.form.profesion class="form-control" %}
@@ -143,7 +146,17 @@
                     <td>{{estado.no_cedula}}</td>
                     <td>{{estado.nivel}}</td>
                     <td>{{estado.tipo_de_contrato}}</td>
-                    <td>{{estado.ultimo_contrato_vence}}</td>
+                    {% if estado.ultimo_contrato_vence|date:'Y-m-d' == "6000-01-01" %}
+                        <td>ESPECIAL</td>
+                    {% elif estado.ultimo_contrato_vence|date:'Y-m-d' == "6001-01-01" %}
+                        <td>INDETERMINADO</td>
+                    {% elif estado.ultimo_contrato_vence|date:'Y-m-d' == "6002-01-01" %}
+                        <td>HONORARIOS</td>
+                    {% elif estado.ultimo_contrato_vence|date:'Y-m-d' == "6003-01-01" %}
+                        <td>NR</td>
+                    {% else %}
+                        <td>{{estado.ultimo_contrato_vence}}</td>
+                    {% endif %}
                     <td>{{estado.tipo_sangre}}</td>
                     <td>{{estado.sexo}}</td>
                     <td>{{estado.telefono}}</td>
@@ -170,6 +183,7 @@
     myModal.addEventListener('hidden.bs.modal', function (event) {
     //    location.reload();
     })
+
 </script>
 {% endblock %}
 

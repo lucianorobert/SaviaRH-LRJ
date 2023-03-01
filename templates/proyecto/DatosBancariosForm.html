@@ -39,39 +39,30 @@
                 <hr>
                 <form method="POST">
                     {% csrf_token %}
-                        <div class="row my-2">
-                            <label class="col-auto col-form-label" empleados="{{empleados}}"><strong>Empleado:</strong></label>
-                            <div class="col-sm-6">
-                                <div class="input-group">
-                                <span class="input-group-text" id="basic-addon1" style="height:35px"><i class="fa-solid fa-user"></i></span>
-                                <div class="selector">
-                                    <select class="form-select form-select-sm " style="height:35px" id="empleados">
-                                    <option id="default_sel">      </option>
-                                    {% for empleado in empleados %}
-                                    <option id="js" target="{{empleado.id}}">
-                                    {{empleado.perfil.nombres}} {{empleado.perfil.apellidos}}
-                                    </option>
+                            <div class="row my-1">
+                                <label for="form.status" class="col-auto col-form-label my-1"><strong>Empleado:</strong></label>
+                                <div class="col-3 d-none">
+                                    {{form.status|add_class:"form-control "}}
+                                </div>
+                                <div class="col-5">
+                                <input type="text" list="status" autocomplete="off" id="empleados" valor="{{status.id}}" placeholder="Empleado..." class="form-control">
+                                <datalist id="status" name='status'>
+                                    {% for status in empleados %}
+                                        {% if status.id != empleado.id %}
+                                            <option valor="{{status.id}}" value="{{status.perfil}}"></option>
+                                        {% endif %}}
                                     {% endfor %}
-                                    </select>
-                                </div>
+                                </datalist>
                                 </div>
                             </div>
                             <div class="row my-1">
-                                <label for="form.status" class="col-auto col-form-label my-1 d-none"><strong>Empleado:</strong></label>
-                                <div class="col-3">
-                                    {{form.status|add_class:"form-control d-none"}}
-                                </div>
-                            </div>
-                            </div>
-                            <div class="row my-1">
-                                <label for="form.no_de_cuenta" class="col-auto col-form-label my-1"><strong>Número de cuenta:</strong></label>
+                                <label for="form.no_de_cuenta" class="col-auto col-form-label my-1 numerico"><strong>Número de cuenta:</strong></label>
                                 <div class="col-3">
                                     {{form.no_de_cuenta|add_class:"form-control"}}
                                 </div>
                             </div>
-
                             <div class="row my-1">
-                                <label for="form.numero_de_tarjeta" class="col-auto col-form-label my-1"><strong>Número de tarjeta:</strong></label>
+                                <label for="form.numero_de_tarjeta" class="col-auto col-form-label my-1 numerico"><strong>Número de tarjeta:</strong></label>
                                 <div class="col-3">
                                     <div class="input-group mb-3 my-1">
                                         <span class="input-group-text" id="basic-addon1" style="height:40px"><i class="fa-brands fa-cc-visa"></i></span>
@@ -81,14 +72,14 @@
                             </div>
 
                             <div class="row my-1">
-                                <label for="form.clabe_interbancaria" class="col-auto col-form-label my-1"><strong>Clabe interbancaria:</strong></label>
-                                <div class="col-2">
+                                <label for="form.clabe_interbancaria" class="col-auto col-form-label my-1 numerico"><strong>Clabe interbancaria:</strong></label>
+                                <div class="col-4">
                                     {{form.clabe_interbancaria|add_class:"form-control"}}
                                 </div>
                             </div>
                             <div class="row my-1">
                                 <label for="form.banco" class="col-auto col-form-label my-1"><strong>Banco:</strong></label>
-                                <div class="col-2">
+                                <div class="col-3">
                                     <div class="input-group mb-3 my-1">
                                         <span class="input-group-text" id="basic-addon1" style="height:40px"><i class="fa-solid fa-building-columns"></i></span>
                                         {{form.banco|add_class:"form-select"}}
@@ -104,13 +95,72 @@
     </div>
   </form>
 <script>
-  document.getElementById("empleados").addEventListener("change", function(element){
+document.getElementById("empleados").addEventListener("change", (event)=>{
     var select = document.getElementById("empleados");
-    var current_option = select.options[select.selectedIndex];
-    var target = current_option.getAttribute('target')
-    var other_select = document.getElementById('id_status')
-    other_select.value = target
-    console.log(current_option)
+    var browserChildren = document.getElementById('status').children;
+    var other_select = document.getElementById('id_status');
+    cont = 0
+
+    for(let i = 0; i < browserChildren.length; i++){
+        if (browserChildren[i].value === select.value){
+            let id = browserChildren[i].getAttribute('valor');
+            other_select.value = id;
+            cont = 1
+            }
+    }
+    console.log(select.value)
+    //El cont = 0 es un indicador/bandera si encuentra al menos una similitud en el for no se activa
+    if ((!select.value) || (cont = 0)){
+        other_select.value = 0
+    }
 });
+
+document.getElementById("btnSave").addEventListener("click", function(event){
+    var empleados = document.getElementById('empleados');
+    var save = document.getElementById('btnSave')
+    if (!empleados){
+        save.removeAttribute('type')
+        Swal.fire({
+            "title":"Error",
+            "text":"Debes ingresar un Empleado",
+            "icon":"error",
+            })
+    }
+});
+//numericos = document.getElementsByClassName("numerico")
+//console.log(numericos)
+
+
+document.getElementById("id_no_de_cuenta").addEventListener('change', function(){
+    cuenta = document.getElementById("id_no_de_cuenta").value
+        if (/[^0-9-\s]+/.test(cuenta)) {
+            //guardar.setAttribute("class","btn btn-success d-none")
+            document.getElementById("id_no_de_cuenta").value=" ";
+            alert("Por favor introducir solo datos numéricos! (Entradas permitidas:0-9)")
+
+         }
+    });
+
+document.getElementById("id_numero_de_tarjeta").addEventListener('change', function(){
+    cuenta = document.getElementById("id_numero_de_tarjeta").value
+
+        if (/[^0-9-\s]+/.test(cuenta)) {
+            document.getElementById("id_numero_de_tarjeta").value=" ";
+            alert("Por favor introducir solo datos numéricos! (Entradas permitidas:0-9)")
+           //cuenta.value = "";
+         }
+    });
+
+
+document.getElementById("id_clabe_interbancaria").addEventListener('change', function(){
+    cuenta = document.getElementById("id_clabe_interbancaria").value
+
+         if (/[^0-9-\s]+/.test(cuenta)) {
+            document.getElementById("id_clabe_interbancaria").value=" ";
+            alert("Por favor introducir solo datos numéricos! (Entradas permitidas:0-9)")
+         }
+    });
+
+
 </script>
 {% endblock %}

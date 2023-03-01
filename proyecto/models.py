@@ -113,12 +113,12 @@ class TipoPerfil(models.Model):
     admin = models.BooleanField(null=True, default=False)
     def __str__(self):
         return f'{self.nombre}, admin: {self.admin} '
-        
+
 class UserDatos(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     distrito = models.ForeignKey(Distrito, on_delete = models.CASCADE, null=True)
     tipo = models.ForeignKey(TipoPerfil, on_delete = models.CASCADE, null=True)
-    numero_de_trabajador = models.IntegerField(null=True)
+    numero_de_trabajador = models.IntegerField(null=True,blank=True)
     def __str__(self):
         return f'{self.user}, distrito: {self.distrito} '
 
@@ -182,7 +182,7 @@ class Status(models.Model):
     domicilio = models.CharField(max_length=60,null=True)
     estado_civil = models.ForeignKey(Civil, on_delete = models.CASCADE, null=True)
     fecha_planta_anterior = models.DateField(null=True, blank=True)
-    fecha_planta = models.DateField(null=True)
+    fecha_planta = models.DateField(null=True,)
     complete = models.BooleanField(default=False)
     complete_costo = models.BooleanField(default=False)
     complete_bancarios = models.BooleanField(default=False)
@@ -272,6 +272,7 @@ class Bonos(models.Model):
     monto = models.DecimalField(max_digits=14, decimal_places=2,null=True, default=0)
     fecha_bono = models.DateField(null=True)
     mes_bono = models.DateField(null=True)
+    comentario = models.CharField(max_length=15,null=True)
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
     complete = models.BooleanField(default=False)
@@ -297,6 +298,13 @@ class Ropa(models.Model):
     seleccionado = models.BooleanField(default=False)
     def __str__(self):
         return f'{self.ropa}'
+
+class Seleccion(models.Model):
+    status = models.ForeignKey(Status, on_delete = models.CASCADE, null=True)
+    ropa = models.ForeignKey(Ropa, on_delete = models.CASCADE, null=True)
+    seleccionado = models.BooleanField(default=False)
+    def __str__(self):
+        return f'{self.status}-{self.ropa}'
 
 class Tallas(models.Model):
     ropa = models.ForeignKey(Ropa, on_delete = models.CASCADE, null=True)
