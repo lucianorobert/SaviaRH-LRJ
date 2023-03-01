@@ -39,28 +39,20 @@
                 <hr>
             <form method="POST">
                 {% csrf_token %}
-                        <div class="row my-2">
-                        <label class="col-auto col-form-label" empleados='{{empleados}}'><strong>Empleado:</strong></label>
-                        <div class="col-sm-6">
-                            <div class="input-group">
-                            <span class="input-group-text my-1" style="height:35px"><i class="fa-solid fa-user"></i></span>
-                            <div class="selector">
-                                <select class="form-select form-select-sm my-1" style="height:35px" id="empleados">
-                                <option id="default_sel">      </option>
-                                {% for empleado in empleados %}
-                                <option id="js" target="{{empleado.id}}">
-                                {{empleado.status.perfil.nombres}} {{empleado.status.perfil.apellidos}}
-                                </option>
-                                {% endfor %}
-                                </select>
-                            </div>
-                            </div>
-                        </div>
-                        </div>
                             <div class="row my-2">
-                                <label for="form.costo" class="col-auto col-form-label my-1 d-none"><strong>Empleado</strong></label>
-                                <div class="col-4">
-                                    {{form.costo|add_class:"form-control d-none"}}
+                                <label for="form.costo" class="col-auto col-form-label my-1 "><strong>Empleado</strong></label>
+                                <div class="col-4 d-none">
+                                    {{form.costo|add_class:"form-control"}}
+                                </div>
+                                <div class="col-5">
+                                <input type="text" list="costo" autocomplete="off" id="empleados" valor="{{costo.id}}" placeholder="Empleado..." class="form-control">
+                                <datalist id="costo" name='costo'>
+                                    {% for costo in empleados %}
+                                        {% if costo.id != empleado.id %}
+                                            <option valor="{{costo.id}}" value="{{costo.status.perfil}}"></option>
+                                        {% endif %}}
+                                    {% endfor %}
+                                </datalist>
                                 </div>
                             </div>
                             <div class="row my-2">
@@ -79,6 +71,15 @@
                                 </div>
                             </div>
                             </div>
+                            <div class="row my-2">
+                                <label for="form.comentario" class="col-auto col-form-label my-1"><strong>Comentario:</strong></label>
+                                <div class="col-7">
+                                    <div class="input-group">
+                                     <span class="input-group-text" id="basic-addon1"><i class="fa-regular fa-comment"></i></span>
+                                    {{form.comentario|add_class:"form-control"}}
+                                    </div>
+                                </div>
+                            </div>
                             <hr>
                             <button type="submit" name="btnSend" class="btn btn-success">
                                 <span class="glyphicon glyphicon-ok"></span> Guardar
@@ -91,13 +92,37 @@
     </div>
 </div>
 <script>
-document.getElementById("empleados").addEventListener("change", function(element){
+document.getElementById("empleados").addEventListener("change", (event)=>{
     var select = document.getElementById("empleados");
-    var current_option = select.options[select.selectedIndex];
-    var target = current_option.getAttribute('target')
-    var other_select = document.getElementById('id_costo')
-    other_select.value = target
-    console.log(current_option)
+    var browserChildren = document.getElementById('costo').children;
+    var other_select = document.getElementById('id_costo');
+    cont = 0
+
+    for(let i = 0; i < browserChildren.length; i++){
+        if (browserChildren[i].value === select.value){
+            let id = browserChildren[i].getAttribute('valor');
+            other_select.value = id;
+            cont = 1
+            }
+    }
+    console.log(select.value)
+    //El cont = 0 es un indicador/bandera si encuentra al menos una similitud en el for no se activa
+    if ((!select.value) || (cont = 0)){
+        other_select.value = 0
+    }
+});
+
+document.getElementById("btnSave").addEventListener("click", function(event){
+    var empleados = document.getElementById('empleados');
+    var save = document.getElementById('btnSave')
+    if (!empleados){
+        save.removeAttribute('type')
+        Swal.fire({
+            "title":"Error",
+            "text":"Debes ingresar un Empleado",
+            "icon":"error",
+            })
+    }
 });
 </script>
 {% endblock %}

@@ -53,7 +53,7 @@
             </div>
         </div>
 
-        <div class="col-md-8">  
+        <div class="col-md-8">
         {% if usuario.tipo.admin == False %}
             <div class="card">
                 <div class="card-header bg-light text-dark">
@@ -64,7 +64,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-4">
-                            <a class="text-decoration-none text-dark" href="">
+                            <a class="text-decoration-none text-dark" href="{% url 'Formato_vacaciones' %}">
                                 <div class="card my-card shadow text-center p-3">
                                     <h4>Días de vacaciones pendientes <i class="fa-solid fa-calendar-days"></i></h4>
                                     <h3>{{vacaciones.total_pendiente}}</h3>
@@ -72,7 +72,7 @@
                             </a>
                         </div>
                         <div class="col-md-4">
-                            <a class="text-decoration-none text-dark" href="">
+                            <a class="text-decoration-none text-dark" href="{% url 'Formato_economicos' %}">
                                 <div class="card my-card shadow text-center p-3">
                                     <h4>Días económicos pendientes <i class="fa-solid fa-calendar-days"></i></h4>
                                     <h3>{{economicos.dias_pendientes}}</h3>
@@ -80,7 +80,7 @@
                             </a>
                         </div>
                         <div class="col-md-4">
-                            <a class="text-decoration-none text-dark" href="">
+                            <a class="text-decoration-none text-dark" href="{% url 'Uniformes_completados_revisar' status_fijo.id %}">
                                 <div class="card my-card shadow text-center p-3">
                                     <h4>Uniformes recibidos <i class="fa-solid fa-shirt"></i></h4>
                                     <h3>{{cantidad_uniformes}}</h3>
@@ -88,7 +88,7 @@
                             </a>
                         </div>
                     </div>
-                </div>    
+                </div>
             </div>
             <div class="d-none">
             {% else %}
@@ -102,7 +102,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-4">
-                            <a class="text-decoration-none text-dark" href="">
+                            <a class="text-decoration-none text-dark" href="{% url 'Perfil' %}">
                                 <div class="card my-card shadow text-center p-3">
                                     <h4>Empleados <i class="fa-solid fa-users"></i></h4>
                                     <h3>{{cantidad}}</h3>
@@ -110,7 +110,7 @@
                             </a>
                         </div>
                         <div class="col-md-4">
-                            <a class="text-decoration-none text-dark" href="">
+                            <a class="text-decoration-none text-dark" href="{% url 'Status' %}">
                                 <div class="card my-card shadow text-center p-3">
                                     <h4>Status <i class="fa-solid fa-folder"></i></h4>
                                     <h3>{{cantidad2}}</h3>
@@ -118,7 +118,7 @@
                             </a>
                         </div>
                         <div class="col-md-4">
-                            <a class="text-decoration-none text-dark" href="">
+                            <a class="text-decoration-none text-dark" href="{% url 'Tabla_costo' %}">
                                 <div class="card my-card shadow text-center p-3">
                                     <h4>Costos <i class="fas fa-sack-dollar"></i></h4>
                                     <h3>{{cantidad3}}</h3>

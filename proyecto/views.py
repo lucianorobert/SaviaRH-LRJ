@@ -8,7 +8,8 @@ import locale
 locale.setlocale( locale.LC_ALL, '' )
 
 from .models import DatosISR, Costo, TablaVacaciones, Perfil, Status, Uniformes, DatosBancarios, Bonos, Vacaciones, Economicos, Puesto, Empleados_Batch, RegistroPatronal, Banco, TablaFestivos
-from .models import Status_Batch, Empresa, Distrito, Nivel, Contrato, Sangre, Sexo, Civil, UserDatos, Catorcenas, Uniforme, Tallas, Ropa, SubProyecto, Proyecto,Costos_Batch, Bancarios_Batch
+from .models import Status_Batch, Empresa, Distrito, Nivel, Contrato, Sangre, Sexo, Civil, UserDatos, Catorcenas, Uniforme, Tallas, Ropa, SubProyecto, Proyecto,Costos_Batch, Bancarios_Batch, Tallas
+from .models import Seleccion
 import csv
 import json
 
@@ -177,7 +178,7 @@ def Tabla_dias_vacaciones(request):
     return render(request, 'proyecto/Tabla_dias_vacaciones.html',context)
 
 @login_required(login_url='user-login')
-def Perfil_vista(request): 
+def Perfil_vista(request):
     user_filter = UserDatos.objects.get(user=request.user)
 
     if user_filter.distrito.distrito == 'Matriz':
@@ -280,14 +281,13 @@ def Perfil_revisar(request, pk):
     return render(request, 'proyecto/Perfil_revisar.html',context)
 
 @login_required(login_url='user-login')
-def Status_vista(request): 
+def Status_vista(request):
     user_filter = UserDatos.objects.get(user=request.user)
 
     if user_filter.distrito.distrito == 'Matriz':
         status= Status.objects.filter(complete=True).order_by("perfil__numero_de_trabajador")
     else:
         status = Status.objects.filter(perfil__distrito = user_filter.distrito, complete=True).order_by("perfil__numero_de_trabajador")
-
     status_filter = StatusFilter(request.GET, queryset=status)
     status = status_filter.qs
     if request.method =='POST' and 'Excel' in request.POST:
@@ -374,8 +374,14 @@ def StatusUpdate(request, pk):
 def Status_revisar(request, pk):
 
     estado = Status.objects.get(id=pk)
-
-
+    if estado.ultimo_contrato_vence == datetime.date(6000, 1, 1): #Esta es la manera correcta de la fecha
+        estado.ultimo_contrato_vence = 'ESPECIAL'
+    elif estado.ultimo_contrato_vence == datetime.date(6001, 1, 1): #Esta es la manera correcta de la fecha
+        estado.ultimo_contrato_vence = 'INDETERMINADO'
+    elif estado.ultimo_contrato_vence == datetime.date(6002, 1, 1): #Esta es la manera correcta de la fecha
+        estado.ultimo_contrato_vence = 'HONORARIOS'
+    elif estado.ultimo_contrato_vence == datetime.date(6003, 1, 1): #Esta es la manera correcta de la fecha
+        estado.ultimo_contrato_vence = 'NR'
     context = {'estado':estado,}
 
     return render(request, 'proyecto/Status_revisar.html',context)
@@ -398,6 +404,7 @@ def FormularioBonos(request):
     catorcenas = Catorcenas.objects.filter(complete=True)
     bono,created=Bonos.objects.get_or_create(complete=False)
     form = BonosForm()
+    form.fields["costo"].queryset = empleados
     if request.method == 'POST':
         form = BonosForm(request.POST,instance=bono)
         form.save(commit=False)
@@ -473,8 +480,15 @@ def Tabla_uniformes(request):
 @login_required(login_url='user-login')
 def Orden_uniformes(request, pk):
     status = Status.objects.get(id=pk)
-    orden, created=Uniformes.objects.get_or_create(complete=False, status= status)
-    ropas = Ropa.objects.filter(seleccionado=False)
+    orden, created=Uniformes.objects.get_or_create(complete=False, status=status)
+    if Seleccion.objects.filter(status = status,seleccionado=True,):
+        seleccion = Seleccion.objects.filter(status = status, seleccionado=True,)
+        ropas = Ropa.objects.filter(complete=True)
+        for dato in seleccion:
+            ropas = ropas.exclude(ropa=dato.ropa.ropa)
+    else:
+        ropas = Ropa.objects.filter(complete=True,)
+    tallas = Tallas.objects.all()
     form = UniformesForm(instance=orden)
     form_uniforme = UniformeForm()
     uniformes_pedidos = Uniforme.objects.filter(orden=orden)
@@ -487,17 +501,21 @@ def Orden_uniformes(request, pk):
             empleado = Status.objects.get(id=pk)
             if form.is_valid():
                 messages.success(request, 'Orden realizada con exito')
-
                 empleado.complete_uniformes = True
                 orden.complete = True
+                for dato in seleccion:
+                    dato.seleccionado = False
+                    dato.save()
                 form.save()
                 orden.save()
                 empleado.save()
+
                 return redirect('Tabla_uniformes')
 
     context= {
         'form':form,
         'status':status,
+        'tallas':tallas,
         'orden':orden,
         'form_uniforme':form_uniforme,
         'uniformes_pedidos':uniformes_pedidos,
@@ -511,24 +529,29 @@ def update_uniformes(request, pk):
     data= json.loads(request.body)
     action = data['action']
     orden_id = int(data['orden_id'])
-    ropa_id = int(data['uniforme'])
+    #ropa_id = int(data['uniforme']) Se DESFAZA AL FILTRARLO INSERVIBLE
     talla_id = int(data['talla'])
     cantidad = int(data['cantidad'])
     orden = Uniformes.objects.get(id = orden_id)
-    ropa = Ropa.objects.get(id = ropa_id)
+
+    talla = Tallas.objects.get(id = talla_id) #talla
+    prenda = Ropa.objects.get(id = talla.ropa.id) #prenda
+
+    seleccionado, created = Seleccion.objects.get_or_create(status = orden.status, ropa = prenda) #Seleccionado
+    ropa = Ropa.objects.get(id = talla.ropa.id)
     talla = Tallas.objects.get(id=talla_id)
     producto, created = Uniforme.objects.get_or_create(orden = orden, ropa = ropa, talla = talla)
     if action == "add":
         producto.cantidad = cantidad
-        ropa.seleccionado = True
+        seleccionado.seleccionado = True
         producto.complete = True
-        ropa.save()
         producto.save()
+        seleccionado.save()
         messages.success(request,f'Se agregan {producto.cantidad} {producto.ropa} a la orden')
     if action == "remove":
-        ropa.seleccionado = False
-        ropa.save()
+        seleccionado.seleccionado = False
         producto.delete()
+        seleccionado.save()
 
     return JsonResponse('Item updated, action executed: '+data["action"], safe=False)
 
@@ -564,6 +587,7 @@ def FormularioDatosBancarios(request):
 
     bancario,created=DatosBancarios.objects.get_or_create(complete=False)
     form = DatosBancariosForm()
+    form.fields["status"].queryset = empleados
 
     if request.method == 'POST' and 'btnSend' in request.POST:
         form = DatosBancariosForm(request.POST,instance=bancario)
@@ -616,6 +640,7 @@ def FormularioCosto(request):
     tablas= DatosISR.objects.all()
     costo,created=Costo.objects.get_or_create(complete=False)
     form = CostoForm()
+    form.fields["status"].queryset = empleados
     puestos = Puesto.objects.all()
 
     #Constantes
@@ -1116,7 +1141,7 @@ def FormularioVacaciones(request):
     user_filter = UserDatos.objects.get(user=request.user)
 
     if user_filter.distrito.distrito == 'Matriz':
-        empleados= Status.objects.filter(complete= True, complete_vacaciones = False)
+        empleados= Status.objects.filter(complete= True, complete_vacaciones = False).exclude(fecha_planta_anterior=None,fecha_planta=None)
     else:
         perfil = Perfil.objects.filter(distrito = user_filter.distrito)
         empleados= Status.objects.filter(perfil__id__in=perfil.all(),complete= True, complete_vacaciones = False)
@@ -1124,6 +1149,7 @@ def FormularioVacaciones(request):
     tablas= TablaVacaciones.objects.all()
     descanso,created=Vacaciones.objects.get_or_create(complete=False)
     form = VacacionesForm()
+    form.fields["status"].queryset = empleados
 
     periodo=1
     ahora = datetime.date.today()
@@ -1145,10 +1171,10 @@ def FormularioVacaciones(request):
         inhabil = descanso.dia_inhabil.numero
         for fecha in (descanso.fecha_inicio + timedelta(n) for n in range(day_count)):
             if fecha.isoweekday() == inhabil:
-                cuenta -= 1 
+                cuenta -= 1
             else:
                 for dia in tabla_festivos:
-                    if fecha == dia.dia_festivo: 
+                    if fecha == dia.dia_festivo:
                         cuenta -= 1
         descanso.dias_disfrutados = cuenta
         descanso.fecha_planta_anterior = descanso.status.fecha_planta_anterior
@@ -1213,10 +1239,10 @@ def VacacionesUpdate(request, pk):
         inhabil = descanso.dia_inhabil.numero
         for fecha in (descanso.fecha_inicio + timedelta(n) for n in range(day_count)):
             if fecha.isoweekday() == inhabil:
-                cuenta -= 1 
+                cuenta -= 1
             else:
                 for dia in tabla_festivos:
-                    if fecha == dia.dia_festivo: 
+                    if fecha == dia.dia_festivo:
                         cuenta -= 1 #Dias que tomare de vacaciones
 
         descanso.dias_disfrutados = cuenta + suma_dias #Dias que tomara mas los que ya tomo
@@ -1288,7 +1314,7 @@ def VacacionesRevisar(request, pk):
                     dato.total_pendiente = 0
                     dato.dias_disfrutados = dato.dias_de_vacaciones
                 else:
-                    dato.total_pendiente = dato.dias_de_vacaciones- total 
+                    dato.total_pendiente = dato.dias_de_vacaciones- total
                     dato.dias_disfrutados = total
                     total = 0
         else:
@@ -1463,7 +1489,7 @@ def Tabla_Economicos(request): #Ya esta
 def EconomicosRevisar(request, pk):
     economicos = Economicos.objects.filter(status__id=pk)
     empleado = economicos.last()
-    
+
     if request.method =='POST' and 'Pdf' in request.POST:
         return reporte_pdf_economico_detalles(economicos,empleado)
 
@@ -2113,15 +2139,26 @@ def convert_excel_status(status):
     rows = status.values_list(Concat('perfil__nombres',Value(' '),'perfil__apellidos'),'registro_patronal__patronal','nss','curp','rfc','profesion','no_cedula',
                                         'nivel','tipo_de_contrato__contrato','ultimo_contrato_vence','tipo_sangre__sangre','sexo__sexo','telefono','domicilio','estado_civil__estado_civil',
                                         'fecha_planta_anterior','fecha_planta',)
-
-
+    #for row in rows:
+    #    if row == datetime.date(6000, 1, 1):
+    #        row = "Especial"
     for row in rows:
         row_num += 1
         for col_num in range(len(row)):
             if col_num < 9:
                 (ws.cell(row = row_num, column = col_num+1, value=row[col_num])).style = body_style
             if col_num == 9:
-                (ws.cell(row = row_num, column = col_num+1, value=row[col_num])).style = date_style
+                value=row[col_num]
+                if value == datetime.date(6000, 1, 1):
+                    (ws.cell(row = row_num, column = col_num+1, value= "Especial")).style = body_style
+                elif value == datetime.date(6001, 1, 1):
+                    (ws.cell(row = row_num, column = col_num+1, value= "INDETERMINADO")).style = body_style
+                elif value == datetime.date(6002, 1, 1):
+                    (ws.cell(row = row_num, column = col_num+1, value= "HONORARIOS")).style = body_style
+                elif value == datetime.date(6003, 1, 1):
+                    (ws.cell(row = row_num, column = col_num+1, value= "Sin fecha")).style = body_style
+                else:
+                    (ws.cell(row = row_num, column = col_num+1, value=row[col_num])).style = date_style
             if col_num > 9:
                 (ws.cell(row = row_num, column = col_num+1, value=row[col_num])).style = body_style
             if col_num >= 15:
@@ -2160,8 +2197,8 @@ def upload_batch_empleados(request):
                         distrito = Distrito.objects.get(distrito = row[2])
                         if Proyecto.objects.filter(proyecto = row[7]):
                             proyecto = Proyecto.objects.get(proyecto = row[7])
-                            if SubProyecto.objects.filter(subproyecto = row[8]):
-                                subproyecto = SubProyecto.objects.get(subproyecto = row[8])
+                            if SubProyecto.objects.get(subproyecto = row[8], proyecto__proyecto = row[7]):
+                                subproyecto = SubProyecto.objects.get(subproyecto = row[8], proyecto__proyecto = row[7])
                                 empleado = Perfil(numero_de_trabajador=row[0], empresa=empresa, distrito=distrito, nombres=row[3],
                                     apellidos=row[4],fecha_nacimiento=fecha,correo_electronico=row[6],proyecto=proyecto,subproyecto=subproyecto,
                                     complete=True, complete_status=False,)
@@ -2274,7 +2311,7 @@ def upload_batch_costos(request):
         form.save()
         form = Costos_BatchForm()
         costo_list = Costos_Batch.objects.get(activated = False)
-        f = open(costo_list.file_name.path, 'r')
+        f = open(costo_list.file_name.path, 'r', encoding='latin1')
         reader = csv.reader(f)
         next(reader) #Advance past the reader
 
@@ -2534,7 +2571,7 @@ def reporte_pdf_uniformes(uniformes, pk):
     c.showPage()
     buf.seek(0)
 
-    return FileResponse(buf, as_attachment=True, filename='pruebauniforme.pdf')
+    return FileResponse(buf, as_attachment=True, filename='Uniforme_reporte.pdf')
 
 def reporte_pdf_costo_detalles(costo):
     now = datetime.date.today()
@@ -2830,7 +2867,7 @@ def FormFormatoVacaciones(request):
     else:
         datos = datos
         status =  Status.objects.get(id=datos.status.id)
-        
+
     #if request.method =='POST' and 'Pdf' in request.POST:
     #    return PdfFormatoVacaciones(usuario)
     form = VacacionesFormato()
@@ -2844,7 +2881,7 @@ def FormFormatoVacaciones(request):
             messages.error(request,'La primera fecha no puede ser posterior a la segunda')
         else:
             if dia_inhabil == None:
-                messages.error(request,'Debe agregar el día que no  labora') 
+                messages.error(request,'Debe agregar el día que no  labora')
             else:
                 if form.is_valid():
                     return redirect('Formato_vacaciones') and PdfFormatoVacaciones(usuario,datos,status,form,)
@@ -2870,10 +2907,10 @@ def PdfFormatoVacaciones(usuario, datos, status, form,):
     inhabil = dia_inhabil.numero
     for fecha in (inicio + timedelta(n) for n in range(day_count)):
         if fecha.isoweekday() == inhabil:
-            cuenta -= 1 
+            cuenta -= 1
         else:
             for dia in tabla_festivos:
-                if fecha == dia.dia_festivo: 
+                if fecha == dia.dia_festivo:
                     cuenta -= 1
     diferencia = str(cuenta)
     #Para ubicar el dia de regreso en un dia habil (Puede caer en día festivo)
@@ -2889,7 +2926,7 @@ def PdfFormatoVacaciones(usuario, datos, status, form,):
     #Colores utilizados
     azul = Color(0.16015625,0.5,0.72265625)
     rojo = Color(0.59375, 0.05859375, 0.05859375)
-    
+
     c.setFillColor(black)
     c.setLineWidth(.2)
     c.setFont('Helvetica-Bold',16)
@@ -3105,7 +3142,7 @@ def FormFormatoEconomicos(request):
         else:
             if form.is_valid():
                 #messages.success(request, 'Formato generado con exíto')
-                return redirect('Formato_economicos') and PdfFormatoEconomicos(usuario,datos,status,form,) 
+                return redirect('Formato_economicos') and PdfFormatoEconomicos(usuario,datos,status,form,)
     context= {
         'usuario':usuario,
         'datos':datos,
@@ -3138,7 +3175,7 @@ def PdfFormatoEconomicos(usuario,datos,status,form,):
     #if regreso.isoweekday() == inhabil2:
     #    regreso = regreso + timedelta(days=1)
 
-    
+
     buf = io.BytesIO()
     c = canvas.Canvas(buf, pagesize=letter)
 
@@ -3155,7 +3192,7 @@ def PdfFormatoEconomicos(usuario,datos,status,form,):
 
     c.drawString(40,690,'NOMBRE:')
     c.line(95,688,325,688)
-    espacio = ' ' 
+    espacio = ' '
     nombre_completo = str(status.perfil.nombres + espacio + status.perfil.apellidos)
     c.drawString(100,690,nombre_completo)
     c.drawString(40,670,'PUESTO:')
@@ -3204,7 +3241,7 @@ def PdfFormatoEconomicos(usuario,datos,status,form,):
     if economico == 0:
         c.rect(360,498, 50, 12, stroke = 1, fill = 1)
     elif economico == 1:
-        c.rect(410,498, 50, 12, stroke = 1, fill = 1)  
+        c.rect(410,498, 50, 12, stroke = 1, fill = 1)
     elif economico == 2:
         c.rect(460,498, 50, 12, stroke = 1, fill = 1)
     c.setFillColor(black)

@@ -61,12 +61,12 @@ class BancariosUpdateForm(forms.ModelForm):
 class BonosForm(forms.ModelForm):
     class Meta:
         model = Bonos
-        fields = ['monto','costo','fecha_bono',]
+        fields = ['monto','costo','fecha_bono','comentario',]
 
 class BonosUpdateForm(forms.ModelForm):
     class Meta:
         model = Bonos
-        fields = ['monto','fecha_bono',]
+        fields = ['monto','fecha_bono','comentario',]
 
 class UniformesForm(forms.ModelForm):
     class Meta:

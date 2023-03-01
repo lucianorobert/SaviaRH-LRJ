@@ -1,4 +1,3 @@
-
 {% extends 'partials/base.html' %}
 {% load static %}
 {% load widget_tweaks %}
@@ -79,7 +78,7 @@
                             <select class="form-select form-select-sm" style="font-size:1.1rem" id="ropa">
                                 <option id="default_sel">      </option>
                                 {% for ropa in ropas %}
-                                <option id="js" ropa="{{ropa.id}}">
+                                <option id="js" ropa="{{ropa.id}}" >
                                     {{ropa.ropa}}
                                 </option>
                                 {% endfor %}
@@ -92,13 +91,28 @@
                         {{form_uniforme.ropa|add_class:"form-select"}}
                         </div>
                     </div>
-                    <label for="form.talla" class="col-auto col-form-label my-1"><strong>Talla:</strong></label>
-                    <div class="col-3">
+                    <div class="col-sm-4">
+                        <div class="selector input-group mb-3">
+                            <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-hashtag"></i></span>
+                            <select class="form-select form-select-sm" style="font-size:1.1rem" id="talla">
+                                <option id="default_sel">      </option>
+                                {% for talla in tallas %}
+                                <option id="js" ropa="{{talla.ropa.id}}" talla="{{talla.id}}">
+                                    {{talla.talla}}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <!--<label for="form.talla" class="col-auto col-form-label my-1"><strong>Talla:</strong></label> -->
+                    <div class="col-3 d-none">
                         <div class="input-group">
                         <span class="input-group-text" id="orden" orden="{{orden.id}}"><i class="fa-solid fa-hashtag"></i></span>
                         {{form_uniforme.talla|add_class:"form-select"}}
                         </div>
                     </div>
+
                     <label for="form_uniforme.cantidad" class="col-auto col-form-label my-1"><strong>Cantidad:</strong></label>
                     <div class="col-sm-2">
                         {{form_uniforme.cantidad|add_class:"form-control"}}
@@ -151,17 +165,45 @@
 </div>
 <script>
 document.getElementById("ropa").addEventListener("change", function(element){
+
     var select = document.getElementById('ropa');
     var current_option = select.options[select.selectedIndex];
     var id = current_option.getAttribute("ropa")
+    var select_talla = document.getElementById('talla');
+    var other_selector2 = document.getElementById('id_talla');
     console.log(id)
-    //let cantidad = current_option.getAttribute('cantidad');
-    //let cantidad_comprada = current_option.getAttribute('cantidad_comprada');
-    //var cantidad_pendiente = cantidad - cantidad_comprada;
-    //console.log(cantidad);
-    var other_selector = document.getElementById('id_ropa');
 
+    other_selector2.selectedIndex = null
+    select_talla.selectedIndex = null
+
+
+    var other_selector = document.getElementById('id_ropa');
     other_selector.selectedIndex = select.selectedIndex
+
+
+    for (var e= 1; e < select_talla.length; e++){
+        index_ropa = select_talla[e].getAttribute("ropa")
+        //console.log(index_ropa)
+        if (index_ropa != id){
+            select_talla[e].setAttribute("class","d-none")
+        }
+        else {
+           select_talla[e].removeAttribute("class")
+        }
+    }
+});
+
+
+document.getElementById("talla").addEventListener("change",function(element){
+    var select =document.getElementById('talla');
+    var current_option = select.options[select.selectedIndex];
+    var id = current_option.getAttribute('talla');
+    var other_selector = document.getElementById('id_talla');
+    other_selector.selectedIndex = select.selectedIndex;
+
+    if (id == null){
+        select.selectedIndex = null
+    }
 });
 
 var updateBtn = document.getElementById('update-uniformes')

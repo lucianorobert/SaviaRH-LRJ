@@ -88,7 +88,7 @@
                                     {% render_field form.fecha_nacimiento type="date" class="form-control" %}
                                 </div>
                             </div>
-                            <div class="row my-3">
+                            <div class="row my-2">
                                 <div class="col-3">
                                     <label for="form.correo_electronico" class="col-auto col-form-label my-1"><strong>Correo electrónico:</strong></label>
                                 </div>
@@ -107,7 +107,7 @@
                             </div>
                             <div class="col-sm-6">
                                 <div class="selector input-group mb-3">
-                                    <label for="form.subproyecto" class="col-auto col-form-label my-1"><strong>Subproyecto: </strong></label>
+                                    <label for="form.subproyecto" class="col-auto col-form-label my-1"><strong>Subproyecto:  </strong></label>
                                     <select class="form-select form-select-sm" style="font-size:1rem" id="subproyecto">
                                     <option id="default_sel">--------</option>
                                     {% for subproyecto in subproyectos %}
@@ -139,6 +139,7 @@
     var select = document.getElementById('id_proyecto');
     var current_option = select.options[select.selectedIndex].value;
     opciones = document.getElementsByClassName("js")
+    opciones.options[opciones.id="default_sel"]
     for (var i=0; i < opciones.length; i++){
 
         if (opciones[i].getAttribute('proyecto') != current_option){
@@ -147,6 +148,7 @@
             opciones[i].setAttribute('class','js')
         }
     }
+
     });
 
     document.getElementById("subproyecto").addEventListener("change", function(element){

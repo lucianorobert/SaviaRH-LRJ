@@ -13,7 +13,7 @@ from .models import Banco
 from .models import DatosISR
 from .models import Nivel
 from .models import Dia_vacacion
-from .models import TablaVacaciones 
+from .models import TablaVacaciones
 from .models import TablaFestivos
 from .models import RegistroPatronal
 from .models import UserDatos
@@ -21,6 +21,7 @@ from .models import TipoPerfil
 from .models import Tallas
 from .models import Ropa
 from .models import Uniforme
+from .models import Seleccion
 
 
 from .models import Costo
@@ -80,6 +81,7 @@ admin.site.register(TipoPerfil)
 admin.site.register(Tallas, TallaAdmin)
 admin.site.register(Ropa)
 admin.site.register(Uniforme)
+admin.site.register(Seleccion)
 
 admin.site.register(Perfil)
 admin.site.register(Status)

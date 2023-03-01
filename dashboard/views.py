@@ -38,20 +38,34 @@ locale.setlocale( locale.LC_ALL, '' )
 @login_required(login_url='user-login')
 def index(request):
     usuario = UserDatos.objects.get(user__id=request.user.id)
-    perfiles = Perfil.objects.filter(complete = True)
-    cantidad = perfiles.count()
-    status = Status.objects.filter(complete = True)
-    cantidad2 = status.count()
-    costo = Costo.objects.filter(complete = True)
-    cantidad3 = costo.count()
-    vacaciones = Vacaciones.objects.filter(status__perfil__numero_de_trabajador=usuario.numero_de_trabajador).last()
-    economicos = Economicos.objects.filter(status__perfil__numero_de_trabajador=usuario.numero_de_trabajador).last()
-    uniformes = Uniforme.objects.filter(orden__status__perfil__numero_de_trabajador=usuario.numero_de_trabajador)
-    cantidad_uniformes=0
-    for uniforme in uniformes:
-        cantidad = uniforme.cantidad
-        cantidad_uniformes = cantidad_uniformes+cantidad
-
+    if usuario.distrito.distrito == 'Matriz':
+        perfiles = Perfil.objects.filter(complete = True)
+        cantidad = perfiles.count()
+        status = Status.objects.filter(complete = True)
+        cantidad2 = status.count()
+        costo = Costo.objects.filter(complete = True)
+        cantidad3 = costo.count()
+        vacaciones = Vacaciones.objects.filter(status__perfil__numero_de_trabajador=usuario.numero_de_trabajador).last()
+        economicos = Economicos.objects.filter(status__perfil__numero_de_trabajador=usuario.numero_de_trabajador).last()
+        uniformes = Uniforme.objects.filter(orden__status__perfil__numero_de_trabajador=usuario.numero_de_trabajador)
+        cantidad_uniformes=0
+        for uniforme in uniformes:
+            cantidad = uniforme.cantidad
+            cantidad_uniformes = cantidad_uniformes+cantidad
+    else:
+        perfiles= Perfil.objects.filter(distrito=usuario.distrito,complete=True)
+        cantidad = perfiles.count()
+        status = Status.objects.filter(perfil__distrito=usuario.distrito,complete = True)
+        cantidad2 = status.count()
+        costo = Costo.objects.filter(status__perfil__distrito=usuario.distrito,complete = True)
+        cantidad3 = costo.count()
+        vacaciones = Vacaciones.objects.filter(status__perfil__numero_de_trabajador=usuario.numero_de_trabajador).last()
+        economicos = Economicos.objects.filter(status__perfil__numero_de_trabajador=usuario.numero_de_trabajador).last()
+        uniformes = Uniforme.objects.filter(orden__status__perfil__numero_de_trabajador=usuario.numero_de_trabajador)
+        cantidad_uniformes=0
+        for uniforme in uniformes:
+            cantidad = uniforme.cantidad
+            cantidad_uniformes = cantidad_uniformes+cantidad
     context = {
         'cantidad': cantidad,
         'cantidad2': cantidad2,
