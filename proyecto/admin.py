@@ -23,7 +23,8 @@ from .models import Ropa
 from .models import Uniforme
 from .models import Seleccion
 
-
+from .models import FactorIntegracion
+from .models import SalarioDatos
 from .models import Costo
 from .models import Perfil
 from .models import Status
@@ -38,12 +39,12 @@ from .models import Status_Batch
 from .models import Costos_Batch
 from .models import Bancarios_Batch
 
+class StatusAdmin(admin.ModelAdmin):
+    autocomplete_fields=['puesto']
+
 class PuestoAdmin(admin.ModelAdmin):
     search_fields = ('puesto'),
     ordering = ['puesto']
-
-class CostoAdmin(admin.ModelAdmin):
-    autocomplete_fields=['puesto']
 
 class TallaAdmin(admin.ModelAdmin):
     list_display = ('id','talla')
@@ -84,8 +85,10 @@ admin.site.register(Uniforme)
 admin.site.register(Seleccion)
 
 admin.site.register(Perfil)
-admin.site.register(Status)
-admin.site.register(Costo,CostoAdmin)
+admin.site.register(Status,StatusAdmin)
+admin.site.register(FactorIntegracion)
+admin.site.register(SalarioDatos)
+admin.site.register(Costo)
 admin.site.register(DatosBancarios)
 admin.site.register(Bonos)
 admin.site.register(Uniformes)

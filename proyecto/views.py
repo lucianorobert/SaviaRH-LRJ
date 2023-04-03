@@ -9,7 +9,7 @@ locale.setlocale( locale.LC_ALL, '' )
 
 from .models import DatosISR, Costo, TablaVacaciones, Perfil, Status, Uniformes, DatosBancarios, Bonos, Vacaciones, Economicos, Puesto, Empleados_Batch, RegistroPatronal, Banco, TablaFestivos
 from .models import Status_Batch, Empresa, Distrito, Nivel, Contrato, Sangre, Sexo, Civil, UserDatos, Catorcenas, Uniforme, Tallas, Ropa, SubProyecto, Proyecto,Costos_Batch, Bancarios_Batch, Tallas
-from .models import Seleccion
+from .models import Seleccion, SalarioDatos, FactorIntegracion
 import csv
 import json
 
@@ -23,14 +23,21 @@ from .forms import CostoForm, BonosForm, VacacionesForm, EconomicosForm, Uniform
 from .forms import CostoUpdateForm, BancariosUpdateForm, BonosUpdateForm, VacacionesUpdateForm, EconomicosUpdateForm, StatusUpdateForm, CatorcenasForm, EconomicosFormato
 from .forms import Dias_VacacionesForm, Empleados_BatchForm, Status_BatchForm, PerfilDistritoForm, UniformeForm, Costos_BatchForm, Bancarios_BatchForm, VacacionesFormato
 from .filters import BonosFilter, Costo_historicFilter, PerfilFilter, StatusFilter, BancariosFilter, CostoFilter, VacacionesFilter, UniformesFilter, EconomicosFilter
-from .filters import CatorcenasFilter
+from .filters import CatorcenasFilter, DistritoFilter
 from decimal import Decimal
 #Excel
 from openpyxl import Workbook
+import openpyxl
+from openpyxl.chart import PieChart, Reference
+from openpyxl.chart.series import DataPoint
+from openpyxl.chart.label import DataLabelList
+from openpyxl.drawing.image import Image
 from openpyxl.styles import NamedStyle, Font, PatternFill
 from openpyxl.utils import get_column_letter
 from django.db.models.functions import Concat
 from django.db.models import Value
+from django.db.models import Sum
+from django.db.models import Count
 
 
 from reportlab.pdfgen import canvas
@@ -189,7 +196,6 @@ def Perfil_vista(request):
     perfiles = perfil_filter.qs
     if request.method =='POST' and 'Excel' in request.POST:
         return convert_excel_perfil(perfiles)
-
     context= {
         'perfiles':perfiles,
         'perfil_filter':perfil_filter,
@@ -312,7 +318,7 @@ def FormularioStatus(request):
     form = StatusForm()
     ahora = datetime.date.today()
     registro_patronal = RegistroPatronal.objects.all()
-
+    puestos = Puesto.objects.all()
     if request.method == 'POST' and 'btnSend' in request.POST:
         form = StatusForm(request.POST,instance=estado)
         form.save(commit=False)
@@ -341,12 +347,14 @@ def FormularioStatus(request):
         'form':form,
         'empleados':empleados,
         'registro_patronal': registro_patronal,
+        'puestos':puestos,
         }
 
     return render(request, 'proyecto/StatusForm.html',context)
 
 @login_required(login_url='user-login')
 def StatusUpdate(request, pk):
+    puestos = Puesto.objects.all()
     estado = Status.objects.get(id=pk)
     ahora = datetime.date.today()
     if request.method == 'POST' and 'btnSend' in request.POST:
@@ -366,7 +374,7 @@ def StatusUpdate(request, pk):
     else:
         form = StatusUpdateForm(instance=estado)
 
-    context = {'form':form,'estado':estado}
+    context = {'form':form,'estado':estado,'puestos':puestos,}
 
     return render(request, 'proyecto/Status_update.html',context)
 
@@ -387,8 +395,40 @@ def Status_revisar(request, pk):
     return render(request, 'proyecto/Status_revisar.html',context)
 
 @login_required(login_url='user-login')
-def Admininistrar_tablas(request):
-    return render(request, 'proyecto/Administrar_tablas.html')
+def Administrar_tablas(request):
+    salario = SalarioDatos.objects.get()
+    distritos = Distrito.objects.filter(complete = True)
+    perfil = Perfil.objects.filter(complete = True)
+    status = Status.objects.filter(complete = True)
+    bancarios = DatosBancarios.objects.filter(complete = True)
+    costo = Costo.objects.filter(complete = True)
+    bonos = Bonos.objects.filter(complete = True)
+    vacaciones = Vacaciones.objects.filter(complete = True)
+    economicos = Economicos.objects.filter(complete = True)
+    if request.method =='POST' and 'Excel' in request.POST:
+        return excel_reporte_general(perfil,status,bancarios,costo,bonos,vacaciones,economicos,)
+    if request.method =='POST' and 'Pdf' in request.POST:
+        return reporte_pdf_general(perfil,status,bancarios,costo,bonos,vacaciones,economicos,)
+    if request.method == 'GET':
+        distrito_seleccionado = request.GET.get('distrito_seleccionado', None)
+    if distrito_seleccionado != None:
+        perfill = Perfil.objects.filter(distrito__distrito = distrito_seleccionado)
+        statuss = Status.objects.filter(perfil__distrito__distrito = distrito_seleccionado)
+        bancarioss = DatosBancarios.objects.filter(status__perfil__distrito__distrito = distrito_seleccionado)
+        costoo = Costo.objects.filter(status__perfil__distrito__distrito = distrito_seleccionado)
+        bonoss = Bonos.objects.filter(costo__status__perfil__distrito__distrito = distrito_seleccionado)
+        vacacioness = Vacaciones.objects.filter(status__perfil__distrito__distrito = distrito_seleccionado)
+        economicoss = Economicos.objects.filter(status__perfil__distrito__distrito = distrito_seleccionado)
+        if request.method =='GET' and 'Excel2' in request.GET:
+            return excel_reporte_especifico(distrito_seleccionado,perfill,statuss,bancarioss,costoo,bonoss,vacacioness,economicoss,)
+        if request.method =='GET' and 'Pdf2' in request.GET:
+            return reporte_pdf_especifico(distrito_seleccionado,perfill,statuss,bancarioss,costoo,bonoss,vacacioness,economicoss,)
+    context= {
+        'distritos':distritos,
+        'distrito_seleccionado':distrito_seleccionado,
+        'salario':salario,
+        }
+    return render(request, 'proyecto/Administrar_tablas.html', context)
 
 @login_required(login_url='user-login')
 def FormularioBonos(request):
@@ -632,16 +672,19 @@ def FormularioCosto(request):
     user_filter = UserDatos.objects.get(user=request.user)
 
     if user_filter.distrito.distrito == 'Matriz':
-        empleados= Status.objects.filter(complete = True, complete_costo = False)
+        empleados= Status.objects.filter(~Q(fecha_ingreso=None), complete = True, complete_costo = False)
+        #empleados= empleados.filter(~Q(fecha_ingreso=None))
     else:
         perfil = Perfil.objects.filter(distrito = user_filter.distrito)
-        empleados= Status.objects.filter(perfil__id__in=perfil.all(),complete = True, complete_costo = False)
+        empleados= Status.objects.filter(~Q(fecha_ingreso=None), perfil__id__in=perfil.all(),complete = True, complete_costo = False)
 
-    tablas= DatosISR.objects.all()
+    tablas = DatosISR.objects.all()
+    dato = SalarioDatos.objects.get()
+    factores = FactorIntegracion.objects.all()
+
     costo,created=Costo.objects.get_or_create(complete=False)
     form = CostoForm()
     form.fields["status"].queryset = empleados
-    puestos = Puesto.objects.all()
 
     #Constantes
     quincena=Decimal(14.00)
@@ -672,14 +715,14 @@ def FormularioCosto(request):
                         if costo.sueldo_diario <= 0:
                             messages.error(request, '(Sueldo diario) La cantidad capturada debe ser mayor a 0')
                         else:
-                            if costo.sdi <= 0:
-                                messages.error(request, '(SDI) La cantidad capturada debe ser mayor a 0')
+                            if costo.laborados <= 0:
+                                messages.error(request, '(Días laborados) La cantidad capturada debe ser mayor a 0')
                             else:
                                 if costo.apoyo_de_pasajes < 0:
                                     messages.error(request, '(Apoyo pasajes) La cantidad capturada debe ser mayor o igual 0')
                                 else:
-                                    if costo.imms_obrero_patronal <= 0:
-                                        messages.error(request, '(IMSS obrero) La cantidad capturada debe ser mayor a 0')
+                                    if costo.laborados > 31:
+                                        messages.error(request, '(Días laborados) La cantidad capturada debe ser menor a 31')
                                     else:
                                         if costo.apoyo_vist_familiar < 0:
                                             messages.error(request, '(Visita familiar) La cantidad capturada debe ser mayor o igual 0')
@@ -702,6 +745,38 @@ def FormularioCosto(request):
                                                                 if costo.campamento < 0:
                                                                     messages.error(request, '(Campamento) La cantidad capturada debe ser mayor o igual 0')
                                                                 else:
+                                                                    #SDI Calculo
+                                                                    prima_riesgo = costo.status.registro_patronal.prima
+                                                                    excedente = dato.UMA*3
+                                                                    cuotafija = (dato.UMA*Decimal(0.204))*costo.laborados
+                                                                    excedente_patronal = (costo.sueldo_diario-excedente)*Decimal(0.011)*costo.laborados
+                                                                    excedente_obrero = (costo.sueldo_diario-excedente)*Decimal(0.004)*costo.laborados
+                                                                    if excedente_patronal < 0:
+                                                                        excedente_patronal = 0
+                                                                    if excedente_obrero < 0:
+                                                                        excedente_obrero = 0
+                                                                    prestaciones_patronal = (costo.sueldo_diario*Decimal(0.007))*costo.laborados
+                                                                    prestaciones_obrero = (costo.sueldo_diario*Decimal(0.0025))*costo.laborados
+                                                                    gastosmp_patronal = (costo.sueldo_diario*Decimal(0.0105))*costo.laborados
+                                                                    gastosmp_obrero = (costo.sueldo_diario*Decimal(0.00375))*costo.laborados
+                                                                    riesgo_trabajo = (costo.sueldo_diario*(prima_riesgo/100))*costo.laborados
+                                                                    invalidezvida_patronal = (costo.sueldo_diario*Decimal(0.0175))*costo.laborados
+                                                                    invalidezvida_obrero = (costo.sueldo_diario*Decimal(0.00625))*costo.laborados
+                                                                    guarderias_prestsociales = (costo.sueldo_diario*Decimal(0.01))*costo.laborados
+                                                                    costo.imms_obrero_patronal = (cuotafija+excedente_patronal+excedente_obrero+prestaciones_patronal
+                                                                                    +prestaciones_obrero+gastosmp_patronal+gastosmp_obrero+riesgo_trabajo+invalidezvida_patronal
+                                                                                    +invalidezvida_obrero+guarderias_prestsociales)
+                                                                    totall = costo.imms_obrero_patronal
+                                                                    actual = date.today()
+                                                                    años_ingreso = actual.year-costo.status.fecha_ingreso.year
+                                                                    if años_ingreso == 0:
+                                                                        años_ingreso=1
+                                                                    for factor in factores:
+                                                                        if años_ingreso >= factor.years:
+                                                                            factor_integracion = factor.factor
+                                                                    costo.sdi = ((365+15+factor_integracion)/365)*costo.sueldo_diario
+                                                                    sdi = costo.sdi
+                                                                    #Costo calculo
                                                                     costo.total_deduccion = costo.amortizacion_infonavit + costo.fonacot
                                                                     costo.neto_pagar = costo.neto_catorcenal_sin_deducciones - costo.total_deduccion
                                                                     costo.sueldo_mensual_neto = (costo.neto_catorcenal_sin_deducciones/quincena)*mes
@@ -725,7 +800,6 @@ def FormularioCosto(request):
                                                                     costo.impuesto= costo.impuesto_marginal + costo.cuota_fija
                                                                     costo.isr= costo.impuesto
                                                                     costo.total_apoyosbonos_empleadocomp= costo.apoyo_vist_familiar + costo.estancia + costo.renta + costo.apoyo_estudios + costo.amv + costo.campamento + costo.gasolina
-
                                                                     costo.total_apoyosbonos_agregcomis = costo.campamento #Modificar falta suma
                                                                     costo.comision_complemeto_salario_bonos= (costo.complemento_salario_mensual + costo.campamento)*comision #Falta suma dentro de la multiplicacion
                                                                     costo.total_costo_empresa = costo.sueldo_mensual_neto + costo.complemento_salario_mensual + costo.apoyo_de_pasajes + costo.impuesto_estatal + costo.imms_obrero_patronal + costo.sar + costo.cesantia + costo.infonavit + costo.isr + costo.total_apoyosbonos_empleadocomp #+ costo.total_apoyosbonos_agregcomis + costo.comision_complemeto_salario_bonos
@@ -745,7 +819,6 @@ def FormularioCosto(request):
     context = {
         'form':form,
         'empleados':empleados,
-        'puestos':puestos,
         'tablas':tablas,
         }
 
@@ -754,11 +827,12 @@ def FormularioCosto(request):
 @login_required(login_url='user-login')
 def CostoUpdate(request, pk):
     tablas= DatosISR.objects.all()
+    dato = SalarioDatos.objects.get()
+    factores = FactorIntegracion.objects.all()
     costo = Costo.objects.get(id=pk)
     registros = costo.history.filter(~Q(amortizacion_infonavit = None))
     myfilter = Costo_historicFilter(request.GET, queryset=registros)
     registros=myfilter.qs
-    puestos = Puesto.objects.all()
 
     comision=Decimal(0.09)
     quincena=Decimal(14.00)
@@ -786,14 +860,14 @@ def CostoUpdate(request, pk):
                         if costo.sueldo_diario <= 0:
                             messages.error(request, '(Sueldo diario) La cantidad capturada debe ser mayor a 0')
                         else:
-                            if costo.sdi <= 0:
-                                messages.error(request, '(SDI) La cantidad capturada debe ser mayor a 0')
+                            if costo.laborados <= 0:
+                                messages.error(request, '(Días laborados) La cantidad capturada debe ser mayor a 0')
                             else:
                                 if costo.apoyo_de_pasajes < 0:
                                     messages.error(request, '(Apoyo pasajes) La cantidad capturada debe ser mayor o igual 0')
                                 else:
-                                    if costo.imms_obrero_patronal <= 0:
-                                        messages.error(request, '(IMSS obrero) La cantidad capturada debe ser mayor a 0')
+                                    if costo.laborados > 31:
+                                        messages.error(request, '(Días laborados) La cantidad capturada debe ser menor a 31')
                                     else:
                                         if costo.apoyo_vist_familiar < 0:
                                             messages.error(request, '(Visita familiar) La cantidad capturada debe ser mayor o igual 0')
@@ -816,6 +890,38 @@ def CostoUpdate(request, pk):
                                                                 if costo.campamento < 0:
                                                                     messages.error(request, '(Campamento) La cantidad capturada debe ser mayor o igual 0')
                                                                 else:
+                                                                                #SDI Calculo
+                                                                    prima_riesgo = costo.status.registro_patronal.prima
+                                                                    excedente = dato.UMA*3
+                                                                    cuotafija = (dato.UMA*Decimal(0.204))*costo.laborados
+                                                                    excedente_patronal = (costo.sueldo_diario-excedente)*Decimal(0.011)*costo.laborados
+                                                                    excedente_obrero = (costo.sueldo_diario-excedente)*Decimal(0.004)*costo.laborados
+                                                                    if excedente_patronal < 0:
+                                                                        excedente_patronal = 0
+                                                                    if excedente_obrero < 0:
+                                                                        excedente_obrero = 0
+                                                                    prestaciones_patronal = (costo.sueldo_diario*Decimal(0.007))*costo.laborados
+                                                                    prestaciones_obrero = (costo.sueldo_diario*Decimal(0.0025))*costo.laborados
+                                                                    gastosmp_patronal = (costo.sueldo_diario*Decimal(0.0105))*costo.laborados
+                                                                    gastosmp_obrero = (costo.sueldo_diario*Decimal(0.00375))*costo.laborados
+                                                                    riesgo_trabajo = (costo.sueldo_diario*(prima_riesgo/100))*costo.laborados
+                                                                    invalidezvida_patronal = (costo.sueldo_diario*Decimal(0.0175))*costo.laborados
+                                                                    invalidezvida_obrero = (costo.sueldo_diario*Decimal(0.00625))*costo.laborados
+                                                                    guarderias_prestsociales = (costo.sueldo_diario*Decimal(0.01))*costo.laborados
+                                                                    costo.imms_obrero_patronal = (cuotafija+excedente_patronal+excedente_obrero+prestaciones_patronal
+                                                                                    +prestaciones_obrero+gastosmp_patronal+gastosmp_obrero+riesgo_trabajo+invalidezvida_patronal
+                                                                                    +invalidezvida_obrero+guarderias_prestsociales)
+                                                                    totall = costo.imms_obrero_patronal
+                                                                    actual = date.today()
+                                                                    años_ingreso = actual.year-costo.status.fecha_ingreso.year
+                                                                    if años_ingreso == 0:
+                                                                        años_ingreso=1
+                                                                    for factor in factores:
+                                                                        if años_ingreso >= factor.years:
+                                                                            factor_integracion = factor.factor
+                                                                    costo.sdi = ((365+15+factor_integracion)/365)*costo.sueldo_diario
+                                                                    sdi = costo.sdi
+                                                                    #Costo calculo
                                                                     costo.total_deduccion = costo.amortizacion_infonavit + costo.fonacot
                                                                     costo.neto_pagar = costo.neto_catorcenal_sin_deducciones - costo.total_deduccion
                                                                     costo.sueldo_mensual_neto = (costo.neto_catorcenal_sin_deducciones/quincena)*mes
@@ -852,7 +958,7 @@ def CostoUpdate(request, pk):
     else:
         form = CostoUpdateForm(instance=costo)
 
-    context = {'form':form,'costo':costo, 'registros':registros,'comision':comision,'myfilter':myfilter,'puestos':puestos}
+    context = {'form':form,'costo':costo, 'registros':registros,'comision':comision,'myfilter':myfilter,}
 
     return render(request, 'proyecto/Costo_update.html',context)
 
@@ -1035,7 +1141,6 @@ def TablaCosto(request):
         costo.nombres=costo.status.perfil.nombres
         costo.apellidos=costo.status.perfil.apellidos
         costo.tipo_de_contrato=costo.status.tipo_de_contrato
-        costo.puesto=costo.puesto
 
         costo.amortizacion_infonavit=locale.currency(costo.amortizacion_infonavit, grouping=True)
         costo.fonacot=locale.currency(costo.fonacot, grouping=True)
@@ -1377,6 +1482,7 @@ def FormularioEconomicos(request):
 
     economico,created=Economicos.objects.get_or_create(complete=False)
     form = EconomicosForm()
+    form.fields["status"].queryset = empleados
     total_dias_economicos=3
     dias_disfrutados=1
 
@@ -1587,7 +1693,7 @@ def convert_excel_costo(bancario):
     money_resumen_style.font = Font(name ='Calibri', size = 14, bold = True)
     wb.add_named_style(money_resumen_style)
 
-    columns = ['Empresa','Distrito','Proyecto','Subproyecto','Nombre','Puesto','Complemento Salario Catorcenal', 'Apoyo de Pasajes','Total percepciones mensual',
+    columns = ['Empresa','Distrito','Proyecto','Subproyecto','#Empleado','Nombre','Puesto','Complemento Salario Catorcenal', 'Apoyo de Pasajes','Total percepciones mensual',
                 'Impuesto Estatal','IMSS obrero patronal','SAR 2%', 'Cesantía','Infonavit','ISR','Apoyo Visita Familiar','Apoyo Estancia','Apoyo Renta',
                 'Apoyo de Estudios','Apoyo de Mantto Vehicular','Gasolina','Total apoyos y bonos','Total costo mensual para la empresa','Ingreso mensual neto del empleado']
 
@@ -1610,7 +1716,7 @@ def convert_excel_costo(bancario):
     ws.column_dimensions[get_column_letter(columna_max)].width = 20
     ws.column_dimensions[get_column_letter(columna_max + 1)].width = 20
 
-    rows = bancario.values_list('status__perfil__empresa__empresa','status__perfil__distrito__distrito','status__perfil__proyecto','status__perfil__subproyecto',Concat('status__perfil__nombres',Value(' '),'status__perfil__apellidos'), 'puesto','complemento_salario_catorcenal',
+    rows = bancario.values_list('status__perfil__empresa__empresa','status__perfil__distrito__distrito','status__perfil__proyecto','status__perfil__subproyecto','status__perfil__numero_de_trabajador',Concat('status__perfil__nombres',Value(' '),'status__perfil__apellidos'), 'status__puesto','complemento_salario_catorcenal',
                             'apoyo_de_pasajes','total_percepciones_mensual','impuesto_estatal','imms_obrero_patronal','sar','cesantia','infonavit','isr','apoyo_vist_familiar','estancia','renta',
                             'apoyo_estudios','amv','gasolina','total_apoyosbonos_agregcomis','total_costo_empresa','ingreso_mensual_neto_empleado')
 
@@ -1620,7 +1726,7 @@ def convert_excel_costo(bancario):
         for col_num in range(len(row)):
             if col_num <= 5:
                 (ws.cell(row = row_num, column = col_num+1, value=row[col_num])).style = body_style
-            if col_num > 5 and col_num <=23:
+            if col_num > 5 and col_num <=24:
                 (ws.cell(row = row_num, column = col_num+1, value=row[col_num])).style = money_style
             else:
                 (ws.cell(row = row_num, column = col_num+1, value=str(row[col_num]))).style = body_style
@@ -2193,23 +2299,30 @@ def upload_batch_empleados(request):
             else:
                 if Empresa.objects.filter(empresa = row[1]):
                     empresa = Empresa.objects.get(empresa = row[1])
-                    if Distrito.objects.filter(distrito = row[2]):
+                    if row[2] == "MOTOS":
+                        distrito = Distrito.objects.get(distrito = "Planta Veracruz")
+                        division = "MOTOS"
+                    elif row[2] == "PETROLERA":
+                        distrito = Distrito.objects.get(distrito = "Planta Veracruz")
+                        division = "PETROLERA"
+                    elif Distrito.objects.filter(distrito = row[2]):
                         distrito = Distrito.objects.get(distrito = row[2])
-                        if Proyecto.objects.filter(proyecto = row[7]):
-                            proyecto = Proyecto.objects.get(proyecto = row[7])
-                            if SubProyecto.objects.get(subproyecto = row[8], proyecto__proyecto = row[7]):
-                                subproyecto = SubProyecto.objects.get(subproyecto = row[8], proyecto__proyecto = row[7])
-                                empleado = Perfil(numero_de_trabajador=row[0], empresa=empresa, distrito=distrito, nombres=row[3],
-                                    apellidos=row[4],fecha_nacimiento=fecha,correo_electronico=row[6],proyecto=proyecto,subproyecto=subproyecto,
-                                    complete=True, complete_status=False,)
-
-                                empleado.save()
-                            else:
-                                messages.error(request,f'El subproyecto no existe dentro de la base de datos, empleado #{row[0]}')
-                        else:
-                            messages.error(request,f'El proyecto no existe dentro de la base de datos, empleado #{row[0]}')
+                        division = ""
                     else:
                         messages.error(request,f'El distrito no existe dentro de la base de datos, empleado #{row[0]}')
+                    if Proyecto.objects.filter(proyecto = row[7]):
+                        proyecto = Proyecto.objects.get(proyecto = row[7])
+                        if SubProyecto.objects.get(subproyecto = row[8], proyecto__proyecto = row[7]):
+                            subproyecto = SubProyecto.objects.get(subproyecto = row[8], proyecto__proyecto = row[7])
+                            empleado = Perfil(numero_de_trabajador=row[0], empresa=empresa, distrito=distrito, nombres=row[3],
+                                apellidos=row[4],fecha_nacimiento=fecha,correo_electronico=row[6],proyecto=proyecto,subproyecto=subproyecto,
+                                complete=True, complete_status=False,)
+                            empleado.division = division
+                            empleado.save()
+                        else:
+                            messages.error(request,f'El subproyecto no existe dentro de la base de datos, empleado #{row[0]}')
+                    else:
+                        messages.error(request,f'El proyecto no existe dentro de la base de datos, empleado #{row[0]}')
                 else:
                     messages.error(request,f'La empresa no existe dentro de la base de datos, empleado #{row[0]}')
         empleados_list.activated = True
@@ -2237,6 +2350,10 @@ def upload_batch_status(request):
 
         for row in reader:
             ultimo_contrato = datetime.datetime.strptime(row[10], "%d/%m/%Y").date()
+            if row[17] == '':
+                ingreso = None
+            else:
+                ingreso = datetime.datetime.strptime(row[17], "%d/%m/%Y").date()
             if row[16] == '':
                 planta = None
             else:
@@ -2262,13 +2379,17 @@ def upload_batch_status(request):
                                         genero = Sexo.objects.get(sexo = row[12])
                                         if Civil.objects.filter(estado_civil = row[14]):
                                             civil = Civil.objects.get(estado_civil = row[14])
-                                            perfil.complete_status = True
-                                            perfil.save()
-                                            status = Status(perfil=perfil,registro_patronal= registro_patronal,nss=row[2],curp=row[3],rfc=row[4],telefono=row[5],profesion=row[6],
-                                                    no_cedula=row[7],nivel=nivel,tipo_de_contrato=tipo_de_contrato,ultimo_contrato_vence=ultimo_contrato,tipo_sangre=sangre,sexo=genero,domicilio=row[13],
-                                                    estado_civil=civil,fecha_planta_anterior=planta_anterior,fecha_planta=planta,complete=True,)
+                                            if Puesto.objects.filter(puesto = row[18]):
+                                                puesto = Puesto.objects.get(puesto = row[18])
+                                                perfil.complete_status = True
+                                                perfil.save()
+                                                status = Status(perfil=perfil,registro_patronal= registro_patronal,nss=row[2],curp=row[3],rfc=row[4],telefono=row[5],profesion=row[6],
+                                                        no_cedula=row[7],nivel=nivel,tipo_de_contrato=tipo_de_contrato,ultimo_contrato_vence=ultimo_contrato,tipo_sangre=sangre,sexo=genero,domicilio=row[13],
+                                                        estado_civil=civil,fecha_planta_anterior=planta_anterior,fecha_planta=planta,fecha_ingreso=ingreso,puesto=puesto,complete=True,)
 
-                                            status.save()
+                                                status.save()
+                                            else:
+                                                messages.error(request,f'El puesto no existe dentro de la base de datos, empleado #{row[0]}')
                                         else:
                                             messages.error(request,f'El estado civil no existe dentro de la base de datos, empleado #{row[0]}')
                                     else:
@@ -2297,6 +2418,8 @@ def upload_batch_status(request):
 
 @login_required(login_url='user-login')
 def upload_batch_costos(request):
+    dato = SalarioDatos.objects.get()
+    factores = FactorIntegracion.objects.all()
     tablas= DatosISR.objects.all()
     quincena=Decimal(14.00)
     mes=Decimal(30.40)
@@ -2320,34 +2443,62 @@ def upload_batch_costos(request):
             #planta_anterior = datetime.datetime.strptime(row[15], "%d/%m/%Y").date()
             if Status.objects.filter(perfil__numero_de_trabajador = row[0]):
                 status = Status.objects.get(perfil__numero_de_trabajador = row[0])
-                if Costo.objects.filter(status__perfil__numero_de_trabajador = row[0]):
-                    messages.error(request,f'El empleado #{row[0]} ya se encuentra en la base de datos')
-                else:
-                    if Puesto.objects.filter(puesto = row[1]):
-                        puesto = Puesto.objects.get(puesto = row[1])
-
+                if status.fecha_ingreso != None:
+                    if Costo.objects.filter(status__perfil__numero_de_trabajador = row[0]):
+                        messages.error(request,f'El empleado #{row[0]} ya se encuentra en la base de datos')
+                    else:
                         status.complete_costo = True
+                        costo = Costo(status=status,neto_catorcenal_sin_deducciones=row[1],complemento_salario_catorcenal=row[2],sueldo_diario=row[3],
+                                amortizacion_infonavit=row[4],fonacot=row[5],apoyo_de_pasajes=row[6],apoyo_vist_familiar=row[7],estancia=row[8],renta=row[9],
+                                campamento=row[10],apoyo_estudios=row[11],gasolina=row[12],amv=row[13],laborados=row[14],complete=True,)
 
-                        costo = Costo(status=status,puesto=puesto,neto_catorcenal_sin_deducciones=row[2],complemento_salario_catorcenal=row[3],sueldo_diario=row[4],sdi=row[5],
-                                imms_obrero_patronal=row[6],amortizacion_infonavit=row[7],fonacot=row[8],apoyo_de_pasajes=row[9],apoyo_vist_familiar=row[10],estancia=row[11],renta=row[12],
-                                campamento=row[13],apoyo_estudios=row[14],gasolina=row[15],amv=row[16],complete=True,)
-
-                        neto_catorcenal_sin_deducciones = Decimal(row[2])
-                        complemento_salario_catorcenal = Decimal(row[3])
-                        sueldo_diario = Decimal(row[4])
-                        sdi = Decimal(row[5])
-                        imms_obrero_patronal = Decimal(row[6])
-                        amortizacion_infonavit = Decimal(row[7])
-                        fonacot = Decimal(row[8])
-                        apoyo_de_pasajes = Decimal(row[9])
-                        apoyo_vist_familiar = Decimal(row[10])
-                        estancia = Decimal(row[11])
-                        renta = Decimal(row[12])
-                        campamento= Decimal(row[13])
-                        apoyo_estudios= Decimal(row[14])
-                        gasolina= Decimal(row[15])
-                        amv= Decimal(row[16])
-
+                        neto_catorcenal_sin_deducciones = Decimal(row[1])
+                        complemento_salario_catorcenal = Decimal(row[2])
+                        sueldo_diario = Decimal(row[3])
+                        #sdi = Decimal(row[5])
+                        #imms_obrero_patronal = Decimal(row[6])
+                        amortizacion_infonavit = Decimal(row[4])
+                        fonacot = Decimal(row[5])
+                        apoyo_de_pasajes = Decimal(row[6])
+                        apoyo_vist_familiar = Decimal(row[7])
+                        estancia = Decimal(row[8])
+                        renta = Decimal(row[9])
+                        campamento= Decimal(row[10])
+                        apoyo_estudios= Decimal(row[11])
+                        gasolina= Decimal(row[12])
+                        amv= Decimal(row[13])
+                        #SDI Calculo
+                        prima_riesgo = costo.status.registro_patronal.prima
+                        excedente = dato.UMA*3
+                        cuotafija = (dato.UMA*Decimal(0.204))*Decimal(costo.laborados)
+                        excedente_patronal = (Decimal(costo.sueldo_diario)-excedente)*Decimal(0.011)*Decimal(costo.laborados)
+                        excedente_obrero = (Decimal(costo.sueldo_diario)-excedente)*Decimal(0.004)*Decimal(costo.laborados)
+                        if excedente_patronal < 0:
+                            excedente_patronal = 0
+                        if excedente_obrero < 0:
+                            excedente_obrero = 0
+                        prestaciones_patronal = (Decimal(costo.sueldo_diario)*Decimal(0.007))*Decimal(costo.laborados)
+                        prestaciones_obrero = (Decimal(costo.sueldo_diario)*Decimal(0.0025))*Decimal(costo.laborados)
+                        gastosmp_patronal = (Decimal(costo.sueldo_diario)*Decimal(0.0105))*Decimal(costo.laborados)
+                        gastosmp_obrero = (Decimal(costo.sueldo_diario)*Decimal(0.00375))*Decimal(costo.laborados)
+                        riesgo_trabajo = (Decimal(costo.sueldo_diario)*(prima_riesgo/100))*Decimal(costo.laborados)
+                        invalidezvida_patronal = (Decimal(costo.sueldo_diario)*Decimal(0.0175))*Decimal(costo.laborados)
+                        invalidezvida_obrero = (Decimal(costo.sueldo_diario)*Decimal(0.00625))*Decimal(costo.laborados)
+                        guarderias_prestsociales = (Decimal(costo.sueldo_diario)*Decimal(0.01))*Decimal(costo.laborados)
+                        costo.imms_obrero_patronal = (cuotafija+excedente_patronal+excedente_obrero+prestaciones_patronal
+                                                    +prestaciones_obrero+gastosmp_patronal+gastosmp_obrero+riesgo_trabajo+invalidezvida_patronal
+                                                    +invalidezvida_obrero+guarderias_prestsociales)
+                        totall = costo.imms_obrero_patronal
+                        actual = date.today()
+                        años_ingreso = actual.year-costo.status.fecha_ingreso.year
+                        if años_ingreso == 0:
+                            años_ingreso=1
+                        for factor in factores:
+                            if años_ingreso >= factor.years:
+                                factor_integracion = factor.factor
+                        costo.sdi = ((365+15+factor_integracion)/365)*Decimal(costo.sueldo_diario)
+                        sdi = costo.sdi
+                            #Costo calculo
                         costo.total_deduccion = amortizacion_infonavit + fonacot
                         costo.neto_pagar = neto_catorcenal_sin_deducciones - costo.total_deduccion
                         costo.sueldo_mensual_neto = (neto_catorcenal_sin_deducciones/quincena)*mes
@@ -2362,26 +2513,22 @@ def upload_batch_costos(request):
                                 costo.cuota_fija=tabla.cuota
                             if costo.lim_inferior >= tabla.p_ingresos:
                                 costo.subsidio=tabla.subsidio
-                            costo.impuesto_estatal= costo.total_percepciones_mensual*impuesto_est
-                            costo.sar= costo.sueldo_mensual_sdi*sar
-                            costo.cesantia= costo.sueldo_mensual_sdi*cesantia
-                            costo.infonavit= costo.sueldo_mensual_sdi*infonavit
-                            costo.excedente= costo.total_percepciones_mensual - costo.lim_inferior
-                            costo.impuesto_marginal= costo.excedente * costo.tasa
-                            costo.impuesto= costo.impuesto_marginal + costo.cuota_fija
-                            costo.isr= costo.impuesto
-                            #dato.otros_bonos= dato.bonos.bonos_ct_ocho + dato.bonos.bonos_ct_nueve
-                            costo.total_apoyosbonos_empleadocomp= apoyo_vist_familiar + estancia + renta + apoyo_estudios + amv + campamento + gasolina
+                        costo.impuesto_estatal= costo.total_percepciones_mensual*impuesto_est
+                        costo.sar= costo.sueldo_mensual_sdi*sar
+                        costo.cesantia= costo.sueldo_mensual_sdi*cesantia
+                        costo.infonavit= costo.sueldo_mensual_sdi*infonavit
+                        costo.excedente= costo.total_percepciones_mensual - costo.lim_inferior
+                        costo.impuesto_marginal= costo.excedente * costo.tasa
+                        costo.impuesto= costo.impuesto_marginal + costo.cuota_fija
+                        costo.isr= costo.impuesto
+                        #dato.otros_bonos= dato.bonos.bonos_ct_ocho + dato.bonos.bonos_ct_nueve
+                        costo.total_apoyosbonos_empleadocomp= apoyo_vist_familiar + estancia + renta + apoyo_estudios + amv + campamento + gasolina
 
-                            costo.total_apoyosbonos_agregcomis = campamento #Modificar falta suma
-                            costo.comision_complemeto_salario_bonos= (costo.complemento_salario_mensual + campamento)*comision #Falta suma dentro de la multiplicacion
-                            costo.total_costo_empresa = costo.sueldo_mensual_neto + costo.complemento_salario_mensual + apoyo_de_pasajes + costo.impuesto_estatal + imms_obrero_patronal + costo.sar + costo.cesantia + costo.infonavit + costo.isr + costo.total_apoyosbonos_empleadocomp #+ costo.total_apoyosbonos_agregcomis + costo.comision_complemeto_salario_bonos
-                            costo.ingreso_mensual_neto_empleado= costo.sueldo_mensual_neto + costo.complemento_salario_mensual + apoyo_de_pasajes + costo.total_apoyosbonos_empleadocomp # + costo.total_apoyosbonos_agregcomis
-
-
+                        costo.total_apoyosbonos_agregcomis = campamento #Modificar falta suma
+                        costo.comision_complemeto_salario_bonos= (costo.complemento_salario_mensual + campamento)*comision #Falta suma dentro de la multiplicacion
+                        costo.total_costo_empresa = costo.sueldo_mensual_neto + costo.complemento_salario_mensual + apoyo_de_pasajes + costo.impuesto_estatal + costo.imms_obrero_patronal + costo.sar + costo.cesantia + costo.infonavit + costo.isr + costo.total_apoyosbonos_empleadocomp #+ costo.total_apoyosbonos_agregcomis + costo.comision_complemeto_salario_bonos
+                        costo.ingreso_mensual_neto_empleado= costo.sueldo_mensual_neto + costo.complemento_salario_mensual + apoyo_de_pasajes + costo.total_apoyosbonos_empleadocomp # + costo.total_apoyosbonos_agregcomis
                         costo.save()
-                    else:
-                        messages.error(request,f'El puesto no existe dentro de la base de datos, empleado #{row[0]}')
             else:
                 messages.error(request,f'El status del empleado #{row[0]} no existe dentro de la base de datos')
 
@@ -2668,7 +2815,7 @@ def reporte_pdf_costo_detalles(costo):
     distrito = str(costo.status.perfil.distrito)
     c.drawString(325,650, distrito)
     #Primera columna
-    puesto = str(costo.puesto)
+    puesto = str(costo.status.puesto)
     c.drawString(90,575,puesto)
     c.drawString(170,550,costo.amortizacion_infonavit)
     c.drawString(100,525,costo.fonacot)
@@ -2895,7 +3042,6 @@ def FormFormatoVacaciones(request):
     return render(request, 'proyecto/Formato_VacacionesForm.html',context)
 
 def PdfFormatoVacaciones(usuario, datos, status, form,):
-    costo = Costo.objects.get(status=status.id)
     inicio = form.cleaned_data.get("fecha_inicio")
     fin = form.cleaned_data.get("fecha_fin")
     dia_inhabil = form.cleaned_data.get("dia_inhabil")
@@ -2942,7 +3088,7 @@ def PdfFormatoVacaciones(usuario, datos, status, form,):
     c.drawString(100,690,nombre_completo)
     c.drawString(40,670,'PUESTO:')
     c.line(95,668,325,668)
-    c.drawString(100,670,costo.puesto.puesto)
+    c.drawString(100,670,status.puesto.puesto)
 
     c.drawString(335,670,'TELEFONO PARTICULAR:')
     c.line(475,668,580,668)
@@ -3152,7 +3298,6 @@ def FormFormatoEconomicos(request):
     return render(request, 'proyecto/Formato_EconomicosForm.html',context)
 
 def PdfFormatoEconomicos(usuario,datos,status,form,):
-    costo = Costo.objects.get(status=status.id)
     now = date.today()
     fecha = form.cleaned_data.get("fecha")
     periodo = str(fecha.year)
@@ -3197,7 +3342,7 @@ def PdfFormatoEconomicos(usuario,datos,status,form,):
     c.drawString(100,690,nombre_completo)
     c.drawString(40,670,'PUESTO:')
     c.line(95,668,325,668)
-    c.drawString(100,670,costo.puesto.puesto)
+    c.drawString(100,670,status.puesto.puesto)
     c.drawString(335,670,'TELEFONO PARTICULAR:')
     c.line(475,668,580,668)
     c.drawString(485,670,status.telefono)
@@ -3273,3 +3418,476 @@ def PdfFormatoEconomicos(usuario,datos,status,form,):
     buf.seek(0)
 
     return FileResponse(buf, as_attachment=True, filename='Formato_Economico.pdf')
+
+    #Reportes generales
+def excel_reporte_general(perfil,status,bancarios,costo,bonos,vacaciones,economicos,):
+    matriz= perfil.filter(distrito__distrito = 'Matriz')
+    matriz = matriz.count()
+    altamira= perfil.filter(distrito__distrito = 'Altamira')
+    altamira = altamira.count()
+    planta= perfil.filter(distrito__distrito = 'Planta Veracruz')
+    planta = planta.count()
+    poza = perfil.filter(distrito__distrito = 'Poza Rica')
+    poza = poza.count()
+    villa = perfil.filter(distrito__distrito = 'Villahermosa')
+    villa = villa.count()
+    veracruz= perfil.filter(distrito__distrito = 'Veracruz')
+    veracruz = veracruz.count()
+    hombres = status.filter(sexo__sexo = 'Masculino')
+    hombres = hombres.count()
+    mujeres = status.filter(sexo__sexo = 'Femenino')
+    mujeres = mujeres.count()
+    perfil = perfil.count()
+    status = status.count()
+    bancarios = bancarios.count()
+    costo = costo.count()
+    bonos = bonos.count()
+    vacaciones = vacaciones.count()
+    economicos = economicos.count()
+    response= HttpResponse(content_type = "application/ms-excel")
+    response['Content-Disposition'] = 'attachment; filename = Reporte_general_' + str(datetime.date.today())+'.xlsx'
+    wb = Workbook()
+    ws = wb.create_sheet(title='Reporte')
+    #Comenzar en la fila 1
+    row_num = 1
+
+    #Create heading style and adding to workbook | Crear el estilo del encabezado y agregarlo al Workbook
+    head_style = NamedStyle(name = "head_style")
+    head_style.font = Font(name = 'Arial', color = '00FFFFFF', bold = True, size = 11)
+    head_style.fill = PatternFill("solid", fgColor = '00003366')
+    wb.add_named_style(head_style)
+    #Create body style and adding to workbook
+    body_style = NamedStyle(name = "body_style")
+    body_style.font = Font(name ='Calibri', size = 10)
+    wb.add_named_style(body_style)
+    #Create messages style and adding to workbook
+    messages_style = NamedStyle(name = "mensajes_style")
+    messages_style.font = Font(name="Arial Narrow", size = 11)
+    wb.add_named_style(messages_style)
+    #Create date style and adding to workbook
+    date_style = NamedStyle(name='date_style', number_format='DD/MM/YYYY')
+    date_style.font = Font(name ='Calibri', size = 10)
+    wb.add_named_style(date_style)
+    money_style = NamedStyle(name='money_style', number_format='$ #,##0.00')
+    money_style.font = Font(name ='Calibri', size = 10)
+    wb.add_named_style(money_style)
+    money_resumen_style = NamedStyle(name='money_resumen_style', number_format='$ #,##0.00')
+    money_resumen_style.font = Font(name ='Calibri', size = 14, bold = True)
+    wb.add_named_style(money_resumen_style)
+
+
+    (ws.cell(column = 10, row = 1, value='{Reporte Creado Automáticamente por Savia RH. UH}')).style = messages_style
+    (ws.cell(column = 10, row = 2, value='{Software desarrollado por Vordcab S.A. de C.V.}')).style = messages_style
+    my_png = openpyxl.drawing.image.Image('static/images/logo/SAVIA_Logo1.png')
+    ws.add_image(my_png, 'K4')
+    #(ws.cell(column = 1, row = 1, value='REPORTE GENERAL SAVIA RH')).style = head_style
+    (ws.cell(column = 1, row = 3, value='Empleados:')).style = messages_style
+    (ws.cell(column = 2, row = 3, value=perfil)).style = body_style
+    (ws.cell(column = 1, row = 4, value='Status:')).style = messages_style
+    (ws.cell(column = 2, row = 4, value=status)).style = body_style
+    (ws.cell(column = 1, row = 5, value='Bancarios:')).style = messages_style
+    (ws.cell(column = 2, row = 5, value=bancarios)).style = body_style
+    (ws.cell(column = 1, row = 6, value='Costo:')).style = messages_style
+    (ws.cell(column = 2, row = 6, value=costo)).style = body_style
+    (ws.cell(column = 1, row = 7, value='Bonos:')).style = messages_style
+    (ws.cell(column = 2, row = 7, value=bonos)).style = body_style
+    (ws.cell(column = 1, row = 8, value='Vacaciones:')).style = messages_style
+    (ws.cell(column = 2, row = 8, value=vacaciones)).style = body_style
+    (ws.cell(column = 1, row = 9, value='Economicos:')).style = messages_style
+    (ws.cell(column = 2, row = 9, value=economicos)).style = body_style
+    (ws.cell(column = 1, row = 10, value='Hombres:')).style = messages_style
+    (ws.cell(column = 2, row = 10, value=hombres)).style = body_style
+    (ws.cell(column = 1, row = 11, value='Mujeres:')).style = messages_style
+    (ws.cell(column = 2, row = 11, value=mujeres)).style = body_style
+
+    (ws.cell(column = 1, row = 15, value='Matriz')).style = messages_style
+    (ws.cell(column = 2, row = 15, value=matriz)).style = body_style
+    (ws.cell(column = 1, row = 16, value='Altamira')).style = messages_style
+    (ws.cell(column = 2, row = 16, value=altamira)).style = body_style
+    (ws.cell(column = 1, row = 17, value='Planta Veracruz')).style = messages_style
+    (ws.cell(column = 2, row = 17, value=planta)).style = body_style
+    (ws.cell(column = 1, row = 18, value='Poza Rica')).style = messages_style
+    (ws.cell(column = 2, row = 18, value=poza)).style = body_style
+    (ws.cell(column = 1, row = 19, value='Villa Hermosa')).style = messages_style
+    (ws.cell(column = 2, row = 19, value=villa)).style = body_style
+    (ws.cell(column = 1, row = 20, value='Veracruz')).style = messages_style
+    (ws.cell(column = 2, row = 20, value=veracruz)).style = body_style
+    pie_chart = PieChart()
+    labels = Reference(ws, min_col=1, min_row=15, max_row=20)
+    data = Reference(ws, min_col=2, min_row=15, max_row=20)
+    pie_chart.add_data(data, titles_from_data=True)
+    pie_chart.set_categories(labels)
+    # Agrega porcentajes a cada sector de la gráfica
+    pie_chart.dataLabels = DataLabelList(showPercent=True, separator=' ')
+    # Cambia el título de la gráfica
+    pie_chart.title = 'Empleados por distrito'
+    # Cambia el tamaño del gráfico
+    pie_chart.width = 8
+    pie_chart.height = 8
+    ws.add_chart(pie_chart, "H12")
+    sheet = wb['Sheet']
+    wb.remove(sheet)
+    wb.save(response)
+
+    return(response)
+
+def reporte_pdf_general(perfil,status,bancarios,costo,bonos,vacaciones,economicos,):
+    #Configuration of the PDF object
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf, pagesize=letter)
+
+    now = datetime.date.today()
+    fecha = str(now)
+    hombres = status.filter(sexo__sexo = 'Masculino')
+    hombres = str(hombres.count())
+    mujeres = status.filter(sexo__sexo = 'Femenino')
+    mujeres = str(mujeres.count())
+    perfil = str(perfil.count())
+    status = str(status.count())
+    bancarios = str(bancarios.count())
+    costo = str(costo.count())
+    bonos = str(bonos.count())
+    vacaciones = str(vacaciones.count())
+    economicos = str(economicos.count())
+    #Colores utilizados
+    azul = Color(0.16015625,0.5,0.72265625)
+    rojo = Color(0.59375, 0.05859375, 0.05859375)
+    #Encabezado
+    c.setFillColor(black)
+    c.setLineWidth(.2)
+    c.setFont('Helvetica',10)
+    c.drawString(440,735,'Fecha:')
+    c.drawString(480,735,fecha)
+
+    c.setFillColor(azul)
+    c.setStrokeColor(azul)
+    c.setLineWidth(20)
+    c.line(20,760,585,760) #Linea azul superior
+    c.setLineWidth(0.2)
+    c.line(20,727.5,585,727.5) #Linea posterior horizontal
+    c.line(250,727.5,250,590) #Linea vertical
+
+    c.setFillColor(white)
+    c.setLineWidth(.2)
+    c.setFont('Helvetica',10)
+    c.drawCentredString(295,755,'REPORTE GENERAL SAVIA RH')
+
+    c.drawInlineImage('static/images/logo/SAVIA_Logo1.png',65,580, 5 * cm, 5 * cm) #Imagen Savia
+    #Primera columna
+    c.setFillColor(black)
+    c.setFont('Helvetica',10)
+    c.drawString(260,710,'Empleados:')
+    c.drawString(335,710,perfil)
+    c.drawString(260,690,'Status:',)
+    c.drawString(335,690,status)
+    c.drawString(260,670,'Bancarios:')
+    c.drawString(335,670,bancarios)
+    c.drawString(260,650,'Costos:')
+    c.drawString(335,650,costo)
+    c.drawString(260,630,'Bonos:')
+    c.drawString(335,630,bonos)
+    c.drawString(260,610,'Vacaciones:')
+    c.drawString(335,610,vacaciones)
+    c.drawString(260,590,'Economicos:')
+    c.drawString(335,590,economicos)
+
+    #Segunda columna
+    c.drawString(420,710,'Hombres:')
+    c.drawString(495,710, hombres)
+    c.drawString(420,690, 'Mujeres:')
+    c.drawString(495,690, mujeres)
+    #c.drawString(420,630, 'Fecha Emisión:')
+    #c.drawString(420,610,'28-06-2022 11:16:21')
+    c.setFillColor(rojo) ## NUMERO DEL FOLIO
+
+    #Tabla y altura guia
+    #data =[]
+    high = 550
+    #data.append(['''Orden #''','''Producto''','''Cantidad''', '''Talla''',])
+    #for uniforme in uniformes: #Salen todos los datos
+    #    data.append([uniforme.id,uniforme.ropa,uniforme.cantidad,uniforme.talla,])
+    #    high = high - 18
+
+    #Observaciones
+    #c.setFillColor(azul)
+    #c.setLineWidth(20)
+    #c.line(20,high-35,585,high-35) #Linea posterior horizontal
+    #c.setFillColor(white)
+    #c.setLineWidth(.1)
+    #c.setFont('Helvetica-Bold',10)
+    #c.drawCentredString(295,high-40,'Observaciones')
+    #c.setFillColor(black)
+    #c.setFont('Helvetica',8)
+    #c.drawCentredString(295,high-60,'                                                                                                                ')
+    #c.drawCentredString(295,high-70,'                                                                                                                ')
+
+    #Autorizacion parte
+    #c.setFillColor(azul)
+    #c.setFont('Helvetica',8)
+    #c.setLineWidth(1)
+    #c.line(150,high-150,275,high-150) #Linea posterior horizontal
+    #c.line(350,high-150,475,high-150) #Linea posterior horizontal
+    #c.setFillColor(black)
+    #c.drawCentredString(212.5,high-160,'Empleado')
+    #c.drawCentredString(412.5,high-160,'Aprobación')
+
+
+    #c.drawCentredString(412.5,high-145,'Nombre aprobador')
+
+    #Pie de pagina
+    c.setFillColor(azul)
+    c.setLineWidth(40)
+    c.line(20,50,585,50) #Linea posterior horizontal
+    c.setFillColor(white)
+    #c.drawCentredString(70,53,'Clasificación:')
+    #c.drawCentredString(140,53,'Nivel:')
+    #c.drawCentredString(240,53,'Preparado por:')
+    #c.drawCentredString(350,53,'Aprobado:')
+    #c.drawCentredString(450,53,'Fecha emisión:')
+    #c.drawCentredString(550,53,'Rev:')
+    #Parte de abajo
+    #c.drawCentredString(70,39,'Controlado')
+    #c.drawCentredString(140,39,'N5')
+    #c.drawCentredString(240,39,'SEOV-ALM-N4-01-01')
+    #c.drawCentredString(350,39,'SUB ADM')
+    #c.drawCentredString(450,39,'24/Oct/2018')
+    #c.drawCentredString(550,39,'001')
+
+    #Propiedades de la tabla
+    #width, height = letter
+    #table = Table(data, colWidths=[2.6 * cm, 2.6 * cm, 11.8 * cm, 2.6 * cm], repeatRows=1)
+    #table.setStyle(TableStyle([ #estilos de la tabla
+        #ENCABEZADO
+    #    ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+    #    ('TEXTCOLOR',(0,0),(-1,0), white),
+    #    ('FONTSIZE',(0,0),(-1,0), 13),
+    #    ('BACKGROUND',(0,0),(-1,0), azul),
+        #CUERPO
+    #    ('TEXTCOLOR',(0,1),(-1,-1), colors.black),
+    #    ('FONTSIZE',(0,1),(-1,-1), 10),
+    #    ]))
+    #table.wrapOn(c, width, height)
+    #table.drawOn(c, 25, high)
+    c.save()
+    c.showPage()
+    buf.seek(0)
+
+    return FileResponse(buf, as_attachment=True, filename='Reporte_general.pdf')
+
+def excel_reporte_especifico(distrito_seleccionado,perfill,statuss,bancarioss,costoo,bonoss,vacacioness,economicoss,):
+    hombres = statuss.filter(sexo__sexo = 'Masculino')
+    hombres = hombres.count()
+    mujeres = statuss.filter(sexo__sexo = 'Femenino')
+    mujeres = mujeres.count()
+    perfil = perfill.count()
+    status = statuss.count()
+    bancarios = bancarioss.count()
+    costo = costoo.count()
+    bonos = bonoss.count()
+    vacaciones = vacacioness.count()
+    economicos = economicoss.count()
+    response= HttpResponse(content_type = "application/ms-excel")
+    response['Content-Disposition'] = 'attachment; filename = Reporte_general_' + distrito_seleccionado+'_'+ str(datetime.date.today())+'.xlsx'
+    wb = Workbook()
+    ws = wb.create_sheet(title='Reporte')
+    #Comenzar en la fila 1
+    row_num = 1
+
+    #Create heading style and adding to workbook | Crear el estilo del encabezado y agregarlo al Workbook
+    head_style = NamedStyle(name = "head_style")
+    head_style.font = Font(name = 'Arial', color = '00FFFFFF', bold = True, size = 11)
+    head_style.fill = PatternFill("solid", fgColor = '00003366')
+    wb.add_named_style(head_style)
+    #Create body style and adding to workbook
+    body_style = NamedStyle(name = "body_style")
+    body_style.font = Font(name ='Calibri', size = 10)
+    wb.add_named_style(body_style)
+    #Create messages style and adding to workbook
+    messages_style = NamedStyle(name = "mensajes_style")
+    messages_style.font = Font(name="Arial Narrow", size = 11)
+    wb.add_named_style(messages_style)
+    #Create date style and adding to workbook
+    date_style = NamedStyle(name='date_style', number_format='DD/MM/YYYY')
+    date_style.font = Font(name ='Calibri', size = 10)
+    wb.add_named_style(date_style)
+    money_style = NamedStyle(name='money_style', number_format='$ #,##0.00')
+    money_style.font = Font(name ='Calibri', size = 10)
+    wb.add_named_style(money_style)
+    money_resumen_style = NamedStyle(name='money_resumen_style', number_format='$ #,##0.00')
+    money_resumen_style.font = Font(name ='Calibri', size = 14, bold = True)
+    wb.add_named_style(money_resumen_style)
+
+
+    (ws.cell(column = 10, row = 1, value='{Reporte Creado Automáticamente por Savia RH. UH}')).style = messages_style
+    (ws.cell(column = 10, row = 2, value='{Software desarrollado por Vordcab S.A. de C.V.}')).style = messages_style
+    my_png = openpyxl.drawing.image.Image('static/images/logo/SAVIA_Logo1.png')
+    ws.add_image(my_png, 'K4')
+    #(ws.cell(column = 1, row = 1, value='REPORTE GENERAL SAVIA RH')).style = head_style
+    (ws.cell(column = 1, row = 3, value='Empleados:')).style = messages_style
+    (ws.cell(column = 2, row = 3, value=perfil)).style = body_style
+    (ws.cell(column = 1, row = 4, value='Status:')).style = messages_style
+    (ws.cell(column = 2, row = 4, value=status)).style = body_style
+    (ws.cell(column = 1, row = 5, value='Bancarios:')).style = messages_style
+    (ws.cell(column = 2, row = 5, value=bancarios)).style = body_style
+    (ws.cell(column = 1, row = 6, value='Costo:')).style = messages_style
+    (ws.cell(column = 2, row = 6, value=costo)).style = body_style
+    (ws.cell(column = 1, row = 7, value='Bonos:')).style = messages_style
+    (ws.cell(column = 2, row = 7, value=bonos)).style = body_style
+    (ws.cell(column = 1, row = 8, value='Vacaciones:')).style = messages_style
+    (ws.cell(column = 2, row = 8, value=vacaciones)).style = body_style
+    (ws.cell(column = 1, row = 9, value='Economicos:')).style = messages_style
+    (ws.cell(column = 2, row = 9, value=economicos)).style = body_style
+    (ws.cell(column = 1, row = 10, value='Hombres:')).style = messages_style
+    (ws.cell(column = 2, row = 10, value=hombres)).style = body_style
+    (ws.cell(column = 1, row = 11, value='Mujeres:')).style = messages_style
+    (ws.cell(column = 2, row = 11, value=mujeres)).style = body_style
+
+    sheet = wb['Sheet']
+    wb.remove(sheet)
+    wb.save(response)
+
+    return(response)
+
+def reporte_pdf_especifico(distrito_seleccionado,perfill,statuss,bancarioss,costoo,bonoss,vacacioness,economicoss,):
+    #Configuration of the PDF object
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf, pagesize=letter)
+
+    now = datetime.date.today()
+    fecha = str(now)
+    hombres = statuss.filter(sexo__sexo = 'Masculino')
+    hombres = str(hombres.count())
+    mujeres = statuss.filter(sexo__sexo = 'Femenino')
+    mujeres = str(mujeres.count())
+    perfil = str(perfill.count())
+    status = str(statuss.count())
+    bancarios = str(bancarioss.count())
+    costo = str(costoo.count())
+    bonos = str(bonoss.count())
+    vacaciones = str(vacacioness.count())
+    economicos = str(economicoss.count())
+    #Colores utilizados
+    azul = Color(0.16015625,0.5,0.72265625)
+    rojo = Color(0.59375, 0.05859375, 0.05859375)
+    #Encabezado
+    c.setFillColor(black)
+    c.setLineWidth(.2)
+    c.setFont('Helvetica',10)
+    c.drawString(440,735,'Fecha:')
+    c.drawString(480,735,fecha)
+
+    c.setFillColor(azul)
+    c.setStrokeColor(azul)
+    c.setLineWidth(20)
+    c.line(20,760,585,760) #Linea azul superior
+    c.setLineWidth(0.2)
+    c.line(20,727.5,585,727.5) #Linea posterior horizontal
+    c.line(250,727.5,250,590) #Linea vertical
+
+    c.setFillColor(white)
+    c.setLineWidth(.2)
+    c.setFont('Helvetica',10)
+    c.drawCentredString(295,755,'Reporte '+distrito_seleccionado+' SAVIA RH')
+
+    c.drawInlineImage('static/images/logo/SAVIA_Logo1.png',65,580, 5 * cm, 5 * cm) #Imagen Savia
+    #Primera columna
+    c.setFillColor(black)
+    c.setFont('Helvetica',10)
+    c.drawString(260,710,'Empleados:')
+    c.drawString(335,710,perfil)
+    c.drawString(260,690,'Status:',)
+    c.drawString(335,690,status)
+    c.drawString(260,670,'Bancarios:')
+    c.drawString(335,670,bancarios)
+    c.drawString(260,650,'Costos:')
+    c.drawString(335,650,costo)
+    c.drawString(260,630,'Bonos:')
+    c.drawString(335,630,bonos)
+    c.drawString(260,610,'Vacaciones:')
+    c.drawString(335,610,vacaciones)
+    c.drawString(260,590,'Economicos:')
+    c.drawString(335,590,economicos)
+
+    #Segunda columna
+    c.drawString(420,710,'Hombres:')
+    c.drawString(495,710, hombres)
+    c.drawString(420,690, 'Mujeres:')
+    c.drawString(495,690, mujeres)
+    #c.drawString(420,630, 'Fecha Emisión:')
+    #c.drawString(420,610,'28-06-2022 11:16:21')
+    c.setFillColor(rojo) ## NUMERO DEL FOLIO
+
+    #Tabla y altura guia
+    #data =[]
+    high = 550
+    #data.append(['''Orden #''','''Producto''','''Cantidad''', '''Talla''',])
+    #for uniforme in uniformes: #Salen todos los datos
+    #    data.append([uniforme.id,uniforme.ropa,uniforme.cantidad,uniforme.talla,])
+    #    high = high - 18
+
+    #Observaciones
+    #c.setFillColor(azul)
+    #c.setLineWidth(20)
+    #c.line(20,high-35,585,high-35) #Linea posterior horizontal
+    #c.setFillColor(white)
+    #c.setLineWidth(.1)
+    #c.setFont('Helvetica-Bold',10)
+    #c.drawCentredString(295,high-40,'Observaciones')
+    #c.setFillColor(black)
+    #c.setFont('Helvetica',8)
+    #c.drawCentredString(295,high-60,'                                                                                                                ')
+    #c.drawCentredString(295,high-70,'                                                                                                                ')
+
+    #Autorizacion parte
+    #c.setFillColor(azul)
+    #c.setFont('Helvetica',8)
+    #c.setLineWidth(1)
+    #c.line(150,high-150,275,high-150) #Linea posterior horizontal
+    #c.line(350,high-150,475,high-150) #Linea posterior horizontal
+    #c.setFillColor(black)
+    #c.drawCentredString(212.5,high-160,'Empleado')
+    #c.drawCentredString(412.5,high-160,'Aprobación')
+
+
+    #c.drawCentredString(412.5,high-145,'Nombre aprobador')
+
+    #Pie de pagina
+    c.setFillColor(azul)
+    c.setLineWidth(40)
+    c.line(20,50,585,50) #Linea posterior horizontal
+    c.setFillColor(white)
+    #c.drawCentredString(70,53,'Clasificación:')
+    #c.drawCentredString(140,53,'Nivel:')
+    #c.drawCentredString(240,53,'Preparado por:')
+    #c.drawCentredString(350,53,'Aprobado:')
+    #c.drawCentredString(450,53,'Fecha emisión:')
+    #c.drawCentredString(550,53,'Rev:')
+    #Parte de abajo
+    #c.drawCentredString(70,39,'Controlado')
+    #c.drawCentredString(140,39,'N5')
+    #c.drawCentredString(240,39,'SEOV-ALM-N4-01-01')
+    #c.drawCentredString(350,39,'SUB ADM')
+    #c.drawCentredString(450,39,'24/Oct/2018')
+    #c.drawCentredString(550,39,'001')
+
+    #Propiedades de la tabla
+    #width, height = letter
+    #table = Table(data, colWidths=[2.6 * cm, 2.6 * cm, 11.8 * cm, 2.6 * cm], repeatRows=1)
+    #table.setStyle(TableStyle([ #estilos de la tabla
+        #ENCABEZADO
+    #    ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+    #    ('TEXTCOLOR',(0,0),(-1,0), white),
+    #    ('FONTSIZE',(0,0),(-1,0), 13),
+    #    ('BACKGROUND',(0,0),(-1,0), azul),
+        #CUERPO
+    #    ('TEXTCOLOR',(0,1),(-1,-1), colors.black),
+    #    ('FONTSIZE',(0,1),(-1,-1), 10),
+    #    ]))
+    #table.wrapOn(c, width, height)
+    #table.drawOn(c, 25, high)
+    c.save()
+    c.showPage()
+    buf.seek(0)
+
+    return FileResponse(buf, as_attachment=True, filename='Reporte_'+distrito_seleccionado+'.pdf')
+

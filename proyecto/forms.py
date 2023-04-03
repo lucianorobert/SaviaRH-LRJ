@@ -22,30 +22,30 @@ class PerfilUpdateForm(forms.ModelForm):
 class StatusForm(forms.ModelForm):
     class Meta:
         model = Status
-        fields = ['perfil','registro_patronal','nss','curp','rfc','profesion',
+        fields = ['perfil','puesto','registro_patronal','fecha_ingreso','nss','curp','rfc','profesion',
                 'no_cedula','nivel','tipo_de_contrato','ultimo_contrato_vence','tipo_sangre',
                 'sexo','domicilio','estado_civil','fecha_planta_anterior','fecha_planta','telefono',]
 
 class StatusUpdateForm(forms.ModelForm):
     class Meta:
         model = Status
-        fields = ['registro_patronal','nss','curp','rfc','profesion',
+        fields = ['registro_patronal','puesto','nss','curp','rfc','profesion','fecha_ingreso',
                 'no_cedula','nivel','tipo_de_contrato','ultimo_contrato_vence','tipo_sangre',
                 'sexo','domicilio','estado_civil','fecha_planta_anterior','fecha_planta','telefono',]
 
 class CostoForm(forms.ModelForm):
     class Meta:
         model = Costo
-        fields = ['status','puesto','amortizacion_infonavit','fonacot','neto_catorcenal_sin_deducciones',
-                'complemento_salario_catorcenal','sueldo_diario','sdi','apoyo_de_pasajes','imms_obrero_patronal',
+        fields = ['status','amortizacion_infonavit','fonacot','neto_catorcenal_sin_deducciones',
+                'complemento_salario_catorcenal','sueldo_diario','apoyo_de_pasajes','laborados',
                 'apoyo_vist_familiar','estancia','renta','apoyo_estudios','amv','gasolina','campamento',]
 
 
 class CostoUpdateForm(forms.ModelForm):
     class Meta:
         model = Costo
-        fields = ['puesto','amortizacion_infonavit','fonacot','neto_catorcenal_sin_deducciones',
-                'complemento_salario_catorcenal','sueldo_diario','sdi','apoyo_de_pasajes','imms_obrero_patronal',
+        fields = ['amortizacion_infonavit','fonacot','neto_catorcenal_sin_deducciones',
+                'complemento_salario_catorcenal','sueldo_diario','apoyo_de_pasajes','laborados',
                 'apoyo_vist_familiar','estancia','renta','apoyo_estudios','amv','gasolina','campamento',]
 
 class DatosBancariosForm(forms.ModelForm):

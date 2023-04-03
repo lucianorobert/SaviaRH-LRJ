@@ -42,7 +42,7 @@
             <div class="card card-body">
                 <h5>Formato días economicos</h5>
                  <div class = "row mt-2 bg-white">
-                    {% if status_fijo.complete_costo == False %}
+                    {% if status_fijo.complete_status == False %}
                     <div class="d-none">
                     {% else %}
                     <div>
@@ -54,7 +54,7 @@
                             <a href="{% url 'Formularioformato_economicos' %}" type="submit" class="btn btn-outline-danger">
                                <i class="fa-solid fa-file-pdf fa-2xl"></i>
                             </a>
-                        </li> 
+                        </li>
                     </ul>
                 </div>
                 <hr>
@@ -70,10 +70,12 @@
                     </thead>
                     <tbody>
                         <tr>
+                            {% if status_fijo.complete_economicos == True %}
                             <td>{{dato.periodo}}</td>
                             <td>{{dato.dias_disfrutados}}</td>
                             <td>{{dato.dias_pendientes}}</td>
-                            <td><a class="btn btn-outline-info" id="btnActualizar" type="button" href=""><i class="fa-solid fa-clipboard"></i></a>
+                            <td><a class="btn btn-outline-info" id="btnActualizar" type="button" href="{% url 'Economicos_revisar' dato.status.id %}"><i class="fa-solid fa-clipboard"></i></a>
+                            {% endif %}
                         </tr>
                     </tbody>
                 </table>
@@ -94,7 +96,7 @@
                             <td>{{dato.periodo}}</td>
                             <td>{{dato.dias_disfrutados}}</td>
                             <td>{{dato.dias_pendientes}}</td>
-                            <td><a class="btn btn-outline-info" id="btnActualizar" type="button" href=""><i class="fa-solid fa-clipboard"></i></a>
+                            <td><a class="btn btn-outline-info" id="btnActualizar" type="button" href="{% url 'Economicos_revisar' dato.status.id %}"><i class="fa-solid fa-clipboard"></i></a>
                         </tr>
                     {% endfor %}
                     </tbody>

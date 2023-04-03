@@ -1,6 +1,6 @@
 import django_filters
 from django.db.models import Q
-from .models import Perfil, Status, Bonos, Costo, DatosBancarios, Vacaciones, Uniformes, Economicos, Catorcenas
+from .models import Perfil, Status, Bonos, Costo, DatosBancarios, Vacaciones, Uniformes, Economicos, Catorcenas, Distrito
 from django_filters import DateFilter, CharFilter
 
 class PerfilFilter(django_filters.FilterSet):
@@ -109,3 +109,10 @@ class CatorcenasFilter(django_filters.FilterSet):
     class Meta:
         model = Catorcenas
         fields = ['start_date','end_date',]
+
+class DistritoFilter(django_filters.FilterSet):
+    distrito = django_filters.CharFilter(field_name='distrito', lookup_expr='icontains')
+    class Meta:
+        model = Distrito
+        fields = ['distrito',]
+

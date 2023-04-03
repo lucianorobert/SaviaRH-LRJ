@@ -35,7 +35,7 @@
 {% if usuario_fijo.id == empleado.id %}
     <div>
 {% elif usuario.tipo.admin == True and usuario.distrito == empleado.distrito %}
-    <div> 
+    <div>
 {% elif usuario.tipo.admin == True and usuario.distrito.distrito == 'Matriz' %}
 {% else %}
     &nbsp;
@@ -43,7 +43,7 @@
     <i class="fa-solid fa-circle-exclamation fa-4x"></i>
     <h2 style="margin-top: 0.5em;">404</h2>
     <h2 style="margin-top: 0.25em;">Page not found</h2>
-    <p>Si tiene los permisos para acceder a esta información <br> comuníquese con los Administradores del sistema.</p> 
+    <p>Si tiene los permisos para acceder a esta información <br> comuníquese con los Administradores del sistema.</p>
     <a href="{% url 'index' %}" class="btn btn-outline-info"><i class="fa-solid fa-backward"></i>  Inicio</a>
     <div class="d-none">
 {% endif %}
@@ -77,7 +77,7 @@
                                         </tr>
                                         <tr>
                                             <th scope="row">Distrito</th>
-                                            <td>{{empleado.distrito}}</td>
+                                            <td>{{empleado.distrito}} {{empleado.division}}</td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Fecha de Nacimiento</th>
@@ -94,7 +94,7 @@
                                         <tr>
                                             <th scope="row">Subroyecto</th>
                                             <td>{{empleado.subproyecto}}</td>
-                                        </tr>                                      
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
