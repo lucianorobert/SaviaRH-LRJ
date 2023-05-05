@@ -121,6 +121,7 @@ class UserDatos(models.Model):
     distrito = models.ForeignKey(Distrito, on_delete = models.CASCADE, null=True)
     tipo = models.ForeignKey(TipoPerfil, on_delete = models.CASCADE, null=True)
     numero_de_trabajador = models.IntegerField(null=True,blank=True)
+    distrito = models.ForeignKey(Distrito, on_delete = models.CASCADE, null=True,blank=True)
     def __str__(self):
         return f'{self.user}, distrito: {self.distrito} '
 
@@ -139,6 +140,8 @@ class Perfil(models.Model):
     complete = models.BooleanField(default=False)
     complete_status = models.BooleanField(default=False)
 
+    class Meta:
+        unique_together = ('numero_de_trabajador', 'distrito',)
 
     @property
     def fotoURL(self):
@@ -220,6 +223,14 @@ class FactorIntegracion(models.Model):
     complete = models.BooleanField(default=False)
     def __str__(self):
         return f'Años: {self.years}, factor: {self.factor}'
+
+class TablaCesantia(models.Model):
+    sbc = models.DecimalField(max_digits=8, decimal_places=2,null=True, default=0)
+    sbc2 = models.DecimalField(max_digits=8, decimal_places=2,null=True, default=0)
+    cuota_patronal = models.DecimalField(max_digits=8, decimal_places=6,null=True, default=0)
+    complete = models.BooleanField(default=False)
+    def __str__(self):
+        return f'SBC del asegurado: {self.sbc}-{self.sbc2}, %Cuota patronal: {self.cuota_patronal}'
 
 class SalarioDatos(models.Model):
     UMA = models.DecimalField(max_digits=10, decimal_places=2,null=True, default=0)

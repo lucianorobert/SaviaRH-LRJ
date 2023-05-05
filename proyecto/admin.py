@@ -23,8 +23,10 @@ from .models import Ropa
 from .models import Uniforme
 from .models import Seleccion
 
+
 from .models import FactorIntegracion
 from .models import SalarioDatos
+from .models import TablaCesantia
 from .models import Costo
 from .models import Perfil
 from .models import Status
@@ -39,8 +41,21 @@ from .models import Status_Batch
 from .models import Costos_Batch
 from .models import Bancarios_Batch
 
+class PerfilAdmin(admin.ModelAdmin):
+    ordering = ['numero_de_trabajador']
+    list_display = ('numero_de_trabajador','nombres','apellidos','id')
+    search_fields = ('numero_de_trabajador'),
+
 class StatusAdmin(admin.ModelAdmin):
-    autocomplete_fields=['puesto']
+    ordering = ['id']
+    list_display = ('id','perfil','perfil_id',)
+    list_filter = ('complete_costo',)
+    search_fields = ('perfil__numero_de_trabajador'),
+
+class CostoAdmin(admin.ModelAdmin):
+    ordering = ['id']
+    list_display = ('id','status')
+    search_fields = ('status__perfil__numero_de_trabajador'),
 
 class PuestoAdmin(admin.ModelAdmin):
     search_fields = ('puesto'),
@@ -84,11 +99,12 @@ admin.site.register(Ropa)
 admin.site.register(Uniforme)
 admin.site.register(Seleccion)
 
-admin.site.register(Perfil)
+admin.site.register(Perfil, PerfilAdmin)
 admin.site.register(Status,StatusAdmin)
 admin.site.register(FactorIntegracion)
+admin.site.register(TablaCesantia)
 admin.site.register(SalarioDatos)
-admin.site.register(Costo)
+admin.site.register(Costo, CostoAdmin)
 admin.site.register(DatosBancarios)
 admin.site.register(Bonos)
 admin.site.register(Uniformes)
