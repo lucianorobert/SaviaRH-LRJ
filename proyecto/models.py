@@ -42,10 +42,12 @@ class Puesto(models.Model):
         return f'{self.puesto}'
 
 class Distrito(models.Model):
-    distrito = models.CharField(max_length=50,null=True)
+    distrito = models.CharField(max_length=20,null=True)
     complete = models.BooleanField(default=False)
     def __str__(self):
         return f'{self.distrito}'
+
+
 class Proyecto(models.Model):
     proyecto = models.CharField(max_length=50,null=True)
     complete = models.BooleanField(default=False)
@@ -86,11 +88,11 @@ class Banco(models.Model):
 class RegistroPatronal(models.Model):
     patronal = models.CharField(max_length=50,null=True)
     empresa = models.ForeignKey(Empresa, on_delete = models.CASCADE, null=True)
+    prima_anterior = models.DecimalField(max_digits=8, decimal_places=5,null=True, default=0)
+    prima = models.DecimalField(max_digits=8, decimal_places=5,null=True, default=0)
     complete = models.BooleanField(default=False)
     def __str__(self):
         return f'{self.patronal}'
-
-
 
 
     #Tabla ISR
@@ -119,6 +121,7 @@ class UserDatos(models.Model):
     distrito = models.ForeignKey(Distrito, on_delete = models.CASCADE, null=True)
     tipo = models.ForeignKey(TipoPerfil, on_delete = models.CASCADE, null=True)
     numero_de_trabajador = models.IntegerField(null=True,blank=True)
+    distrito = models.ForeignKey(Distrito, on_delete = models.CASCADE, null=True,blank=True)
     def __str__(self):
         return f'{self.user}, distrito: {self.distrito} '
 
@@ -127,6 +130,7 @@ class Perfil(models.Model):
     numero_de_trabajador = models.IntegerField(null=True)
     empresa = models.ForeignKey(Empresa, on_delete = models.CASCADE, null=True)
     distrito = models.ForeignKey(Distrito, on_delete = models.CASCADE, null=True)
+    division = models.CharField(max_length=15,blank=True)
     nombres = models.CharField(max_length=50,null=True)
     apellidos = models.CharField(max_length=50,null=True)
     fecha_nacimiento = models.DateField(null=True)
@@ -136,6 +140,8 @@ class Perfil(models.Model):
     complete = models.BooleanField(default=False)
     complete_status = models.BooleanField(default=False)
 
+    class Meta:
+        unique_together = ('numero_de_trabajador', 'distrito',)
 
     @property
     def fotoURL(self):
@@ -183,6 +189,8 @@ class Status(models.Model):
     estado_civil = models.ForeignKey(Civil, on_delete = models.CASCADE, null=True)
     fecha_planta_anterior = models.DateField(null=True, blank=True)
     fecha_planta = models.DateField(null=True,)
+    fecha_ingreso = models.DateField(null=True,blank=True)
+    puesto = models.ForeignKey(Puesto, on_delete = models.CASCADE, null=True)
     complete = models.BooleanField(default=False)
     complete_costo = models.BooleanField(default=False)
     complete_bancarios = models.BooleanField(default=False)
@@ -208,13 +216,33 @@ class DatosBancarios(models.Model):
         return f'{self.status.perfil.nombres} {self.status.perfil.apellidos}'
 
 
+    #Para el calculo utilizando la fecha de ingreso
+class FactorIntegracion(models.Model):
+    years = models.IntegerField(null=True)
+    factor = models.DecimalField(max_digits=10, decimal_places=6,null=True, default=0)
+    complete = models.BooleanField(default=False)
+    def __str__(self):
+        return f'Años: {self.years}, factor: {self.factor}'
 
+class TablaCesantia(models.Model):
+    sbc = models.DecimalField(max_digits=8, decimal_places=2,null=True, default=0)
+    sbc2 = models.DecimalField(max_digits=8, decimal_places=2,null=True, default=0)
+    cuota_patronal = models.DecimalField(max_digits=8, decimal_places=6,null=True, default=0)
+    complete = models.BooleanField(default=False)
+    def __str__(self):
+        return f'SBC del asegurado: {self.sbc}-{self.sbc2}, %Cuota patronal: {self.cuota_patronal}'
+
+class SalarioDatos(models.Model):
+    UMA = models.DecimalField(max_digits=10, decimal_places=2,null=True, default=0)
+    Salario_minimo = models.DecimalField(max_digits=10, decimal_places=2,null=True, default=0)
+    def __str__(self):
+        return f'Salario minimo {self.Salario_minimo}, UMA: {self.UMA}'
 
 class Costo(models.Model):
     #Independientes (formulario)
     status = models.ForeignKey(Status, on_delete = models.CASCADE, null=True)
+    laborados = models.IntegerField(null=True, default=0)
     seccion = models.CharField(max_length=50,null=True)
-    puesto = models.ForeignKey(Puesto, on_delete = models.CASCADE, null=True)
     amortizacion_infonavit = models.DecimalField(max_digits=14, decimal_places=2,null=True, default=0)
     fonacot = models.DecimalField(max_digits=14, decimal_places=2,null=True, default=0)
     neto_catorcenal_sin_deducciones = models.DecimalField(max_digits=14, decimal_places=2,null=True, default=0)

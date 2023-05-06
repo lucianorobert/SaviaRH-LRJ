@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-r9fy(pk86$+m$yra4u*dua2%u(8xp9e-t^(3q3ibft-oj6c+zk'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True #True es para ver la pantalla amarilla, False para ver el 404
 
 ALLOWED_HOSTS = ['*']
 

@@ -14,17 +14,17 @@ def contadores_processor(request):
         usuario_fijo = None
         status_fijo = None
     else:
-        usuario = UserDatos.objects.get(user=request.user.id)     
-        usuario_fijo = Perfil.objects.filter(numero_de_trabajador=usuario.numero_de_trabajador)
+        usuario = UserDatos.objects.get(user=request.user.id)
+        usuario_fijo = Perfil.objects.filter(numero_de_trabajador=usuario.numero_de_trabajador, distrito=usuario.distrito)
         if not usuario_fijo:
             usuario_fijo = None
         else:
-            usuario_fijo = Perfil.objects.get(numero_de_trabajador=usuario.numero_de_trabajador)
-        status_fijo = Status.objects.filter(perfil__numero_de_trabajador = usuario.numero_de_trabajador)
+            usuario_fijo = Perfil.objects.get(numero_de_trabajador=usuario.numero_de_trabajador, distrito=usuario.distrito)
+        status_fijo = Status.objects.filter(perfil__numero_de_trabajador = usuario.numero_de_trabajador, perfil__distrito = usuario.distrito)
         if not status_fijo:
             status_fijo = None
         else:
-            status_fijo = Status.objects.get(perfil__numero_de_trabajador = usuario.numero_de_trabajador)
+            status_fijo = Status.objects.get(perfil__numero_de_trabajador = usuario.numero_de_trabajador, perfil__distrito = usuario.distrito)
     return {
     'usuario':usuario,
     'usuario_fijo':usuario_fijo,

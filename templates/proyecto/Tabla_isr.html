@@ -51,7 +51,7 @@
     </div>
 
 <!-- Aquí empieza la generación de la tabla -->
-<div class = "row mt-2">
+<div class="card card-body">
     <div class="col-md-12">
         <table class="table table-striped table-hover bg-white">
             <thead class="text-black" style="background-color: #F5F5F5;">
@@ -63,7 +63,7 @@
                     <th scope="col">Para ingresos de</th>
                     <th scope="col">Hasta ingresos de</th>
                     <th scope="col">Cantidad de subsidio para el empleo mensual</th>
-                    <th scope="col">Editar</th>
+                <!--    <th scope="col">Editar</th> -->
                 </tr>
             </thead>
             <tbody>
@@ -76,11 +76,12 @@
                     <td>{{isr.p_ingresos}}</td>
                     <td>{{isr.g_ingresos}}</td>
                     <td>{{isr.subsidio}}</td>
-                    <td><a class="btn btn-outline-info" id="btnActualizar" type="button" href="{% url 'Isr_update' isr.id %}"><i class="fa-solid fa-pen-to-square"></i></a>
+                <!--    <td><a class="btn btn-outline-info" id="btnActualizar" type="button" href="{% url 'Isr_update' isr.id %}"><i class="fa-solid fa-pen-to-square"></i></a> -->
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+        <a href="{% url 'Administrar_tablas' %}" class="btn btn-outline-info"><i class="fa-solid fa-backward"></i></a>
     </div>
 </div>
 

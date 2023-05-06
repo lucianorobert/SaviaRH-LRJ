@@ -45,6 +45,7 @@
                                     <div class="input-group mb-3">
                                     <span class="input-group-text"><i class="fa-solid fa-calendar-plus"></i></span>
                                     {% render_field form.fecha_inicio type="date" class="form-control" %}
+                                    </div>
                                 </div>
                             </div>
                             <div class="row my-2">
@@ -53,6 +54,7 @@
                                     <div class="input-group mb-3">
                                     <span class="input-group-text"><i class="fa-solid fa-calendar-plus"></i></span>
                                     {% render_field form.fecha_fin type="date" class="form-control" %}
+                                    </div>
                                 </div>
                             </div>
                             <div class="row my-2">
@@ -61,10 +63,10 @@
                                     {{form.dia_inhabil|add_class:"form-control"}}
                                 </div>
                             </div>
-        <hr>
-        <button id="btnSave" type="submit" name="btnSend" class="btn btn-success">Guardar</button>
-        <a href="{% url 'Formato_vacaciones' %}" class="btn btn">Cancelar</a>
-         </form>
+                        <hr>
+                    <button id="btnSave" type="submit" name="btnSend" class="btn btn-success">Guardar</button>
+                    <a href="{% url 'Formato_vacaciones' %}" class="btn btn">Cancelar</a>
+                </form>
             </div>
         </div>
 </div>

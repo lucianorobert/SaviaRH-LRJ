@@ -35,16 +35,16 @@
 {% if status_fijo.id == estado.id %}
     <div>
 {% elif usuario.tipo.admin == True and usuario.distrito == estado.perfil.distrito %}
-    <div> 
+    <div>
 {% elif usuario.tipo.admin == True and usuario.distrito.distrito == 'Matriz' %}
-    <div> 
+    <div>
 {% else %}
     &nbsp;
     <div style="text-align: center;">
     <i class="fa-solid fa-circle-exclamation fa-4x"></i>
     <h2 style="margin-top: 0.5em;">404</h2>
     <h2 style="margin-top: 0.25em;">Page not found</h2>
-    <p>Si tiene los permisos para acceder a esta información <br> comuníquese con los Administradores del sistema.</p> 
+    <p>Si tiene los permisos para acceder a esta información <br> comuníquese con los Administradores del sistema.</p>
     <a href="{% url 'index' %}" class="btn btn-outline-info"><i class="fa-solid fa-backward"></i>  Inicio</a>
     <div class="d-none">
 {% endif %}
@@ -85,6 +85,10 @@
                                         <tr>
                                             <th scope="row">Profesión</th>
                                             <td>{{estado.profesion}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Puesto</th>
+                                            <td>{{estado.puesto}}</td>
                                         </tr>
                                         <tr>
                                             <th scope="row">No. de cédula</th>
@@ -129,6 +133,10 @@
                                          <tr>
                                             <th scope="row">Fecha de planta actual:</th>
                                             <td>{{estado.fecha_planta}}</td>
+                                        </tr>
+                                         <tr>
+                                            <th scope="row">Fecha de ingreso:</th>
+                                            <td>{{estado.fecha_ingreso}}</td>
                                         </tr>
                                     </tbody>
                                 </table>

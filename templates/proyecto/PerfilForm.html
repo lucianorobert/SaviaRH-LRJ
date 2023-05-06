@@ -48,7 +48,7 @@
                             </div>
                             <div class="row my-2">
                                 <label for="form.numero_de_trabajador" class="col-auto col-form-label my-1"><strong>Numero del empleado:</strong></label>
-                                <div class="col-1">
+                                <div class="col-2">
                                     {{form.numero_de_trabajador|add_class:"form-control"}}
                                 </div>
                             </div>
@@ -89,9 +89,7 @@
                                 </div>
                             </div>
                             <div class="row my-2">
-                                <div class="col-3">
                                     <label for="form.correo_electronico" class="col-auto col-form-label my-1"><strong>Correo electrónico:</strong></label>
-                                </div>
                                 <div class="col-3">
                                     <div class="input-group">
                                         <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-at"></i></span>
@@ -134,28 +132,27 @@
             </div>
         </div>
     </div>
-    <script>
-    document.getElementById("id_proyecto").addEventListener("change", function(element){
+<script>
+document.getElementById("id_proyecto").addEventListener("change", function(element){
     var select = document.getElementById('id_proyecto');
     var current_option = select.options[select.selectedIndex].value;
-    opciones = document.getElementsByClassName("js")
-    opciones.options[opciones.id="default_sel"]
+    var opciones = document.getElementById("subproyecto").options;
     for (var i=0; i < opciones.length; i++){
-
         if (opciones[i].getAttribute('proyecto') != current_option){
              opciones[i].setAttribute('class','js d-none')
         } else {
             opciones[i].setAttribute('class','js')
         }
     }
+    var other_selector = document.getElementById('id_subproyecto');
+    other_selector.selectedIndex = select.selectedIndex;
+});
 
+document.getElementById("subproyecto").addEventListener("change", function(element){
+    var select = document.getElementById('subproyecto');
+    var current_option = select.options[select.selectedIndex].value;
+    var other_selector = document.getElementById('id_subproyecto');
+    other_selector.selectedIndex = select.selectedIndex
     });
-
-    document.getElementById("subproyecto").addEventListener("change", function(element){
-        var select = document.getElementById('subproyecto');
-        var current_option = select.options[select.selectedIndex].value;
-        var other_selector = document.getElementById('id_subproyecto');
-        other_selector.selectedIndex = select.selectedIndex
-    });
-    </script>
+</script>
 {% endblock %}

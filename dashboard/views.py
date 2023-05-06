@@ -49,9 +49,9 @@ def index(request):
         economicos = Economicos.objects.filter(status__perfil__numero_de_trabajador=usuario.numero_de_trabajador).last()
         uniformes = Uniforme.objects.filter(orden__status__perfil__numero_de_trabajador=usuario.numero_de_trabajador)
         cantidad_uniformes=0
-        for uniforme in uniformes:
-            cantidad = uniforme.cantidad
-            cantidad_uniformes = cantidad_uniformes+cantidad
+        #for uniforme in uniformes:
+        #    cantidad_ = uniforme.cantidad
+        #    cantidad_uniformes = cantidad_uniformes+cantidad
     else:
         perfiles= Perfil.objects.filter(distrito=usuario.distrito,complete=True)
         cantidad = perfiles.count()
