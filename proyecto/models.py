@@ -364,6 +364,57 @@ class Uniforme(models.Model):
     def __str__(self):
         return f'Ropa: {self.ropa} Talla: {self.talla} Cantidad: {self.cantidad}'
 
+class Trabajos_encomendados(models.Model):
+    asunto1 = models.CharField(max_length=30,null=True,blank=True)
+    estado1 = models.CharField(max_length=30,null=True,blank=True)
+    asunto2 = models.CharField(max_length=30,null=True,blank=True)
+    estado2 = models.CharField(max_length=30,null=True,blank=True)
+    asunto3 = models.CharField(max_length=30,null=True,blank=True)
+    estado3 = models.CharField(max_length=30,null=True,blank=True)
+    asunto4 = models.CharField(max_length=30,null=True,blank=True)
+    estado4 = models.CharField(max_length=30,null=True,blank=True)
+    asunto5 = models.CharField(max_length=30,null=True,blank=True)
+    estado5 = models.CharField(max_length=30,null=True,blank=True)
+    asunto6 = models.CharField(max_length=30,null=True,blank=True)
+    estado6 = models.CharField(max_length=30,null=True,blank=True)
+    complete = models.BooleanField(default=False)
+    def __str__(self):
+        return f'ID: {self.id},'
+class Temas_comentario_solicitud_vacaciones(models.Model):
+    comentario1 = models.CharField(max_length=30,null=True,blank=True)
+    comentario2 = models.CharField(max_length=30,null=True,blank=True)
+    comentario3 = models.CharField(max_length=30,null=True,blank=True)
+    comentario4 = models.CharField(max_length=30,null=True,blank=True)
+    comentario5 = models.CharField(max_length=30,null=True,blank=True)
+    comentario6 = models.CharField(max_length=30,null=True,blank=True)
+    comentario7 = models.CharField(max_length=30,null=True,blank=True)
+    comentario8 = models.CharField(max_length=30,null=True,blank=True)
+    comentario9 = models.CharField(max_length=30,null=True,blank=True)
+    complete = models.BooleanField(default=False)
+    def __str__(self):
+        return f'ID: {self.id},'
+    
+class Solicitud_vacaciones(models.Model):
+    status = models.ForeignKey(Status, on_delete = models.CASCADE, null=True)
+    periodo = models.CharField(max_length=50,null=True)
+    fecha_inicio = models.DateField(null=True)
+    fecha_fin = models.DateField(null=True)
+    dia_inhabil = models.ForeignKey(Dia_vacacion, on_delete = models.CASCADE, blank=True, null=True)
+    recibe_nombre= models.CharField(max_length=50,null=True, blank=True)
+    recibe_area= models.CharField(max_length=50,null=True, blank=True)
+    recibe_puesto= models.CharField(max_length=50,null=True, blank=True)
+    recibe_sector= models.CharField(max_length=50,null=True, blank=True)
+    asunto = models.ForeignKey(Trabajos_encomendados, on_delete = models.CASCADE, null=True)
+    informacion_adicional= models.CharField(max_length=50,null=True, blank=True)
+    temas = models.ForeignKey(Temas_comentario_solicitud_vacaciones, on_delete = models.CASCADE, null=True)
+    anexos = models.CharField(max_length=50,null=True, blank=True)
+    autorizar = models.BooleanField(null=True, default=None)
+    created_at=models.DateTimeField(auto_now_add=True)
+    updated_at=models.DateTimeField(auto_now=True)
+    complete = models.BooleanField(default=False)
+    def __str__(self):
+        return f' id: {self.id} Status: {self.status} Fecha solicitud: {self.created_at} Días: {self.fecha_inicio} a {self.fecha_fin}'
+    
 class Vacaciones(models.Model):
     status = models.ForeignKey(Status, on_delete = models.CASCADE, null=True)
     periodo = models.CharField(max_length=50,null=True)
@@ -383,7 +434,18 @@ class Vacaciones(models.Model):
             return "Campo vacio"
         return f'{self.status.perfil.nombres} {self.status.perfil.apellidos}'
 
-
+class Solicitud_economicos(models.Model):
+    status = models.ForeignKey(Status, on_delete = models.CASCADE, null=True)
+    periodo = models.CharField(max_length=50,null=True)
+    fecha = models.DateField(null=True)
+    comentario = models.CharField(max_length=50,null=True)
+    autorizar = models.BooleanField(null=True, default=None)
+    created_at=models.DateTimeField(auto_now_add=True)
+    updated_at=models.DateTimeField(auto_now=True)
+    complete = models.BooleanField(default=False)
+    def __str__(self):
+        return f'Status: {self.status} Fecha solicitud: {self.created_at} Día: {self.fecha}'
+    
 class Economicos(models.Model):
     status = models.ForeignKey(Status, on_delete = models.CASCADE, null=True)
     periodo = models.CharField(max_length=50,null=True)
@@ -431,7 +493,6 @@ class Bancarios_Batch(models.Model):
     file_name = models.FileField(upload_to='product_bash')
     uploaded = models.DateField(auto_now_add=True)
     activated = models.BooleanField(default=False)
-
 
     def __str__(self):
         return f'File id:{self.id}'

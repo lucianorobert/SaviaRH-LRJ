@@ -1,6 +1,6 @@
 #from genericpath import exists
 #from itertools import count
-from proyecto.models import UserDatos, Perfil, Status
+from proyecto.models import UserDatos, Perfil, Status, Solicitud_economicos, Solicitud_vacaciones
 #from requisiciones.models import Requis
 #from user.models import Profile
 #Variables globales de usuario
@@ -25,8 +25,14 @@ def contadores_processor(request):
             status_fijo = None
         else:
             status_fijo = Status.objects.get(perfil__numero_de_trabajador = usuario.numero_de_trabajador, perfil__distrito = usuario.distrito)
+    solicitudes_economicos = Solicitud_economicos.objects.filter(complete=True, autorizar=None)
+    economicos_count = solicitudes_economicos.count()
+    solicitudes_vacaciones = Solicitud_vacaciones.objects.filter(complete=True, autorizar=None)
+    vacaciones_count = solicitudes_vacaciones.count()
     return {
     'usuario':usuario,
     'usuario_fijo':usuario_fijo,
     'status_fijo':status_fijo,
+    'economicos_count':economicos_count,
+    'vacaciones_count':vacaciones_count,
     }

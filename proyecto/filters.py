@@ -1,6 +1,7 @@
 import django_filters
 from django.db.models import Q
 from .models import Perfil, Status, Bonos, Costo, DatosBancarios, Vacaciones, Uniformes, Economicos, Catorcenas, Distrito
+from .models import Solicitud_vacaciones, Solicitud_economicos
 from django_filters import DateFilter, CharFilter
 
 class PerfilFilter(django_filters.FilterSet):
@@ -116,3 +117,25 @@ class DistritoFilter(django_filters.FilterSet):
         model = Distrito
         fields = ['distrito',]
 
+class SolicitudesVacacionesFilter(django_filters.FilterSet):
+    numero_de_trabajador = django_filters.NumberFilter(field_name='status__perfil__numero_de_trabajador')
+    nombres = CharFilter(method ='nombres_filter', label="Search")
+    distrito = django_filters.CharFilter(field_name='status__perfil__distrito__distrito', lookup_expr='icontains')
+
+    class Meta:
+        model = Solicitud_vacaciones
+        fields = ['nombres','distrito','numero_de_trabajador',]
+
+    def nombres_filter(self, queryset, name, value):
+        return queryset.filter(Q(status__perfil__nombres__icontains = value) | Q(status__perfil__apellidos__icontains = value))
+    
+class SolicitudesEconomicosFilter(django_filters.FilterSet):
+    numero_de_trabajador = django_filters.NumberFilter(field_name='status__perfil__numero_de_trabajador')
+    nombres = CharFilter(method ='nombres_filter', label="Search")
+    distrito = django_filters.CharFilter(field_name='status__perfil__distrito__distrito', lookup_expr='icontains')
+    class Meta:
+        model = Solicitud_economicos
+        fields = ['nombres','distrito','numero_de_trabajador',]
+        
+    def nombres_filter(self, queryset, name, value):
+        return queryset.filter(Q(status__perfil__nombres__icontains = value) | Q(status__perfil__apellidos__icontains = value))

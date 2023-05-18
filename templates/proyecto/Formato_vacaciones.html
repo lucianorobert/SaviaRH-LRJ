@@ -1,7 +1,7 @@
 {% extends 'partials/base.html' %}
 <html>
 <head>
-{% block title %}Formato Vacaciones{% endblock %}
+{% block title %}Solicitud Vacaciones{% endblock %}
 </head>
 <body>
 {% block content %}
@@ -40,7 +40,7 @@
         {% csrf_token %}
         <div class="col-12">
             <div class="card card-body">
-                <h5>Formato de vacaciones</h5>
+                <h5>Solicitud de vacaciones</h5>
                 <div class = "row mt-2 bg-white">
                     {% if status_fijo.complete_status == False %}
                     <div class="d-none">

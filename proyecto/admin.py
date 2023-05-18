@@ -32,8 +32,12 @@ from .models import Perfil
 from .models import Status
 from .models import DatosBancarios
 from .models import Bonos
-from .models import Uniformes
+from .models import Uniformes 
+from .models import Trabajos_encomendados
+from .models import Temas_comentario_solicitud_vacaciones
+from .models import Solicitud_vacaciones
 from .models import Vacaciones
+from .models import Solicitud_economicos
 from .models import Economicos
 from .models import Catorcenas
 from .models import Empleados_Batch
@@ -108,7 +112,11 @@ admin.site.register(Costo, CostoAdmin)
 admin.site.register(DatosBancarios)
 admin.site.register(Bonos)
 admin.site.register(Uniformes)
+admin.site.register(Trabajos_encomendados)
+admin.site.register(Temas_comentario_solicitud_vacaciones)
+admin.site.register(Solicitud_vacaciones)
 admin.site.register(Vacaciones)
+admin.site.register(Solicitud_economicos)
 admin.site.register(Economicos)
 admin.site.register(Catorcenas)
 admin.site.register(Empleados_Batch)

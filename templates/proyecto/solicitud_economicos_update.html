@@ -1,0 +1,90 @@
+{% extends 'partials/base.html' %}
+{% load widget_tweaks %}
+<html>
+<head>
+{% block title %}Solicitudes Economicos{% endblock %}
+</head>
+<body>
+{% block content %}
+<!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
+<div class="row my-4">
+    <div class="col-md-4">
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == "error" %}
+                <script>
+                Swal.fire({
+                    "title":"Error",
+                    "text":"{{message}}",
+                    "icon":"error",
+                })
+                </script>
+                {% else %}
+                <script>
+                Swal.fire({
+                    "title":"Excelente",
+                    "text":"{{message}}",
+                    "icon":"success",
+                })
+                </script>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+
+<hr>
+<hr>
+<div class="container card card-body">
+        <div class="columns is-mobile">
+            <div class="column is-half is-offset-one-quarter">
+                <h3 class="title is-size-3">Solicitud Economico</h3>
+                <hr>
+                <form method="POST">
+                    {% csrf_token %}
+                        <label for="form.solicitud" class="col-auto col-form-label"><strong>Solicitud: #{{solicitud.id}}</strong></label>
+                        <br>
+                        <label for="form.nombre" class="col-auto col-form-label"><strong>Empleado: {{solicitud.status.perfil.nombres}} {{solicitud.status.perfil.apellidos}}</strong></label>
+                        <br>
+                        <label for="form.fecha" class="col-auto col-form-label my-1"><strong>Fecha solicitada por el empleado:</strong></label>
+                        <div class="col-2">
+                            {% render_field form.fecha type="date" class="form-control" %}
+                        </div>
+                        <label for="form.comentario" class="col-auto col-form-label my-1"><strong>Comentario del empleado:</strong></label>
+                        <div class="col-4">
+                            {{ form.comentario|add_class:"form-control"}}
+                            <label for="id_autorizar" class="col-auto col-form-label my-1"><strong>Autorizar:</strong></label>
+                            <div class="col-12">
+                                {{ form.autorizar|add_class:"form-control"|attr:"id:id_autorizar"}}
+                            </div>
+                        <label for="form.texto_personalizado" id="texto_personalizado_label" class="col-auto col-form-label my-1"><strong>Observaciones:</strong></label>
+                        <div class="col-12">
+                            <input type="text" name="observaciones" id="texto_personalizado" class="form-control" maxlength="40">
+                        </div>
+                </div>
+                <hr>
+                <button type="submit" name="btnSend" class="btn btn-success">
+                    <span class="glyphicon glyphicon-ok"></span> Guardar
+                </button>
+                    <a href="{% url 'Solicitudes_economicos' %}" class="btn btn">Cancelar</a>
+                </form>
+         </div>
+    </div>
+</div>
+<!--<script>
+  document.getElementById('id_autorizar').addEventListener('change', function() {
+    var textoPersonalizado = document.getElementById('texto_personalizado');
+    var texto_personalizado_label = document.getElementById('texto_personalizado_label');
+    if (this.value === 'Yes') {
+      textoPersonalizado.style.display = 'block';
+      texto_personalizado_label.style.display = 'block';
+    } else {
+      textoPersonalizado.style.display = 'none';
+      texto_personalizado_label.style.display = 'none';
+    }
+  });
+</script> -->
+{% endblock %}
+</body>
+</html>

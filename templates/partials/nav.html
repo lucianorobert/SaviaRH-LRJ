@@ -49,7 +49,7 @@
                         <div class="d-none">
                         {% else %}
                         <div>
-                        <h6 class="dropdown-header">Usuario</h6>
+                        <h6 class="dropdown-header">Información del usuario</h6>
                         <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{% url 'Perfil_revisar' usuario_fijo.id %}">Perfil</a>
                             <a class="dropdown-item" href="{% url 'Status_revisar' status_fijo.id %}">Status</a>
@@ -71,14 +71,32 @@
                         {% else %}
                         <div>
                         {% endif %}
-                        <h6 class="dropdown-header">Empleados</h6>
+                        <h6 class="dropdown-header">Información de los empleados</h6>
                         <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{% url 'Perfil' %}">Perfiles</a>
                             <a class="dropdown-item" href="{% url 'Status' %}">Status</a>
+                            <h6 class="dropdown-header">Autorización de solicitudes</h6>
+                            <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{% url 'Solicitudes_vacaciones' %}">
+                                    Solicitudes vacaciones
+                                    {% if vacaciones_count > 0 %}
+                                    <span class="badge bg-danger"></span>
+                                    <span class="badge bg-danger">({{vacaciones_count}})</span>
+                                    <span class="sr-only">unread messages</span>
+                                    {% endif %} 
+                                </a>
+                                <a class="dropdown-item" href="{% url 'Solicitudes_economicos' %}">
+                                    Solicitudes económicos
+                                    {% if economicos_count > 0 %}
+                                    <span class="badge bg-danger"></span>
+                                    <span class="badge bg-danger">({{economicos_count}})</span>
+                                    <span class="sr-only">unread messages</span>
+                                    {% endif %} 
+                                </a>
                             <!--<a class="dropdown-item" href="{% url 'Tabla_isr' %}">Tabla datos ISR</a>-->
                             <!--<a class="dropdown-item" href="{% url 'Tabla_dias_vacaciones' %}">Tabla de días de vacaciones disponibles</a>-->
                             <div class="dropdown-divider"></div>
-                            <h6 class="dropdown-header">Tablas de datos</h6>
+                            <h6 class="dropdown-header">Tablas datos empleados</h6>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{% url 'Tabla_datosbancarios' %}">Datos bancarios</a>
                             <a class="dropdown-item" href="{% url 'Tabla_costo' %}">Costos</a>
@@ -87,17 +105,18 @@
                             <a class="dropdown-item" href="{% url 'Tabla_uniformes' %}">Uniformes</a>
                             <a class="dropdown-item" href="{% url 'Tabla_economicos' %}">Días económicos</a>
                             <div class="dropdown-divider"></div>
-                            <h6 class="dropdown-header">Información general</h6>
+                            <h6 class="dropdown-header">Información general del sistema</h6>
                             <a class="dropdown-item" href="{% url 'Administrar_tablas' %}">Datos generales</a>
                             <div class="dropdown-divider"></div>
                         </div>
                             {% if usuario_fijo.numero_de_trabajador == None %}
                             <div>
                             {% else %}
-                            <h6 class="dropdown-header">Formatos</h6>
+                            <h6 class="dropdown-header">Solicitudes</h6>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{% url 'Formato_vacaciones' %}">Vacaciones</a>
-                            <a class="dropdown-item" href="{% url 'Formato_economicos' %}">Economicos</a>
+                            <a class="dropdown-item" href="{% url 'Solicitar_vacacion' %}">Solicitar días de vacaciones</a>
+                            <a class="dropdown-item" href="{% url 'Solicitar_economico' %}">Solicitar días económicos</a>
+                            <a class="dropdown-item" href="{% url 'Solicitudes_vista_empleado' %}">Solicitudes revisadas</a>
                         <div class="dropdown-divider"></div>
                             {% endif %}
                     </div>

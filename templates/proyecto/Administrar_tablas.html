@@ -37,57 +37,43 @@
 <hr>
  <!-- Aqui es el encabezado -->
 <div class = "row mt-2 bg-white">
-        <form method=POST>
-        {% csrf_token %}
-        <div class="col-12">
-            <div class="card card-body">
-                <h5>Información general</h5>
-                 <div class = "row mt-2 bg-white">
-                    <hr>
-                    <ul class="nav nav-pills">
-                        <li class="nav-item mx-2">
-                            <button type="submit" name="Excel" class="btn btn-outline-success" value='Reporte Excel'>
-                                <i class="fa-solid fa-file-excel fa-2xl"></i>
-                            </button>
-                        </li>
-                        <li class="nav-item mx-2">
-                            <button type="submit" name="Pdf" class="btn btn-outline-danger" value='Reporte Pdf'>
-                                <i class="fa-solid fa-file-pdf fa-2xl"></i>
-                            </button>
-                        </li>
-                    </ul>
-                </div>
+<form method="POST">
+    {% csrf_token %}
+    <div class="col-12">
+        <div class="card card-body">
+            <h3>Información general sistema RH </h3>
+             <div class="row mt-2 bg-white">
+                <hr>
+                <h6>Generar reporte del sistema </h6>
+                <ul class="nav nav-pills">
+                    <li class="nav-item mx-2">
+                        <button type="submit" name="Excel" style="margin-left: 40px;" class="btn btn-outline-success" value="Reporte Excel">
+                            <i class="fa-solid fa-file-excel fa-2xl"></i>
+                        </button>
+                    </li>
+                    <li class="nav-item mx-2">
+                        <button type="submit" name="Pdf" class="btn btn-outline-danger" value="Reporte Pdf">
+                            <i class="fa-solid fa-file-pdf fa-2xl"></i>
+                        </button>
+                        <label for="distrito" style="margin-left: 20px;">Seleccione el distrito: </label>
+                        <select id="distrito" name="distrito_seleccionado">
+                            <option value="">Seleccione una opción</option>
+                            {% for distrito in distritos %}
+                                <option value="{{ distrito.distrito }}">{{ distrito.distrito }}</option>
+                            {% endfor %}
+                        </select>
+                    </li>
+                </ul>
             </div>
         </div>
-        </form>
-    <div class="card card-body">
-    <h5>Información específica</h5>
-    <form method="GET">
-        {% csrf_token %}
-        <label for="distrito">Seleccione el distrito: </label>
-        <select id="distrito" name="distrito_seleccionado">
-            {% for distrito in distritos %}
-                <option value="{{ distrito.distrito }}">{{ distrito.distrito }}</option>
-            {% endfor %}
-        </select>
-        <hr>
-    <ul class="nav nav-pills">
-        <li class="nav-item mx-2">
-            <button type="submit" name="Excel2" class="btn btn-outline-success" value='Reporte Excel'>
-                <i class="fa-solid fa-file-excel fa-2xl"></i>
-            </button>
-        </li>
-        <li class="nav-item mx-2">
-            <button type="submit" name="Pdf2" class="btn btn-outline-danger" value='Reporte Pdf'>
-                <i class="fa-solid fa-file-pdf fa-2xl"></i>
-            </button>
-        </li>
-    </ul>
-    </form>
+    </div>
+</form>
     <hr>
-    <center><h5>Tablas datos generales</h5></center>
+    <center><h5>Tablas de datos generales</h5></center>
+    <br>
     </div>
 </div>
+
     <div class="card-body">
         <div class="row">
             <div class="col-md-4">

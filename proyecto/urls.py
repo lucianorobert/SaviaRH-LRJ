@@ -43,6 +43,9 @@ urlpatterns = [
 
     path('Vacaciones/update/<int:pk>/', views.VacacionesUpdate, name='Vacaciones_update'),
     path('Vacaciones/revisar/<int:pk>/', views.VacacionesRevisar, name='Vacaciones_revisar'),
+    path('Solicitudes_vacaciones', views.Tabla_solicitud_vacaciones, name='Solicitudes_vacaciones'),
+    path('Solicitudes_vacaciones_formato/<int:pk>/', views.PdfFormatoVacaciones, name='Solicitudes_vacaciones_formato'), #genera el pdf
+    path('Solicitud_vacacion_autorizar/<int:pk>/', views.solicitud_vacacion_verificar, name='solicitud-vacacion-update'),
 
     path('Formulario_DatosBancarios', views.FormularioDatosBancarios, name='Formulario_datosbancarios'),
     path('Tabla_DatosBancarios', views.Tabla_Datosbancarios, name='Tabla_datosbancarios'),
@@ -68,13 +71,18 @@ urlpatterns = [
     path('Formulario_Economicos', views.FormularioEconomicos, name='Formulario_economicos'),
     path('Tabla_Economicos', views.Tabla_Economicos, name='Tabla_economicos'),
 
-    path('Formato/Vacaciones', views.FormatoVacaciones, name='Formato_vacaciones'),
-    path('Formulario/Formato/Vacaciones', views.FormFormatoVacaciones, name='Formularioformato_vacaciones'),
-    path('Formato/Economicos', views.FormatoEconomicos, name='Formato_economicos'),
-    path('Formulario/Formato/Economicos', views.FormFormatoEconomicos, name='Formularioformato_economicos'),
+    path('Solicitar/Vacaciones', views.SolicitudVacaciones, name='Solicitar_vacacion'),
+    path('Formato/Vacaciones', views.FormatoVacaciones, name='Formato_vacaciones'), #Borrar
+    #path('Formulario/Formato/Vacaciones', views.FormFormatoVacaciones, name='Formularioformato_vacaciones'),
+    path('Formato/Economicos', views.FormatoEconomicos, name='Formato_economicos'), #Borrar
+    path('Solicitar/Economico', views.SolicitudEconomicos, name='Solicitar_economico'),
 
     path('Economicos/update/<int:pk>/', views.EconomicosUpdate, name='Economicos_update'),
     path('Economicos/revisar/<int:pk>/', views.EconomicosRevisar, name='Economicos_revisar'),
-    #path('ajax/load-subproyectos/', views.load_subproyectos, name='ajax_load_subproyectos'),  # <-- rutina en Ajax
+    path('Solicitudes_economicos', views.Tabla_solicitud_economicos, name='Solicitudes_economicos'),
+    path('Solicitudes_economicos_formato/<int:pk>/', views.PdfFormatoEconomicos, name='Solicitudes_economicos_formato'), #genera el pdf
+    path('Solicitud_economico_autorizar/<int:pk>/', views.solicitud_economico_verificar, name='solicitud-economico-update'),
+
+    path('Solicitudes_revisadas/Empleado', views.Solicitudes_revisar_empleado, name='Solicitudes_vista_empleado'), #Vista empleado generar pdf
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

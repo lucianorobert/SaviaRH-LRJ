@@ -1,6 +1,7 @@
 from django import forms
 from proyecto.models import Perfil, Status, Costo, DatosBancarios, Bonos, Uniformes, Vacaciones, Economicos, DatosISR, TablaVacaciones, Empleados_Batch, Catorcenas, Proyecto, SubProyecto
-from proyecto.models import Status_Batch, Uniforme, Costos_Batch, Bancarios_Batch
+from proyecto.models import Status_Batch, Uniforme, Costos_Batch, Bancarios_Batch, Solicitud_economicos, Solicitud_vacaciones, Temas_comentario_solicitud_vacaciones
+
 class PerfilForm(forms.ModelForm):
     class Meta:
         model = Perfil
@@ -78,17 +79,36 @@ class UniformeForm(forms.ModelForm):
         model = Uniforme
         fields = ['ropa','talla','cantidad']
 
-
-
 class VacacionesForm(forms.ModelForm):
     class Meta:
         model = Vacaciones
         fields = ['status','fecha_inicio','fecha_fin','comentario', 'dia_inhabil',]
 
-class VacacionesFormato(forms.ModelForm):
+class VacacionesFormato(forms.ModelForm): ###
     class Meta:
         model = Vacaciones
         fields = ['fecha_inicio','fecha_fin', 'dia_inhabil',]
+
+class SolicitudVacacionesForm(forms.ModelForm):
+    class Meta:
+        model = Solicitud_vacaciones
+        fields = ['fecha_inicio','fecha_fin', 'dia_inhabil',]
+
+class SolicitudVacacionesUpdateForm(forms.ModelForm):
+    AUTORIZACION_CHOICES = (
+        ('Yes', 'Si'),
+        ('No', 'No'),
+    )
+
+    autorizar = forms.TypedChoiceField( #definir como TypedChoiceField en vez de ChoiceField, 
+        choices=AUTORIZACION_CHOICES, #lo que permite agregar un argumento adicional llamado coerce 
+        coerce=lambda x: x == 'Yes', #para realizar la conversión deseada del valor del campo.
+        widget=forms.Select(attrs={'class': 'form-control'})
+    ) #selecciona 'Yes', se convierte en True, y cuando selecciona 'No', se convierte en False.
+    
+    class Meta:
+        model = Solicitud_vacaciones
+        fields = ['fecha_inicio','fecha_fin', 'dia_inhabil','autorizar',]
 
 class VacacionesUpdateForm(forms.ModelForm):
     class Meta:
@@ -100,10 +120,29 @@ class EconomicosForm(forms.ModelForm):
         model = Economicos
         fields = ['status','fecha','comentario',]
 
-class EconomicosFormato(forms.ModelForm):
+class EconomicosFormato(forms.ModelForm): ####Borrar
     class Meta:
         model = Economicos
-        fields = ['fecha',]
+        fields = ['fecha','comentario',]
+
+class SolicitudEconomicosForm(forms.ModelForm):
+    class Meta:
+        model = Solicitud_economicos
+        fields = ['fecha','comentario',]
+class SolicitudEconomicosUpdateForm(forms.ModelForm):
+    AUTORIZACION_CHOICES = (
+        ('Yes', 'Si'),
+        ('No', 'No'),
+    )
+    
+    autorizar = forms.TypedChoiceField( #definir como TypedChoiceField en vez de ChoiceField, 
+        choices=AUTORIZACION_CHOICES, #lo que permite agregar un argumento adicional llamado coerce 
+        coerce=lambda x: x == 'Yes', #para realizar la conversión deseada del valor del campo.
+        widget=forms.Select(attrs={'class': 'form-control'})
+    ) #selecciona 'Yes', se convierte en True, y cuando selecciona 'No', se convierte en False.
+    class Meta:
+        model = Solicitud_economicos
+        fields = ['fecha','comentario','autorizar',]
 
 class EconomicosUpdateForm(forms.ModelForm):
     class Meta:
