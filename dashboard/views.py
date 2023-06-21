@@ -12,7 +12,7 @@ from reportlab.lib.colors import Color, black, blue, red, white
 from reportlab.platypus import BaseDocTemplate, Frame, Paragraph, NextPageTemplate, PageBreak, PageTemplate,Table, SimpleDocTemplate,TableStyle
 from reportlab.lib.styles import getSampleStyleSheet
 import os
-from proyecto.models import Perfil, Vacaciones, Economicos, UserDatos, Uniforme
+from proyecto.models import Perfil, Vacaciones, Economicos, UserDatos, Uniforme, DatosBancarios
 #from django.contrib.auth.decorators import login_required
 #from .filters import ArticulosparaSurtirFilter
 from django.http import HttpResponse
@@ -45,6 +45,12 @@ def index(request):
         cantidad2 = status.count()
         costo = Costo.objects.filter(complete = True)
         cantidad3 = costo.count()
+        vacacion = Vacaciones.objects.filter(complete = True)
+        cantidad4 = vacacion.count()
+        economico = Economicos.objects.filter(complete = True)
+        cantidad5 = economico.count()
+        bancario = DatosBancarios.objects.filter(complete = True)
+        cantidad6 = bancario.count()
         vacaciones = Vacaciones.objects.filter(status__perfil__numero_de_trabajador=usuario.numero_de_trabajador).last()
         economicos = Economicos.objects.filter(status__perfil__numero_de_trabajador=usuario.numero_de_trabajador).last()
         uniformes = Uniforme.objects.filter(orden__status__perfil__numero_de_trabajador=usuario.numero_de_trabajador)
@@ -59,6 +65,10 @@ def index(request):
         cantidad2 = status.count()
         costo = Costo.objects.filter(status__perfil__distrito=usuario.distrito,complete = True)
         cantidad3 = costo.count()
+        vacacion = Vacaciones.objects.filter(status__perfil__distrito=usuario.distrito,complete = True)
+        cantidad4 = vacacion.count()
+        economico = Economicos.objects.filter(status__perfil__distrito=usuario.distrito,complete = True)
+        cantidad5 = economico.count()
         vacaciones = Vacaciones.objects.filter(status__perfil__numero_de_trabajador=usuario.numero_de_trabajador).last()
         economicos = Economicos.objects.filter(status__perfil__numero_de_trabajador=usuario.numero_de_trabajador).last()
         uniformes = Uniforme.objects.filter(orden__status__perfil__numero_de_trabajador=usuario.numero_de_trabajador)
@@ -70,6 +80,9 @@ def index(request):
         'cantidad': cantidad,
         'cantidad2': cantidad2,
         'cantidad3': cantidad3,
+        'cantidad4': cantidad4,
+        'cantidad5': cantidad5,
+        'cantidad6': cantidad6,
         'vacaciones': vacaciones,
         'economicos': economicos,
         'cantidad_uniformes': cantidad_uniformes,

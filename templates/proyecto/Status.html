@@ -79,7 +79,7 @@
             <form method="GET" class="row g-3">
                 {% csrf_token %}
                 <label for="status_filter.form.perfil__numero_de_trabajador" class="col-sm-auto col-form-label text-right"><strong>No. Trabajador:</strong></label>
-                <div class="col-auto">
+                <div class="col-sm-1">
                        {% render_field status_filter.form.numero_de_trabajador class="form-control" %}
                 </div>
                 <label for="status_filter.form.perfil__nombres" class="col-sm-auto col-form-label text-right"><strong>Nombre:</strong></label>

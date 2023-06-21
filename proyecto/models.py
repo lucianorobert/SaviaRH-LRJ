@@ -138,7 +138,10 @@ class Perfil(models.Model):
     proyecto = models.ForeignKey(Proyecto, on_delete = models.CASCADE, null=True)
     subproyecto = models.ForeignKey(SubProyecto, on_delete = models.CASCADE, null=True)
     complete = models.BooleanField(default=False)
+    baja = models.BooleanField(default=False)
     complete_status = models.BooleanField(default=False)
+    history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
+    editado = models.CharField(max_length=15,blank=True)
 
     class Meta:
         unique_together = ('numero_de_trabajador', 'distrito',)
@@ -185,10 +188,10 @@ class Status(models.Model):
     ultimo_contrato_vence = models.DateField(null=True)
     tipo_sangre = models.ForeignKey(Sangre, on_delete = models.CASCADE, null=True)
     sexo = models.ForeignKey(Sexo, on_delete = models.CASCADE, null=True)
-    domicilio = models.CharField(max_length=60,null=True)
+    domicilio = models.CharField(max_length=75,null=True)
     estado_civil = models.ForeignKey(Civil, on_delete = models.CASCADE, null=True)
     fecha_planta_anterior = models.DateField(null=True, blank=True)
-    fecha_planta = models.DateField(null=True,)
+    fecha_planta = models.DateField(null=True, blank=True)
     fecha_ingreso = models.DateField(null=True,blank=True)
     puesto = models.ForeignKey(Puesto, on_delete = models.CASCADE, null=True)
     complete = models.BooleanField(default=False)
@@ -204,11 +207,12 @@ class Status(models.Model):
 
 class DatosBancarios(models.Model):
     status = models.ForeignKey(Status, on_delete = models.CASCADE, null=True)
-    no_de_cuenta = models.CharField(max_length=50,null=True)
-    numero_de_tarjeta = models.CharField(max_length=18,null=True,blank=True)
-    clabe_interbancaria = models.CharField(max_length=50,null=True)
+    no_de_cuenta = models.CharField(max_length=35,null=True)
+    numero_de_tarjeta = models.CharField(max_length=35,null=True,blank=True)
+    clabe_interbancaria = models.CharField(max_length=35,null=True)
     banco = models.ForeignKey(Banco, on_delete = models.CASCADE, null=True)
     complete = models.BooleanField(default=False)
+    history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
 
     def __str__(self):
         if self.status ==None:
@@ -289,6 +293,7 @@ class Costo(models.Model):
     updated_at=models.DateField(auto_now=True)
     complete = models.BooleanField(default=False)
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
+    editado = models.CharField(max_length=15,blank=True)
     def __str__(self):
         if self.status ==None:
             return "Campo vacio"
@@ -305,6 +310,7 @@ class Bonos(models.Model):
     updated_at=models.DateTimeField(auto_now=True)
     complete = models.BooleanField(default=False)
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
+    editado = models.CharField(max_length=15,blank=True)
     def __str__(self):
         if self.costo ==None:
             return "Campo vacio"
@@ -425,14 +431,15 @@ class Vacaciones(models.Model):
     dias_disfrutados = models.IntegerField(null=True, default=0)
     total_pendiente = models.IntegerField(null=True, default=0)
     comentario = models.CharField(max_length=50,null=True)
-    created_at=models.DateTimeField(auto_now_add=True)
+    created_at=models.DateTimeField(auto_now=True)
     updated_at=models.DateTimeField(auto_now=True)
     complete = models.BooleanField(default=False)
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
+    editado = models.CharField(max_length=15,blank=True)
     def __str__(self):
         if self.status == None:
             return "Campo vacio"
-        return f'{self.status.perfil.nombres} {self.status.perfil.apellidos}'
+        return f'{self.status.perfil.nombres} {self.status.perfil.apellidos} {self.periodo} {self.total_pendiente}'
 
 class Solicitud_economicos(models.Model):
     status = models.ForeignKey(Status, on_delete = models.CASCADE, null=True)
@@ -457,6 +464,7 @@ class Economicos(models.Model):
     complete = models.BooleanField(default=False)
     complete_dias = models.BooleanField(default=False)
     history = HistoricalRecords(history_change_reason_field=models.TextField(null=True))
+    editado = models.CharField(max_length=15,blank=True)
     def __str__(self):
         if self.status == None:
             return "Campo vacio"
@@ -497,4 +505,10 @@ class Bancarios_Batch(models.Model):
     def __str__(self):
         return f'File id:{self.id}'
 
+class Vacaciones_anteriores_Batch(models.Model):
+    file_name = models.FileField(upload_to='product_bash')
+    uploaded = models.DateField(auto_now_add=True)
+    activated = models.BooleanField(default=False)
 
+    def __str__(self):
+        return f'File id:{self.id}'

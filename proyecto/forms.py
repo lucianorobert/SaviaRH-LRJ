@@ -1,6 +1,6 @@
 from django import forms
 from proyecto.models import Perfil, Status, Costo, DatosBancarios, Bonos, Uniformes, Vacaciones, Economicos, DatosISR, TablaVacaciones, Empleados_Batch, Catorcenas, Proyecto, SubProyecto
-from proyecto.models import Status_Batch, Uniforme, Costos_Batch, Bancarios_Batch, Solicitud_economicos, Solicitud_vacaciones, Temas_comentario_solicitud_vacaciones
+from proyecto.models import Status_Batch, Uniforme, Costos_Batch, Bancarios_Batch, Solicitud_economicos, Solicitud_vacaciones, Temas_comentario_solicitud_vacaciones, Vacaciones_anteriores_Batch
 
 class PerfilForm(forms.ModelForm):
     class Meta:
@@ -184,3 +184,8 @@ class CatorcenasForm(forms.ModelForm):
     class Meta:
         model = Catorcenas
         fields = ['catorcena','fecha_inicial','fecha_final',]
+
+class Vacaciones_anteriores_BatchForm(forms.ModelForm):
+    class Meta:
+        model = Vacaciones_anteriores_Batch
+        fields= ['file_name']

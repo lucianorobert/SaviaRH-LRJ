@@ -36,44 +36,92 @@
         <div class="columns is-mobile">
             <div class="column is-half is-offset-one-quarter">
                 <h3 class="title is-size-3">Vacaciones del empleado</h3>
-                <h7 class="title is-size-3">{{vaca.status.perfil.nombres}} {{vaca.status.perfil.apellidos}}</h7>
+                <h7 class="title is-size-3">{{actual.status.perfil.nombres}} {{actual.status.perfil.apellidos}}</h7>
                 <hr>
                 <h5 class="title is-size-3">Días pendientes por año</h5>
                 <div class='table-responsive'>
                     <table class="table table-ligth table-striped mx-1">
-                    <thead>
+                        <thead>
                             <tr>
-                                <th scope="col">Fecha de planta</th>
                                 <th scope="col">Fecha de planta anterior</th>
+                                <th scope="col">Fecha de planta</th>
                                 <th scope="col">Periodo vacacional</th>
                                 <th scope="col">Días asignados a ese año</th>
                                 <th scope="col">Días disfrutados</th>
-                                 <th scope="col">Total pendiente</th>                               
+                                <th scope="col">Total pendiente</th>
+                                <th scope="col">Acción</th>
                             </tr>
-                    </thead>
-                    <tbody>
-                    {% for dato in datos %}
+                        </thead>
+                        <tbody>
+                        {% for dato in datos %}
                             <tr>
-                                <th scope="col">{{dato.status.fecha_planta_anterior}}</th>
-                                <th scope="col">{{dato.status.fecha_planta}}</th>
-                                <th scope="col">{{dato.periodo}}</th>                               
-                                <th scope="col">{{dato.dias_de_vacaciones}}</th>
-                                <th scope="col">{{dato.dias_disfrutados}}</th>
-                                <th scope="col">{{dato.total_pendiente}}</th>
+                                <td>{{ dato.status.fecha_planta_anterior }}</td>
+                                <td>{{ dato.status.fecha_planta }}</td>
+                                <td>{{ dato.periodo }}</td>
+                                <td>{{ dato.dias_de_vacaciones }}</td>
+                                <td>{{ dato.dias_disfrutados }}</td>
+                                <td>{{ dato.total_pendiente }}</td>
+                                <td>
+                                    <button class="btn btn-primary btn-inspeccionar" data-historial="{{ dato.history.all }}">Inspeccionar</button>
+                                </td>
                             </tr>
-                    {% endfor %}
-                    </tbody>
+                            <tr class="tr-historial" style="display: none;">
+                                <td colspan="6">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Fecha de vacación</th>
+                                                <th scope="col">Fecha de planta anterior</th>
+                                                <th scope="col">Fecha de planta</th>
+                                                <th scope="col">Periodo vacacional</th>
+                                                <th scope="col">Días asignados a ese año</th>
+                                                <th scope="col">Días disfrutados</th>
+                                                <th scope="col">Total pendiente</th>
+                                                <th scope="col">Fecha modificación</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for historial in dato.history.all %}
+                                                <tr>
+                                                    <td>{{ historial.status.fecha_inicio }}-{{ historial.status.fecha_fin }}</td>
+                                                    <td>{{ historial.status.fecha_planta_anterior }}</td>
+                                                    <td>{{ historial.status.fecha_planta }}</td>
+                                                    <td>{{ historial.periodo }}</td>
+                                                    <td>{{ historial.dias_de_vacaciones }}</td>
+                                                    <td>{{ historial.dias_disfrutados }}</td>
+                                                    <td>{{ historial.total_pendiente }}</td>
+                                                    <td>{{ historial.updated_at }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
                     </table>
                 </div>
-            <h5 align="right"> Total de días de vacaciones pendientes: {{resultado}}</h5>
+            <br>
+            <h5 align="right"> Total de días pendientes: {{resultado}}</h5>
             </div>
             <hr>
-            <a href="{% url 'Tabla_vacaciones_empleados' %}" class="btn btn-outline-info"><i class="fa-solid fa-backward"></i></a>
+            {% if usuario.tipo.admin == False %}
+                <div class="d-none">
+            {% else %}
+                <div>
+            {% endif %}
+                <a href="{% url 'Tabla_vacaciones_empleados' %}" class="btn btn-outline-info"><i class="fa-solid fa-backward"></i></a>
+            </div>
         </div>
     </div>
 
 <script>
-var dias = document.getElementById("id_dias_disfrutados");
-dias.value = "";
+    const botonesInspeccionar = document.querySelectorAll('.btn-inspeccionar');
+    botonesInspeccionar.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const historialRow = btn.parentNode.parentNode.nextElementSibling;
+            historialRow.style.display = historialRow.style.display === 'none' ? 'table-row' : 'none';
+        });
+    });
 </script>
 {% endblock %}

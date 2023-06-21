@@ -46,15 +46,18 @@
                 <hr>
                 {% else %}
                 <div class="form-group">
-                    <label class="col-auto col-form-label"><strong>Información económicos del empleado</strong></label>
+                    <label class="col-auto col-form-label"><strong>Información vacaciones del empleado</strong></label>
                     <br>
-                    <label for="form.nombre" class="col-auto col-form-label">Días disfrutados: {{datos.dias_disfrutados}}</label>
+                    <label for="form.nombre" class="col-auto col-form-label">Días disfrutados este año: {{datos.dias_disfrutados}}</label>
                     <br>
-                    <label for="form.nombre" class="col-auto col-form-label">Días pendientes: {{datos.total_pendiente}}</label>
+                    <label for="form.nombre" class="col-auto col-form-label">Días pendientes totales del empleado, contando años anteriores: {{pendiente}}</label>
                     <br>
-                    <label for="form.nombre" class="col-auto col-form-label">Ultima fecha que se tomo: {{datos.fecha_inicio}} a {{datos.fecha_fin}}</label>            
+                    <label for="form.nombre" class="col-auto col-form-label">Ultima fecha que se tomo: {{datos.fecha_inicio}} a {{datos.fecha_fin}}</label>   
+                    <br>
+                    <a href="{% url 'Vacaciones_revisar' status_fijo.id %}" class="btn btn-primary" target="_blank"><i class="fa-solid fa-square-up-right"></i> Datos completos de vacaciones del empleado</a>         
                     <br>                
                 </div>
+                <hr>
                 {% endif %} 
                 <h4 class="title is-size-3">Formulario</h4>
                 <label for="form.nombre" class="col-auto col-form-label"><strong>Empleado: {{datos.status.perfil.nombres}} {{datos.status.perfil.apellidos}}</strong></label>

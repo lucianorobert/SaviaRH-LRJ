@@ -77,7 +77,11 @@
                             </tbody>
                         </table>
                             <hr>
-                            <div class="col-md-2">
+                            {% if usuario.tipo.admin == False %}
+                                <div class="d-none">
+                            {% else %}
+                                <div>
+                            {% endif %}
                                 <a href="{% url 'Tabla_economicos' %}" class="btn btn-outline-info"><i class="fa-solid fa-backward"></i></a>
                             </div>
                         </div>

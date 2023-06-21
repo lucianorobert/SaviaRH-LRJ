@@ -1,6 +1,6 @@
 import django_filters
 from django.db.models import Q
-from .models import Perfil, Status, Bonos, Costo, DatosBancarios, Vacaciones, Uniformes, Economicos, Catorcenas, Distrito
+from .models import Perfil, Status, Bonos, Costo, DatosBancarios, Vacaciones, Uniformes, Economicos, Catorcenas, Distrito, Empresa
 from .models import Solicitud_vacaciones, Solicitud_economicos
 from django_filters import DateFilter, CharFilter
 
@@ -18,7 +18,7 @@ class PerfilFilter(django_filters.FilterSet):
 class StatusFilter(django_filters.FilterSet):
     numero_de_trabajador = django_filters.NumberFilter(field_name='perfil__numero_de_trabajador')
     empresa = django_filters.CharFilter(field_name='perfil__empresa__empresa', lookup_expr='icontains')
-    distrito = django_filters.CharFilter(field_name='perfil__distrito__distrito', lookup_expr='icontains')
+    distrito = django_filters.ModelChoiceFilter(queryset=Distrito.objects.all(), field_name='perfil__distrito__distrito')
     nombres = CharFilter(method ='nombres_filter', label="Search")
     profesion = django_filters.CharFilter(field_name='profesion', lookup_expr='icontains')
 
@@ -40,15 +40,16 @@ class BancariosFilter(django_filters.FilterSet):
         return queryset.filter(Q(status__perfil__nombres__icontains = value) | Q(status__perfil__apellidos__icontains = value))
 
 class CostoFilter(django_filters.FilterSet):
+    numero_de_trabajador = django_filters.NumberFilter(field_name='status__perfil__numero_de_trabajador')
     nombres = CharFilter(method ='nombres_filter', label="Search")
-    empresa = django_filters.CharFilter(field_name='status__perfil__empresa__empresa', lookup_expr='icontains')
-    distrito = django_filters.CharFilter(field_name='status__perfil__distrito__distrito', lookup_expr='icontains')
-    proyecto = django_filters.CharFilter(field_name='status__perfil__proyecto', lookup_expr='icontains')
-    subproyecto = django_filters.CharFilter(field_name='status__perfil__subproyecto', lookup_expr='icontains')
+    empresa = django_filters.ModelChoiceFilter(queryset=Empresa.objects.all(), field_name='status__perfil__empresa_empresa')
+    distrito = django_filters.ModelChoiceFilter(queryset=Distrito.objects.all(), field_name='status__perfil__distrito__distrito')
+    #proyecto = django_filters.CharFilter(field_name='status__perfil__proyecto', lookup_expr='icontains')
+    #subproyecto = django_filters.CharFilter(field_name='status__perfil__subproyecto', lookup_expr='icontains')
 
     class Meta:
         model = Costo
-        fields = ['nombres','empresa','distrito','proyecto','subproyecto']
+        fields = ['numero_de_trabajador','nombres','empresa','distrito']
 
     def nombres_filter(self, queryset, name, value):
         return queryset.filter(Q(status__perfil__nombres__icontains = value) | Q(status__perfil__apellidos__icontains = value))
@@ -63,7 +64,7 @@ class BonosFilter(django_filters.FilterSet):
         fields = ['start_date','end_date','nombres']
 
     def nombres_filter(self, queryset, name, value):
-        return queryset.filter(Q(status__perfil__nombres__icontains = value) | Q(status__perfil__apellidos__icontains = value))
+        return queryset.filter(Q(costo__status__perfil__nombres__icontains = value) | Q(costo__status__perfil__apellidos__icontains = value))
 
 class VacacionesFilter(django_filters.FilterSet):
     nombres = CharFilter(method ='nombres_filter', label="Search")

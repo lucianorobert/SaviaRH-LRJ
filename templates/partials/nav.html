@@ -53,6 +53,8 @@
                         <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{% url 'Perfil_revisar' usuario_fijo.id %}">Perfil</a>
                             <a class="dropdown-item" href="{% url 'Status_revisar' status_fijo.id %}">Status</a>
+                            <a class="dropdown-item" href="{% url 'Vacaciones_revisar' status_fijo.id %}">Vacaciones</a>
+                            <a class="dropdown-item" href="{% url 'Economicos_revisar' status_fijo.id %}">Economicos</a>
                             {% if status_fijo.complete_bancarios == True %}
                                 <a class="dropdown-item" href="{% url 'Empleado_bancarios' status_fijo.id %}">Datos bancarios</a>
                             {% endif %}

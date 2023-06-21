@@ -89,6 +89,7 @@
             <table class="table table-striped table-hover bg-white">
             <thead class="text-black" style="background-color: #F5F5F5;">
                 <tr style="background-color:#2A628F;color:#ffffff;">
+                    <th scope="col"># Empleado</th>
                     <th scope="col">Empleado</th>
                     <th scope="col">Periodo</th>
                     <th scope="col">Días económicos disfrutados</th>
@@ -100,6 +101,7 @@
             <tbody>
                 {% for economico in economicos %}
                 <tr>
+                    <td>{{economico.status.perfil.numero_de_trabajador}}</td>
                     <td>{{economico.status.perfil.nombres}} {{economico.status.perfil.apellidos}}</td>
                     <td>{{economico.periodo}}</td>
                     <td>{{economico.dias_disfrutados}}</td>
@@ -119,7 +121,8 @@
             <table class="table table-striped table-hover bg-white">
             <thead class="text-black" style="background-color: #F5F5F5;">
                 <tr style="background-color:#2A628F;color:#ffffff;">
-                    <th scope="col">Empleado</th>
+                    <th scope="col">Numero</th>
+                    <th scope="col"># Empleado</th>
                     <th scope="col">Periodo</th>
                     <th scope="col">Días económicos disfrutados</th>
                     <th scope="col">Días económicos pendientes</th>
@@ -131,6 +134,7 @@
             <tbody>
                 {% for economico in economicoss %}
                 <tr>
+                    <td>{{economico.status.perfil.numero_de_trabajador}}</td>
                     <td>{{economico.status.perfil.nombres}} {{economico.status.perfil.apellidos}}</td>
                     <td>{{economico.periodo}}</td>
                     <td>{{economico.dias_disfrutados}}</td>

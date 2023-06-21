@@ -22,6 +22,7 @@ from .models import Tallas
 from .models import Ropa
 from .models import Uniforme
 from .models import Seleccion
+from .models import Vacaciones_anteriores_Batch
 
 
 from .models import FactorIntegracion
@@ -60,6 +61,11 @@ class CostoAdmin(admin.ModelAdmin):
     ordering = ['id']
     list_display = ('id','status')
     search_fields = ('status__perfil__numero_de_trabajador'),
+
+class VacacionAdmin(admin.ModelAdmin):
+    ordering = ['id']
+    list_display = ('id','status')
+    search_fields = ('status__perfil__nombres'),
 
 class PuestoAdmin(admin.ModelAdmin):
     search_fields = ('puesto'),
@@ -115,7 +121,7 @@ admin.site.register(Uniformes)
 admin.site.register(Trabajos_encomendados)
 admin.site.register(Temas_comentario_solicitud_vacaciones)
 admin.site.register(Solicitud_vacaciones)
-admin.site.register(Vacaciones)
+admin.site.register(Vacaciones, VacacionAdmin)
 admin.site.register(Solicitud_economicos)
 admin.site.register(Economicos)
 admin.site.register(Catorcenas)
@@ -123,3 +129,4 @@ admin.site.register(Empleados_Batch)
 admin.site.register(Status_Batch)
 admin.site.register(Costos_Batch)
 admin.site.register(Bancarios_Batch)
+admin.site.register(Vacaciones_anteriores_Batch)

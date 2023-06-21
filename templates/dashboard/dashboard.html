@@ -64,7 +64,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-4">
-                            <a class="text-decoration-none text-dark" href="{% url 'Formato_vacaciones' %}">
+                            <a class="text-decoration-none text-dark" href="{% url 'Vacaciones_revisar' status_fijo.id %}">
                                 <div class="card my-card shadow text-center p-3">
                                     <h4>Días de vacaciones pendientes <i class="fa-solid fa-calendar-days"></i></h4>
                                     <h3>{{vacaciones.total_pendiente}}</h3>
@@ -72,7 +72,7 @@
                             </a>
                         </div>
                         <div class="col-md-4">
-                            <a class="text-decoration-none text-dark" href="{% url 'Tabla_catorcenas' %}">
+                            <a class="text-decoration-none text-dark" href="{% url 'Economicos_revisar' status_fijo.id %}">
                                 <div class="card my-card shadow text-center p-3">
                                     <h4>Días económicos pendientes <i class="fa-solid fa-calendar-days"></i></h4>
                                     <h3>{{economicos.dias_pendientes}}</h3>
@@ -83,7 +83,11 @@
                             <a class="text-decoration-none text-dark" href="{% url 'Uniformes_completados_revisar' status_fijo.id %}">
                                 <div class="card my-card shadow text-center p-3">
                                     <h4>Uniformes recibidos <i class="fa-solid fa-shirt"></i></h4>
+                                    {% if cantidad_uniformes == 0 %}
+                                    <div class="d-none"></div>
+                                    {% else %}
                                     <h3>{{cantidad_uniformes}}</h3>
+                                    {% endif %}
                                 </div>
                             </a>
                         </div>
@@ -122,6 +126,34 @@
                                 <div class="card my-card shadow text-center p-3">
                                     <h4>Costos <i class="fas fa-sack-dollar"></i></h4>
                                     <h3>{{cantidad3}}</h3>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <a class="text-decoration-none text-dark" href="{% url 'Tabla_vacaciones_empleados' %}">
+                                <div class="card my-card shadow text-center p-3">
+                                    <h4>Vacaciones <i class="fa-solid fa-users"></i></h4>
+                                    <h3>{{cantidad4}}</h3>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a class="text-decoration-none text-dark" href="{% url 'Tabla_economicos' %}">
+                                <div class="card my-card shadow text-center p-3">
+                                    <h4>Economicos <i class="fa-solid fa-folder"></i></h4>
+                                    <h3>{{cantidad5}}</h3>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a class="text-decoration-none text-dark" href="{% url 'Tabla_datosbancarios' %}">
+                                <div class="card my-card shadow text-center p-3">
+                                    <h4>Bancarios <i class="fa-solid fa-folder"></i></h4>
+                                    <h3>{{cantidad6}}</h3>
                                 </div>
                             </a>
                         </div>

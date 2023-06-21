@@ -116,6 +116,7 @@
                     <th scope="col">Proyecto</th>
                     <th scope="col">Subproyecto</th>
                     <th scope="col">Detalle</th>
+                    <th scope="col">Baja/Cambio Distrito</th>
                     <th scope="col">Editar</th>
 
                 </tr>
@@ -128,10 +129,11 @@
                     <td>{{perfil.distrito}} {{perfil.division}}</td>
                     <td>{{perfil.nombres}} {{perfil.apellidos}}</td>
                     <td>{{perfil.fecha_nacimiento}}</td>
-                    <td>{{perfil.correo_electronico}}</td>
+                    <td>{{perfil.correo_electronico}}</td> 
                     <td>{{perfil.proyecto}}</td>
                     <td>{{perfil.subproyecto}}</td>
                     <td><a class="btn btn-outline-info" id="btnRevisar" type="button" href="{% url 'Perfil_revisar' perfil.id %}"><i class="fa-solid fa-address-card"></i></a>
+                    <td><a type="button" class="btn btn-outline-light" style="background-color:#9a9b9d" data-bs-toggle="modal" data-bs-target='#dialog' hx-target="#document" hx-get="{% url 'Cambio_baja_empleado' perfil.id %}"><i class="fa-solid fa-pen-to-square"></i></a>
                     <td><a class="btn btn-outline-info" id="btnActualizar" type="button" href="{% url 'Perfil_update' perfil.id %}"><i class="fa-solid fa-pen-to-square"></i></a>
                 </tr>
                 {% endfor %}

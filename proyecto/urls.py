@@ -16,6 +16,7 @@ urlpatterns = [
     path('upload_Perfil', views.upload_batch_empleados, name='Upload_perfil'),
 
     path('Perfil/update/<int:pk>/', views.PerfilUpdate, name='Perfil_update'),
+    path('Perfil/Cambio_Baja/<int:pk>/', views.Cambio_baja_empleado, name='Cambio_baja_empleado'),  
     path('Perfil/revisar/<int:pk>/', views.Perfil_revisar, name='Perfil_revisar'),
     path('Status/update/<int:pk>/', views.StatusUpdate, name='Status_update'),
     path('Status/revisar/<int:pk>/', views.Status_revisar, name='Status_revisar'),
@@ -46,6 +47,7 @@ urlpatterns = [
     path('Solicitudes_vacaciones', views.Tabla_solicitud_vacaciones, name='Solicitudes_vacaciones'),
     path('Solicitudes_vacaciones_formato/<int:pk>/', views.PdfFormatoVacaciones, name='Solicitudes_vacaciones_formato'), #genera el pdf
     path('Solicitud_vacacion_autorizar/<int:pk>/', views.solicitud_vacacion_verificar, name='solicitud-vacacion-update'),
+    path('upload_Vacaciones_anteriores', views.upload_batch_vacaciones_anteriores, name='Upload_vacaciones_anteriores'),
 
     path('Formulario_DatosBancarios', views.FormularioDatosBancarios, name='Formulario_datosbancarios'),
     path('Tabla_DatosBancarios', views.Tabla_Datosbancarios, name='Tabla_datosbancarios'),
