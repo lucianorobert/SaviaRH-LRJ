@@ -1340,14 +1340,14 @@ def FormularioVacaciones(request):
         for tabla in tablas:
             if antiguedad >= tabla.years:
                 descanso.dias_de_vacaciones = tabla.days
+                
         #Aqui se agregan los dias pendientes anteriores
         descanso.dias_de_vacaciones = descanso.dias_de_vacaciones + pendientes
-
         if descanso.dias_disfrutados < 0:
             messages.error(request, '(Dias disfrutados) La cantidad capturada debe ser mayor o igual 0')
         else:
             if descanso.dias_disfrutados > descanso.dias_de_vacaciones:
-                messages.error(request, '(Dias disfrutados) La cantidad total capturada debe ser menor a {descanso.dias_de_vacaciones} ')
+                messages.error(request, f'(Dias disfrutados) La cantidad total capturada debe ser menor a {descanso.dias_de_vacaciones} ')
             else:
                 periodofecha = descanso.created_at.year
                 str(periodo)

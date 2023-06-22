@@ -1,5 +1,7 @@
 from django.db import models
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
+from django.conf import settings #22/03/2022
+User = settings.AUTH_USER_MODEL #22/03/2022
 from simple_history.models import HistoricalRecords
 
 
@@ -123,7 +125,7 @@ class UserDatos(models.Model):
     numero_de_trabajador = models.IntegerField(null=True,blank=True)
     distrito = models.ForeignKey(Distrito, on_delete = models.CASCADE, null=True,blank=True)
     def __str__(self):
-        return f'{self.user}, distrito: {self.distrito} '
+        return f'{self.user}, distrito: {self.distrito}'
 
 class Perfil(models.Model):
     foto = models.ImageField(null=True, blank=True, upload_to="perfil/")

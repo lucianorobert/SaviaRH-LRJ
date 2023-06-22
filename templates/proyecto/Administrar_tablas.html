@@ -1,119 +1,110 @@
 {% extends 'partials/base.html' %}
 {% load widget_tweaks %}
-<html>
 <head>
-{% block title %}Información general{% endblock %}
+    {% block title %}Información general{% endblock %}
 </head>
 <body>
-{% block content %}
-<!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
-<div class="row my-4">
-    <div class="col-md-4">
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        {% if messages %}
-            {% for message in messages %}
-                {% if message.tags == "error" %}
-                <script>
-                Swal.fire({
-                    "title":"Error",
-                    "text":"{{message}}",
-                    "icon":"error",
-                })
-                </script>
-                {% else %}
-                <script>
-                Swal.fire({
-                    "title":"Excelente",
-                    "text":"{{message}}",
-                    "icon":"success",
-                })
-                </script>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
+    {% block content %}
+    <!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
+    <div class="row my-3">
+        <div class="col-md-4">
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.tags == "error" %}
+                    <script>
+                    Swal.fire({
+                        "title":"Error",
+                        "text":"{{message}}",
+                        "icon":"error",
+                    })
+                    </script>
+                    {% else %}
+                    <script>
+                    Swal.fire({
+                        "title":"Excelente",
+                        "text":"{{message}}",
+                        "icon":"success",
+                    })
+                    </script>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
     </div>
-</div>
-<hr>
-<hr>
- <!-- Aqui es el encabezado -->
-<div class = "row mt-2 bg-white">
-<form method="POST">
-    {% csrf_token %}
-    <div class="col-12">
-        <div class="card card-body">
-            <h3>Información general sistema RH </h3>
-             <div class="row mt-2 bg-white">
-                <hr>
-                <h6>Generar reporte del sistema </h6>
-                <ul class="nav nav-pills">
-                    <li class="nav-item mx-2">
-                        <button type="submit" name="Excel" style="margin-left: 40px;" class="btn btn-outline-success" value="Reporte Excel">
-                            <i class="fa-solid fa-file-excel fa-2xl"></i>
-                        </button>
-                    </li>
-                    <li class="nav-item mx-2">
-                        <button type="submit" name="Pdf" class="btn btn-outline-danger" value="Reporte Pdf">
-                            <i class="fa-solid fa-file-pdf fa-2xl"></i>
-                        </button>
-                        <label for="distrito" style="margin-left: 20px;">Seleccione el distrito: </label>
-                        <select id="distrito" name="distrito_seleccionado">
-                            <option value="">Seleccione una opción</option>
-                            {% for distrito in distritos %}
-                                <option value="{{ distrito.distrito }}">{{ distrito.distrito }}</option>
-                            {% endfor %}
-                        </select>
-                    </li>
-                </ul>
+  
+    <!-- Aqui es el encabezado -->
+    <div class="body flex-grow-1 px-4">
+        <div class="row">
+            <div>
+                <div class="col-12">
+                    <div class="card card-body mt-3">
+                        <div>
+                            <h3>Información general sistema RH </h3>
+                        </div>
+                        <div class="align-items-center mt-2">
+                            <form method="POST">
+                                {% csrf_token %}
+                                <h6>Generar reporte del sistema </h6>
+                                <label for="distrito" style="margin-left: 20px;">Seleccione el distrito: </label>
+                                <select id="distrito" name="distrito_seleccionado">
+                                    <option value="">Seleccione una opción</option>
+                                    {% for distrito in distritos %}
+                                        <option value="{{ distrito.distrito }}">{{ distrito.distrito }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" name="Excel" style="margin-left: 40px;" class="btn btn-outline-success" value="Reporte Excel">
+                                    <i class="fa-solid fa-file-excel fa-2xl"></i>
+                                </button>
+                                <button type="submit" name="Pdf" class="btn btn-outline-danger" value="Reporte Pdf">
+                                    <i class="fa-solid fa-file-pdf fa-2xl"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <center><h4>Tablas de datos generales</h4></center>
+                        <div class="row">
+                            <div class="col-md-4 my-3">
+                                <a class="text-decoration-none text-dark" href="{% url 'Tabla_dias_vacaciones' %}">
+                                    <div class="card my-card shadow text-center p-3">
+                                        <h4>Tabla de antigüedad <i class="fa-solid fa-database"></i></h4>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-4 my-3">
+                                <a class="text-decoration-none text-dark" href="{% url 'Tabla_isr' %}">
+                                    <div class="card my-card shadow text-center p-3">
+                                        <h4>Tabla ISR <i class="fa-solid fa-database"></i></h4>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-4 my-3">
+                                <a class="text-decoration-none text-dark" href="{% url 'Tabla_catorcenas' %}">
+                                    <div class="card my-card shadow text-center p-3">
+                                        <h4>Tabla días de catorcenas <i class="fa-solid fa-database"></i></h4>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-4 my-3">
+                                <a class="text-decoration-none text-dark" href="">
+                                    <div class="card my-card shadow text-center p-3">
+                                        <h4>Salario minimo: ${{salario.Salario_minimo}}</h4>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-4 my-3">
+                                <a class="text-decoration-none text-dark" href="">
+                                    <div class="card my-card shadow text-center p-3">
+                                        <h4>UMA: ${{salario.UMA}}</h4>
+                                    </div>
+                                </a>
+                            </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</form>
-    <hr>
-    <center><h5>Tablas de datos generales</h5></center>
-    <br>
     </div>
-</div>
-
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-4">
-                <a class="text-decoration-none text-dark" href="{% url 'Tabla_dias_vacaciones' %}">
-                    <div class="card my-card shadow text-center p-3">
-                        <h4>Tabla de antigüedad <i class="fa-solid fa-database"></i></h4>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-4">
-                <a class="text-decoration-none text-dark" href="{% url 'Tabla_isr' %}">
-                    <div class="card my-card shadow text-center p-3">
-                        <h4>Tabla ISR <i class="fa-solid fa-database"></i></h4>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-4">
-                <a class="text-decoration-none text-dark" href="{% url 'Tabla_catorcenas' %}">
-                    <div class="card my-card shadow text-center p-3">
-                        <h4>Tabla días de catorcenas <i class="fa-solid fa-database"></i></h4>
-                    </div>
-                </a>
-            </div>
-            <hr>
-            <div class="col-md-4">
-                <a class="text-decoration-none text-dark" href="">
-                    <div class="card my-card shadow text-center p-3">
-                        <h4>Salario minimo: ${{salario.Salario_minimo}}</h4>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-4">
-                <a class="text-decoration-none text-dark" href="">
-                    <div class="card my-card shadow text-center p-3">
-                        <h4>UMA: ${{salario.UMA}}</h4>
-                    </div>
-                </a>
-            </div>
-    </div>
-{% endblock %}
-
+    {% endblock %}
 </body>
-</html>

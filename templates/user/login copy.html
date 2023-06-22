@@ -1,0 +1,324 @@
+{% extends 'partials/base.html' %}
+{% load crispy_forms_tags %}
+{% block title %} Login Page {% endblock %}
+
+
+{% block content %}
+<hr>
+<hr>
+{% if user.is_authenticated %}
+  <div class='container'>
+        <div class='row mt-5'>
+            <div class='col-md-6 offset-md-3'>
+                <div class='border p-3 bg-white'>
+                    <h3>Login Page</h3>
+                    <hr>
+                   <h6>En este momento ya estás activo en el sistema como: {{user.username}}</h6>
+                </div>
+            </div>
+        </div>
+    </div>
+{%else%}
+    <div class='container'>
+        <div class='row mt-5'>
+            <div class='col-md-6 offset-md-3'>
+                <div class='border p-3 bg-white'>
+                    <h3>Login Page</h3>
+                    <hr>
+                    <form method='POST'>
+                        {% csrf_token %}
+                        <div>
+                        {{form|crispy}}
+                        </div>
+                        <hr>
+                        <input class='btn btn-success' type='submit' value='Log in'>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif%}
+{% endblock%}
+
+
+
+///Centrado horizontalmente 
+<!-- {% extends 'partials/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %}Login Page{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <div class="row mt-5">
+      {% if user.is_authenticated %}
+        <div class="col-md-12 offset-md-3">
+          <div class="border p-3 bg-white">
+            <h3>Login Page</h3>
+            <hr>
+            <h6>En este momento ya estás activo en el sistema como: {{ user.username }}</h6>
+          </div>
+        </div>
+      {% else %}
+        <div class="col-md-6">
+          <div class="border p-3 bg-white">
+            <h3>Login Page</h3>
+            <hr>
+            <form method="POST">
+              {% csrf_token %}
+              <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            {{ form.username|as_crispy_field }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.password|as_crispy_field }}
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="col-md-6">
+                            <div class="border p-3 bg-white" style="width: 200px; height: 200px;">
+                                <img src="{% static 'images/logo/logo_vordcab.png' %}" alt="SAVIA" width="50" height="50">
+                            </div>
+                          </div>
+                    </div>
+                </div>
+            </div>
+                
+              <hr>
+              <input class="btn btn-success" type="submit" value="Log in">
+            </form>
+          </div>
+        </div>
+        
+      {% endif %}
+    </div>
+  </div>
+{% endblock %} -->
+
+
+
+
+//verticalmente
+{% extends 'partials/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %}Login Page{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <div class="row mt-5 justify-content-center">
+      {% if user.is_authenticated %}
+        <div class="col-md-6">
+          <div class="border p-3 bg-white">
+            <h3>Login Page</h3>
+            <hr>
+            <h6>En este momento ya estás activo en el sistema como: {{ user.username }}</h6>
+          </div>
+        </div>
+      {% else %}
+        <div class="col-md-6">
+          <div class="border p-3 bg-white">
+            <h3>Login Page</h3>
+            <hr>
+            <form method="POST">
+              {% csrf_token %}
+              <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            {{ form.username|as_crispy_field }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.password|as_crispy_field }}
+                        </div>
+                        <hr>
+                        <input class="btn btn-success" type="submit" value="Log in">
+                    </div>
+                    <div class="col">
+                        <div class="border p-3 bg-white" style="width: 200px; height: 200px;">
+                            <img src="{% static 'images/logo/logo_vordcab.png' %}" alt="SAVIA" width="50" height="50">
+                        </div>
+                    </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
+
+
+//both
+{% extends 'partials/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %}Login Page{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <div class="row mt-5 justify-content-center align-items-center" style="min-height: 100vh;">
+      {% if user.is_authenticated %}
+        <div class="col-md-6">
+          <div class="border p-3 bg-white">
+            <h3>Login Page</h3>
+            <hr>
+            <h6>En este momento ya estás activo en el sistema como: {{ user.username }}</h6>
+          </div>
+        </div>
+      {% else %}
+        <div class="col-md-6">
+          <div class="border p-3 bg-white">
+            <h3>Login Page</h3>
+            <hr>
+            <form method="POST">
+              {% csrf_token %}
+              <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            {{ form.username|as_crispy_field }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.password|as_crispy_field }}
+                        </div>
+                        <hr>
+                        <input class="btn btn-success" type="submit" value="Log in">
+                    </div>
+                    <div class="col">
+                        <div class="border p-3 bg-white" style="width: 200px; height: 200px;">
+                            <img src="{% static 'images/logo_vordcab.png' %}" alt="SAVIA" width="50" height="50">
+                        </div>
+                    </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
+
+
+{% extends 'partials/base.html' %} 
+{% load crispy_forms_tags %}
+{% load static %} 
+{% block title %}Login Page{% endblock %} 
+{% block content %}
+<div class="container">
+  <div
+    class="row justify-content-center align-items-center"
+    style="min-height: 100vh"
+  >
+    {% if user.is_authenticated %}
+    <div class="col-md-6">
+      <div class="border p-3 bg-white">
+        <h3>Login Page</h3>
+        <hr />
+        <h6>
+          En este momento ya estás activo en el sistema como: {{ user.username}}
+        </h6>
+      </div>
+    </div>
+    {% else %}
+    <div class="col-md-6">
+      <div class="border p-3 bg-white">
+        <h3>Login Page</h3>
+        <hr />
+        <form method="POST">
+          {% csrf_token %}
+          <div class="container">
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  {{ form.username|as_crispy_field }}
+                </div>
+                <div class="form-group">
+                  {{ form.password|as_crispy_field }}
+                </div>
+                <hr />
+                <input class="btn btn-success btn-primary btn-lg btn-block" type="submit" value="Log in" />
+              </div>
+              <div class="col">
+                <div
+                  class="border p-3 bg-white">
+                  <img src="{% static 'images/logo/logo_vordcab-50.png' %}"/>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+
+
+{% extends 'partials/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %}Login Page{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <div class="row justify-content-center align-items-center" style="min-height: 100vh">
+    <div class="row mt-5">
+      {% if user.is_authenticated %}
+        <div class="col-md-6">
+          <div class="border p-3 bg-white">
+            <h3>Login Page</h3>
+            <hr>
+            <h6>En este momento ya estás activo en el sistema como: {{ user.username }}</h6>
+          </div>
+        </div>
+      {% else %}
+        <div class="col-md-6">
+          <div class="border p-3 bg-white">
+            <h3>Login Page</h3>
+            <hr>
+            <form method="POST">
+              {% csrf_token %}
+              <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            {{ form.username|as_crispy_field }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.password|as_crispy_field }}
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="col-md-6">
+                            <div class="border p-3 bg-white" style="width: 235px; height: 185px;">
+                                <img src="{% static 'images/logo/logo_vordcab-100.png' %}" width="225" height="160">
+                            </div>
+                          </div>
+                    </div>
+                </div>
+            </div>
+                
+              <hr>
+              <input class="btn btn-success" type="submit" value="Log in">
+            </form>
+          </div>
+        </div>
+        
+      {% endif %}
+    </div>
+</div>
+  </div>
+{% endblock %}
+
+

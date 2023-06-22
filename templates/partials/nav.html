@@ -9,7 +9,7 @@
     {% if user.is_authenticated %}
         <div class="container-fluid">
             <a class="navbar-brand" href={% url "index" %}>
-            <img src="https://www.pythonanywhere.com/user/vicjosh/files/home/vicjosh/mysite/templates/partials/SAVIA_Logo1.png" alt="SAVIA" width="50" height="50">
+            <img src="{% static 'SAVIA_Logo.png' %}" alt="SAVIA" width="50" height="50">
             </a>
             <ul class="nav nav-pills" >
                 <li  class="nav-item">
@@ -21,12 +21,12 @@
                 {% if usuario_fijo.numero_de_trabajador == None %}
                     <div>
                     <li class="nav-item">
-                    <a class="nav-link text-white" >{{usuario.user}}</a>
+                        <a class="nav-link text-white" href="{% url 'user-profile' %}"> {{usuario.user}}</a>
                     </li>
                 {% else %}
                     <div>
                     <li class="nav-item">
-                    <a class="nav-link text-white" href="{% url 'Perfil_revisar' usuario_fijo.id %}">{{usuario_fijo.nombres}} {{usuario_fijo.apellidos}}</a>
+                    <a class="nav-link text-white" href="{% url 'user-profile' usuario_fijo.id %}">{{usuario_fijo.nombres}} {{usuario_fijo.apellidos}}</a>
                     </li>
                 {% endif %}
 
@@ -38,6 +38,8 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
                     <span class="navbar-toggler-icon"></span>
             </button>
+
+            <!-- Empieza sidebar menu -->
             <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
                 <div class="offcanvas-header">
                     <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Menú</h5>
@@ -122,21 +124,7 @@
                     </div>
                 </div>
             </div>
-    <!--
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <a class="navbar-brand text-white" href="#">
-                    <img src="https://www.pythonanywhere.com/user/UlisesHuesca/files/home/UlisesHuesca/inventoryproject/templates/partials/SAVIA_Logo.png" alt="SAVIA" width="36" height="30">
-                </a>
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link active text-white" aria-current="page" href="">Registro</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="">Login</a>
-                    </li>
-                </ul>
-            </div>
-    -->
+            <!-- Termina sidebar   -->
         </div>
     {% endif %}
 </nav>

@@ -25,11 +25,11 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('dashboard/', include('dashboard.urls')),
     path('proyecto/', include('proyecto.urls')),
-    path('user/', include('user.urls')),
+    path('', include('user.urls')),
     path('admin/', admin.site.urls),
-    path('', auth_views.LoginView.as_view(template_name='user/login.html'), name='user-login'),
-    path('logout/', auth_views.LogoutView.as_view(template_name='user/logout.html'), name='user-logout'),
-    path('register/', user_view.register, name='user-register'),
-    path('profile/', user_view.profile, name='user-profile'),
+    # path('', auth_views.LoginView.as_view(template_name='user/login.html'), name='user-login'),
+    # path('logout/', auth_views.LogoutView.as_view(template_name='user/logout.html'), name='user-logout'),
+    # path('register/', user_view.register, name='user-register'),
+    # path('profile/', user_view.profile, name='user-profile'),
 
 ]  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

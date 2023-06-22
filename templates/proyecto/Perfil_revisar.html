@@ -1,119 +1,126 @@
 {% extends 'partials/base.html' %}
 {% load widget_tweaks %}
-
-{% block content %}
-<!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
-<div class="row my-4">
-    <div class="col-md-4">
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        {% if messages %}
-            {% for message in messages %}
-                {% if message.tags == "error" %}
-                <script>
-                Swal.fire({
-                    "title":"Error",
-                    "text":"{{message}}",
-                    "icon":"error",
-                })
-                </script>
-                {% else %}
-                <script>
-                Swal.fire({
-                    "title":"Excelente",
-                    "text":"{{message}}",
-                    "icon":"success",
-                })
-                </script>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
+<head>
+    {% block title %}Perfil info{% endblock %}
+</head>
+<body>
+    {% block content %}
+    <!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
+    <div class="row my-4">
+        <div class="col-md-4">
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.tags == "error" %}
+                    <script>
+                    Swal.fire({
+                        "title":"Error",
+                        "text":"{{message}}",
+                        "icon":"error",
+                    })
+                    </script>
+                    {% else %}
+                    <script>
+                    Swal.fire({
+                        "title":"Excelente",
+                        "text":"{{message}}",
+                        "icon":"success",
+                    })
+                    </script>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
     </div>
-</div>
 
-<hr>
-<hr>
-{% if usuario_fijo.id == empleado.id %}
-    <div>
-{% elif usuario.tipo.admin == True and usuario.distrito == empleado.distrito %}
-    <div>
-{% elif usuario.tipo.admin == True and usuario.distrito.distrito == 'Matriz' %}
-{% else %}
-    &nbsp;
-    <div style="text-align: center;">
-    <i class="fa-solid fa-circle-exclamation fa-4x"></i>
-    <h2 style="margin-top: 0.5em;">404</h2>
-    <h2 style="margin-top: 0.25em;">Page not found</h2>
-    <p>Si tiene los permisos para acceder a esta información <br> comuníquese con los Administradores del sistema.</p>
-    <a href="{% url 'index' %}" class="btn btn-outline-info"><i class="fa-solid fa-backward"></i>  Inicio</a>
-    <div class="d-none">
-{% endif %}
-    <div class="container">
-        <div class="row my-4">
-            <div class="col-md-4"></div>
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header text-black" style="background-color: #F5F5F5;">
-                        <div style="text-align:right">
-                            <strong>
-                                Información de Perfil
-                            </strong>
-                            <img class="img-thumbnail" width=100px src='{{empleado.empresa.logoURL}}'  alt="Logo de Empresa">
+    {% if usuario_fijo.id == empleado.id %}
+        <div>
+    {% elif usuario.tipo.admin == True and usuario.distrito == empleado.distrito %}
+        <div>
+    {% elif usuario.tipo.admin == True and usuario.distrito.distrito == 'Matriz' %}
+    {% else %}
+        &nbsp;
+        <div style="text-align: center;">
+            <i class="fa-solid fa-circle-exclamation fa-4x"></i>
+            <h2 style="margin-top: 0.5em;">404</h2>
+            <h2 style="margin-top: 0.25em;">Page not found</h2>
+            <p>Si tiene los permisos para acceder a esta información <br> comuníquese con los Administradores del sistema.</p>
+            <a href="{% url 'index' %}" class="btn btn-outline-info"><i class="fa-solid fa-backward"></i>  Inicio</a>
+        <div class="d-none">
+    {% endif %}
+    <div class="container card card-body" style="margin: 0 auto; width: 105vh;">
+        <div class="row">
+            <div>
+                <div class="col-12">
+                    <!-- <div class="card card-body"> -->
+                    <div class="row mt-2">
+                        <div>
+                            <div class="card-header text-black" style="background-color: #F5F5F5;">
+                                <div style="text-align:right">
+                                    <strong>
+                                        Información de Perfil
+                                    </strong>
+                                    <img class="img-thumbnail" width=100px src='{{empleado.empresa.logoURL}}'  alt="Logo de Empresa">
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <span class="h4">{{empleado.nombres}} {{empleado.apellidos}}</span>
-                                <hr>
-                                <table class="table bg-white table-borderless">
-                                    <tbody>
-                                        <tr>
-                                            <th scope="row">Número de Identificación</th>
-                                            <td>{{empleado.numero_de_trabajador}}</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Empresa</th>
-                                            <td>{{empleado.empresa}}</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Distrito</th>
-                                            <td>{{empleado.distrito}} {{empleado.division}}</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Fecha de Nacimiento</th>
-                                            <td>{{empleado.fecha_nacimiento}}</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Correo Electrónico</th>
-                                            <td>{{empleado.correo_electronico}}</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Proyecto</th>
-                                            <td>{{empleado.proyecto}}</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">Subroyecto</th>
-                                            <td>{{empleado.subproyecto}}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="col-md-4">
-                                <img class="img-thumbnail" src="{{empleado.fotoURL}}"  alt="Imagen de Usuario">
-                            </div>
-                            <hr>
-                            {% if usuario.tipo.admin == False %}
-                                <div class="d-none">
-                            {% else %}
-                                <div>
-                            {% endif %}
-                                <a href="{% url 'Perfil' %}" class="btn btn-outline-info"><i class="fa-solid fa-backward"></i></a>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <span class="h4">{{empleado.nombres}} {{empleado.apellidos}}</span>
+                                    <hr>
+                                    <table class="table bg-white table-borderless">
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row">Número de Identificación</th>
+                                                <td>{{empleado.numero_de_trabajador}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Empresa</th>
+                                                <td>{{empleado.empresa}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Distrito</th>
+                                                <td>{{empleado.distrito}} {{empleado.division}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Fecha de Nacimiento</th>
+                                                <td>{{empleado.fecha_nacimiento}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Correo Electrónico</th>
+                                                <td>{{empleado.correo_electronico}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Proyecto</th>
+                                                <td>{{empleado.proyecto}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Subroyecto</th>
+                                                <td>{{empleado.subproyecto}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-md-4">
+                                    <img class="img-thumbnail" src="{{empleado.fotoURL}}"  alt="Imagen de Usuario">
+                                </div>
+                                {% if usuario.tipo.admin == False %}
+                                    <div class="d-none">
+                                {% else %}
+                                    <div>
+                                {% endif %}
+                                    <a href="{% url 'Perfil' %}" class="btn btn-outline-info"><i class="fa-solid fa-backward"></i></a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        </div>
+    </div>
+    </div>
+    </div>
+    {% endblock %}
 
-{% endblock %}
+</body>

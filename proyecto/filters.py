@@ -63,7 +63,7 @@ class BonosFilter(django_filters.FilterSet):
         fields = ['start_date','end_date','nombres']
 
     def nombres_filter(self, queryset, name, value):
-        return queryset.filter(Q(status__perfil__nombres__icontains = value) | Q(status__perfil__apellidos__icontains = value))
+        return queryset.filter(Q(costo__status__perfil__nombres__icontains = value) | Q(costo__status__perfil__apellidos__icontains = value))
 
 class VacacionesFilter(django_filters.FilterSet):
     nombres = CharFilter(method ='nombres_filter', label="Search")

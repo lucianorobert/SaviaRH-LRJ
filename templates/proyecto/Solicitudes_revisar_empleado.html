@@ -1,37 +1,39 @@
 {% extends 'partials/base.html' %}
 {% load widget_tweaks %}
-
-{% block content %}
-<!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
-<div class="row my-4">
-    <div class="col-md-4">
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        {% if messages %}
-            {% for message in messages %}
-                {% if message.tags == "error" %}
-                <script>
-                Swal.fire({
-                    "title":"Error",
-                    "text":"{{message}}",
-                    "icon":"error",
-                })
-                </script>
-                {% else %}
-                <script>
-                Swal.fire({
-                    "title":"Excelente",
-                    "text":"{{message}}",
-                    "icon":"success",
-                })
-                </script>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
+<head>
+    {% block title %}Solicitudes empleados info{% endblock %}
+</head>
+<body>
+    {% block content %}
+    <!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
+    <div class="row my-4">
+        <div class="col-md-4">
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.tags == "error" %}
+                    <script>
+                    Swal.fire({
+                        "title":"Error",
+                        "text":"{{message}}",
+                        "icon":"error",
+                    })
+                    </script>
+                    {% else %}
+                    <script>
+                    Swal.fire({
+                        "title":"Excelente",
+                        "text":"{{message}}",
+                        "icon":"success",
+                    })
+                    </script>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
     </div>
-</div>
 
-<hr>
-<hr>
+
 <!--{% if status_fijo.id == perfil.id %}
     <div>
 {% elif usuario.tipo.admin == True and usuario.distrito == perfil.distrito %}
@@ -48,67 +50,68 @@
     <a href="{% url 'index' %}" class="btn btn-outline-info"><i class="fa-solid fa-backward"></i>  Inicio</a>
     <div class="d-none">
 {% endif %}-->
-<div class="row">
-	<div class="col-md">
-		<div class="card card-body">
-			<h5>Solicitudes de días de vacaciones:</h5>
-            <table class="table table-striped table-hover bg-white">
-            <thead class="text-black" style="background-color: #F5F5F5;">
-                <tr style="background-color:#2A628F;color:#ffffff;">
-                    <th scope="col">Nombre</th>
-                    <th scope="col">Distrito</th>
-                    <th scope="col"># Solicitud</th>
-                    <th scope="col">Autorizada</th>
-                    <th scope="col">Fecha Sol.</th>
-                    <th scope="col">PDF</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for solicitud in solicitudes_vacaciones %}
-                <tr>
-                    <td>{{solicitud.status.perfil.nombres}} {{solicitud.status.perfil.apellidos}}</td>
-                    <td>{{solicitud.status.perfil.distrito}}</td>
-                    <td>{{solicitud.id}}</td>
-                    <td>{{solicitud.autorizar}}</td>
-                    <td>{{solicitud.fecha_inicio}}-{{solicitud.fecha_fin}}</td>
-                    <td><a class="btn btn-outline-info" id="btnActualizar" type="button" href="{% url 'Solicitudes_vacaciones_formato' solicitud.id %}"><i class="fa-solid fa-file-pdf fa-2xl"></i></a></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-            </table>
-		</div>
-	</div>
+<div class="body flex-grow-1 px-4">
+    <div class="row">
+        <div class="col-md">
+            <div class="card card-body">
+                <h5>Solicitudes de días de vacaciones:</h5>
+                <table class="table table-striped table-hover bg-white">
+                <thead class="text-black" style="background-color: #F5F5F5;">
+                    <tr style="background-color:#2A628F;color:#ffffff;">
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Distrito</th>
+                        <th scope="col"># Solicitud</th>
+                        <th scope="col">Autorizada</th>
+                        <th scope="col">Fecha Sol.</th>
+                        <th scope="col">PDF</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for solicitud in solicitudes_vacaciones %}
+                    <tr>
+                        <td>{{solicitud.status.perfil.nombres}} {{solicitud.status.perfil.apellidos}}</td>
+                        <td>{{solicitud.status.perfil.distrito}}</td>
+                        <td>{{solicitud.id}}</td>
+                        <td>{{solicitud.autorizar}}</td>
+                        <td>{{solicitud.fecha_inicio}}-{{solicitud.fecha_fin}}</td>
+                        <td><a class="btn btn-outline-info" id="btnActualizar" type="button" href="{% url 'Solicitudes_vacaciones_formato' solicitud.id %}"><i class="fa-solid fa-file-pdf fa-2xl"></i></a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                </table>
+            </div>
+        </div>
 
-	<div class="col-md">
-		<div class="card card-body">
-			<h5>Solicitudes de días economicos:</h5>
-            <table class="table table-striped table-hover bg-white">
-            <thead class="text-black" style="background-color: #F5F5F5;">
-                <tr style="background-color:#2A628F;color:#ffffff;">
-                    <th scope="col">Nombre</th>
-                    <th scope="col">Distrito</th>
-                    <th scope="col"># Solicitud</th>
-                    <th scope="col">Autorizada</th>
-                    <th scope="col">Fecha Sol.</th>
-                    <th scope="col">PDF</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for solicitud in solicitudes_economicos %}
-                <tr>
-                    <td>{{solicitud.status.perfil.nombres}} {{solicitud.status.perfil.apellidos}}</td>
-                    <td>{{solicitud.status.perfil.distrito}}</td>
-                    <td>{{solicitud.id}}</td>
-                    <td>{{solicitud.autorizar}}</td>
-                    <td>{{solicitud.fecha}}</td>
-                    <td><a class="btn btn-outline-info" id="btnActualizar" type="button" href="{% url 'Solicitudes_economicos_formato' solicitud.id %}"><i class="fa-solid fa-file-pdf fa-2xl"></i></a></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-            </table>
-		</div>
-	</div>
+        <div class="col-md">
+            <div class="card card-body">
+                <h5>Solicitudes de días economicos:</h5>
+                <table class="table table-striped table-hover bg-white">
+                <thead class="text-black" style="background-color: #F5F5F5;">
+                    <tr style="background-color:#2A628F;color:#ffffff;">
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Distrito</th>
+                        <th scope="col"># Solicitud</th>
+                        <th scope="col">Autorizada</th>
+                        <th scope="col">Fecha Sol.</th>
+                        <th scope="col">PDF</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for solicitud in solicitudes_economicos %}
+                    <tr>
+                        <td>{{solicitud.status.perfil.nombres}} {{solicitud.status.perfil.apellidos}}</td>
+                        <td>{{solicitud.status.perfil.distrito}}</td>
+                        <td>{{solicitud.id}}</td>
+                        <td>{{solicitud.autorizar}}</td>
+                        <td>{{solicitud.fecha}}</td>
+                        <td><a class="btn btn-outline-info" id="btnActualizar" type="button" href="{% url 'Solicitudes_economicos_formato' solicitud.id %}"><i class="fa-solid fa-file-pdf fa-2xl"></i></a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
-
-
 {% endblock %}
+</body>

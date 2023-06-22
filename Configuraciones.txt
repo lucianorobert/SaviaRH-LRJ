@@ -1,0 +1,27 @@
+21/06/2023 SAVIA-RH
+Formulario Vacaciones (Menú vacaciones))
+Admin: tabla_vacaciones.
+JSON: 24_tablavacaciones.json
+
+Formulario Status
+
+Campo: ultimo_contrato_vence - puede tener 5 valores:
+    ESPECIAL = 01/01/6000 - 
+    INDETERMINADO = 01/01/6001
+    HONORARIOS = 01/01/6002
+    Sin fecha = S/F
+    tener fecha = 01/01/2023
+    
+
+Campo: tipo_de_contrato
+    ESPECIAL
+    INDETERMINADO
+    HONORARIOS
+
+
+fecha_planta_anterior 
+Sin fecha = 01/01/6003
+
+fecha_planta
+Sin fecha = HONORARIOS = 01/01/6004
+
