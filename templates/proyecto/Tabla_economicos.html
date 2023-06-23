@@ -1,119 +1,111 @@
 {% extends 'partials/base.html' %}
 {% load widget_tweaks %}
-<html>
 <head>
-{% block title %}Tabla dias economicos{% endblock %}
+    {% block title %}Días económicos{% endblock %}
 </head>
 <body>
-{% block content %}
-<!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
-<div class="row my-4">
-    <div class="col-md-4">
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        {% if messages %}
-            {% for message in messages %}
-                {% if message.tags == "error" %}
-                <script>
-                Swal.fire({
-                    "title":"Error",
-                    "text":"{{message}}",
-                    "icon":"error",
-                })
-                </script>
-                {% else %}
-                <script>
-                Swal.fire({
-                    "title":"Excelente",
-                    "text":"{{message}}",
-                    "icon":"success",
-                })
-                </script>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
-    </div>
-</div>
-<hr>
-<hr>
-    <!-- Aqui es el encabezado -->
-    <div class = "row mt-2 bg-white">
-        <form method=POST>
-        {% csrf_token %}
-        <div class="col-12">
-            <div class="card card-body">
-                <h5>Información días económicos</h5>
-                 <div class = "row mt-2 bg-white">
-                    <hr>
-                    <ul class="nav nav-pills">
-                        <li class="nav-item mx-2">
-                            <button type="submit" name="Excel" class="btn btn-outline-success" value='Reporte Excel'>
-                                <i class="fa-solid fa-file-excel fa-2xl"></i>
-                            </button>
-                        </li>
-                    <!--    <li class="nav-item mx-2">
-                            <button type="button" class="btn btn-outline-danger">
-                               <i class="fa-solid fa-file-pdf fa-2xl"></i>
-                            </button>
-                        </li> -->
-                        <li class="nav-item mx-2">
-                            <a type="button" class="btn btn-outline-info" href="{% url 'Formulario_economicos' %}">
-                                <i class="fa-solid fa-user-plus"></i>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        </form>
-    </div>
-<div class="card card-body">
-            <h5>Filtro económicos</h5>
-            <hr>
-            <form method="GET" class="row g-3">
-                {% csrf_token %}
-                <label for="economico_filter.form.nombres" class="col-sm-auto col-form-label text-right"><strong>Nombre:</strong></label>
-                <div class="col-auto">
-                       {% render_field economico_filter.form.nombres class="form-control" %}
-                </div>
-                <div class="col-auto">
-                <button class="btn btn-outline-success" type="submit" value="Buscar"><i class="fa-solid fa-magnifying-glass"></i></button>
-            </div>
-            </form>
-</div>
-
-
-<div class="row">
-	<div class="col-md">
-		<div class="card card-body">
-			<h5>Empleados pendientes de días económicos:</h5>
-            <table class="table table-striped table-hover bg-white">
-            <thead class="text-black" style="background-color: #F5F5F5;">
-                <tr style="background-color:#2A628F;color:#ffffff;">
-                    <th scope="col"># Empleado</th>
-                    <th scope="col">Empleado</th>
-                    <th scope="col">Periodo</th>
-                    <th scope="col">Días económicos disfrutados</th>
-                    <th scope="col">Días económicos pendientes</th>
-                    <th scope="col">Detalles</th>
-                    <th scope="col">Agregar</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for economico in economicos %}
-                <tr>
-                    <td>{{economico.status.perfil.numero_de_trabajador}}</td>
-                    <td>{{economico.status.perfil.nombres}} {{economico.status.perfil.apellidos}}</td>
-                    <td>{{economico.periodo}}</td>
-                    <td>{{economico.dias_disfrutados}}</td>
-                    <td>{{economico.dias_pendientes}}</td>
-                    <td><a class="btn btn-outline-info" id="btnActualizar" type="button" href="{% url 'Economicos_revisar' economico.status.id %}"><i class="fa-solid fa-clipboard"></i></a>
-                    <td><a class="btn btn-outline-info" id="btnActualizar" type="button" href="{% url 'Economicos_update' economico.status.id %}"><i class="fa-solid fa-calendar-plus"></i></a>
-                </tr>
+    {% block content %}
+    <!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
+    <div class="row my-4">
+        <div class="col-md-4">
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.tags == "error" %}
+                    <script>
+                    Swal.fire({
+                        "title":"Error",
+                        "text":"{{message}}",
+                        "icon":"error",
+                    })
+                    </script>
+                    {% else %}
+                    <script>
+                    Swal.fire({
+                        "title":"Excelente",
+                        "text":"{{message}}",
+                        "icon":"success",
+                    })
+                    </script>
+                    {% endif %}
                 {% endfor %}
-            </tbody>
-            </table>
-		</div>
-	</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Aqui es el encabezado -->
+    <div class="body flex-grow-1 px-4">
+        <div class="row">
+            <div>
+                <div class="col-12">
+                    <div class="card card-body">
+                        <div class="row row-cols-2 mt-2">
+                            <div>
+                                <h5>Información días económicos</h5>
+                            </div>
+                            <div class="align-items-center text-end">
+                                <form method=POST>
+                                    {% csrf_token %}
+                                    <div class="col-12">
+                                        <button type="submit" name="Excel" class="btn btn-outline-success" value='Reporte Excel'>
+                                            <i class="fa-solid fa-file-excel fa-2xl"></i>
+                                        </button>
+                                        <a type="button" class="btn btn-outline-info" href="{% url 'Formulario_economicos' %}">
+                                            <i class="fa-solid fa-user-plus"></i>
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-12 justify-content-center">
+                            <div class="row mt-1">
+                                <div class="col">
+                                    <form method="GET" class="row g-3">
+                                        {% csrf_token %}
+                                        <label for="economico_filter.form.nombres" class="col-sm-auto col-form-label text-right"><strong>Nombre:</strong></label>
+                                        <div class="col-auto">
+                                            {% render_field economico_filter.form.nombres class="form-control" %}
+                                        </div>
+                                        <div class="col-auto">
+                                            <button class="btn btn-outline-success" type="submit" value="Buscar"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-md">
+                            <div class="card card-body">
+                                <h5>Empleados pendientes de días económicos:</h5>
+                                <table class="table table-striped table-hover bg-white">
+                                    <thead class="text-black" style="background-color: #F5F5F5;">
+                                        <tr style="background-color:#2A628F;color:#ffffff;">
+                                            <th scope="col">Empleado</th>
+                                            <th scope="col">Periodo</th>
+                                            <th scope="col">Días económicos disfrutados</th>
+                                            <th scope="col">Días económicos pendientes</th>
+                                            <th scope="col">Detalles</th>
+                                            <th scope="col">Agregar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for economico in economicos %}
+                                        <tr>
+                                            <td>{{economico.status.perfil.nombres}} {{economico.status.perfil.apellidos}}</td>
+                                            <td>{{economico.periodo}}</td>
+                                            <td>{{economico.dias_disfrutados}}</td>
+                                            <td>{{economico.dias_pendientes}}</td>
+                                            <td><a class="btn btn-outline-info" id="btnActualizar" type="button" href="{% url 'Economicos_revisar' economico.status.id %}"><i class="fa-solid fa-clipboard"></i></a>
+                                            <td><a class="btn btn-outline-info" id="btnActualizar" type="button" href="{% url 'Economicos_update' economico.status.id %}"><i class="fa-solid fa-calendar-plus"></i></a>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    </table>
+                                </div>
+                            </div>
 
 	<div class="col-md">
 		<div class="card card-body">
@@ -121,8 +113,7 @@
             <table class="table table-striped table-hover bg-white">
             <thead class="text-black" style="background-color: #F5F5F5;">
                 <tr style="background-color:#2A628F;color:#ffffff;">
-                    <th scope="col">Numero</th>
-                    <th scope="col"># Empleado</th>
+                    <th scope="col">Empleado</th>
                     <th scope="col">Periodo</th>
                     <th scope="col">Días económicos disfrutados</th>
                     <th scope="col">Días económicos pendientes</th>
@@ -134,7 +125,6 @@
             <tbody>
                 {% for economico in economicoss %}
                 <tr>
-                    <td>{{economico.status.perfil.numero_de_trabajador}}</td>
                     <td>{{economico.status.perfil.nombres}} {{economico.status.perfil.apellidos}}</td>
                     <td>{{economico.periodo}}</td>
                     <td>{{economico.dias_disfrutados}}</td>
@@ -153,9 +143,10 @@
 <div class="modal fade" id ="dialog" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" id="document" role="document">
 
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
-{% endblock %}
-
+    {% endblock %}
 </body>
-</html>

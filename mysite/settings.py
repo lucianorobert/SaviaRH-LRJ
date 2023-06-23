@@ -26,6 +26,8 @@ DEBUG = True #True es para ver la pantalla amarilla, False para ver el 404
 
 ALLOWED_HOSTS = ['*']
 
+#Esta etiqueta es necesaria para agregar crispy
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # Application definition
 
@@ -48,6 +50,9 @@ INSTALLED_APPS = [
     "django_htmx",
     'crispy_forms',
 ]
+
+#Setting CustomUser defined in user app model User
+AUTH_USER_MODEL = 'user.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -104,11 +109,11 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'saviadatabase',
+        'NAME': 'SaviaRH_db',
         'USER': 'root',
-        'PASSWORD': 'Root',
+        'PASSWORD': 'password',
         'HOST': 'localhost',
-        'PORT': '',
+        'PORT': '3306'
     }
 }
 # Password validation
@@ -141,7 +146,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
@@ -166,8 +170,14 @@ LOGIN_REDIRECT_URL ='index'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_BACKEND="django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST="smtp.gmail.com"
-EMAIL_USE_TLS=True
-EMAIL_PORT=587
-EMAIL_HOST_USER="victorjosh02@gmail.com"
-EMAIL_HOST_PASSWORD="ppysupnditwwccde"
+# EMAIL_HOST="smtp.gmail.com"
+# EMAIL_USE_TLS=True
+# EMAIL_PORT=587
+# EMAIL_HOST_USER="victorjosh02@gmail.com"
+# EMAIL_HOST_PASSWORD="ppysupnditwwccde"
+
+EMAIL_HOST = 'mail.vordtec.com'
+EMAIL_PORT = '26'
+EMAIL_HOST_USER = 'savia@vordtec.com'
+EMAIL_HOST_PASSWORD = 'MjUaQ*46852'
+EMAIL_USE_TLS = True

@@ -1,0 +1,5 @@
+Menu solicitar dias de vacaciones
+Si hay una solicitud generada pendiente de autorizar sale un mensaje de error indicando que está pendiente.
+Este mensaje debe aparecer al cargar el formulario como advertencia, pero no después de haber capturado toda la información y borrar todos los datos
+
+COMO GUARDAR LOS CAMPOS DE INPUT EN CASO DE ALGÚN ERROR O AL RECARGAR LA PAGINA ESTOS DEBEN RESGUARDARSE

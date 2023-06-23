@@ -1,48 +1,58 @@
 {% extends 'partials/base.html' %}
 {% load widget_tweaks %}
-
-{% block content %}
-<!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
-<div class="row my-4">
-    <div class="col-md-4">
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        {% if messages %}
-            {% for message in messages %}
-                {% if message.tags == "error" %}
-                <script>
-                Swal.fire({
-                    "title":"Error",
-                    "text":"{{message}}",
-                    "icon":"error",
-                })
-                </script>
-                {% else %}
-                <script>
-                Swal.fire({
-                    "title":"Excelente",
-                    "text":"{{message}}",
-                    "icon":"success",
-                })
-                </script>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
+<head>
+    {% block title %}Perfil{% endblock %}
+</head>
+<body>
+    {% block content %}
+    <!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
+    <div class="row my-4">
+        <div class="col-md-4">
+            <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.tags == "error" %}
+                    <script>
+                        Swal.fire({
+                            "title":"Error",
+                            "text":"{{message}}",
+                            "icon":"error",
+                        })
+                    </script>
+                    {% else %}
+                    <script>
+                        Swal.fire({
+                            "title":"Excelente",
+                            "text":"{{message}}",
+                            "icon":"success",
+                        })
+                    </script>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
     </div>
-</div>
 
-<hr>
-<hr>
-    <div class="container card card-body">
+    <!-- <div class="container card card-body" style="margin: 0 auto; width: fit-content;">
         <div class="columns is-mobile">
-            <div class="column is-half is-offset-one-quarter">
-                <h3 class="title is-size-3">Formulario: Perfil del Empleado</h3>
-                <hr>
+            <div class="column is-half is-offset-one-quarter"> -->
+    <!-- <div class="body flex-grow-1 px-4"> -->
+    <div class="container card card-body" style="margin: 0 auto; width: 105vh;">
+        <div class="row">
+            <div>
+                <div class="col-12">
+                    <!-- <div class="card card-body"> -->
+                    <div class="row mt-2">
+                        <div>
+                            <h5 class="title is-size-3">Formulario: Perfil del Empleado</h5>
+                        </div>
+                        <hr>
                         <!-- El action y el multipart es para permitir cargar imagenes -->
-                <form method='POST' action='{{ action_url }}' enctype='multipart/form-data'>
-                    {% csrf_token %}
-                            <div class="row my-2" id='OrderForm' data-subproyecto-url="" novalidate>
+                        <form method='POST' action='{{ action_url }}' enctype='multipart/form-data'>
+                        {% csrf_token %}
+                            <div class="row" id='OrderForm' data-subproyecto-url="" novalidate>
                                 <label for="form.foto" class="col-auto col-form-label my-1"><strong>Foto:</strong></label>
-                                <div class="col-4">
+                                <div class="col">
                                     {{form.foto|add_class:"form-control"}}
                                 </div>
                             </div>
@@ -53,71 +63,82 @@
                                 </div>
                             </div>
                             <div class="row my-2">
-                                <label for="form.empresa" class="col-auto col-form-label my-1"><strong>Empresa:</strong></label>
-                                <div class="col-3">
+                                <div class="col-auto">
+                                    <label for="form.empresa" class="col-auto col-form-label my-1"><strong>Empresa:</strong></label>
+                                </div>
+                                <div class="col-auto">
                                     <div class="input-group">
-                                    <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-industry"></i></span>
-                                    {{form.empresa|add_class:"form-select"}}
+                                        <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-industry"></i></span>
+                                        {{form.empresa|add_class:"form-select"}}
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <label for="form.distrito" class="col-auto col-form-label my-1"><strong>Distrito:</strong></label>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-location-dot"></i></span>
+                                        {{form.distrito|add_class:"form-select"}}
                                     </div>
                                 </div>
                             </div>
                             <div class="row my-2">
-                                <label for="form.distrito" class="col-auto col-form-label my-1"><strong>Distrito:</strong></label>
-                                <div class="col-3">
-                                    <div class="input-group">
-                                    <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-location-dot"></i></span>
-                                    {{form.distrito|add_class:"form-select"}}
-                                    </div>
+                                <div class="col-auto">
+                                    <label for="form.nombres" class="col-auto col-form-label my-1"><strong>Nombres:</strong></label>
                                 </div>
-                            </div>
-                            <div class="row my-2">
-                                <label for="form.nombres" class="col-auto col-form-label my-1"><strong>Nombres:</strong></label>
-                                <div class="col-2">
+                                <div class="col-auto">
                                     {{form.nombres|add_class:"form-control"}}
                                 </div>
-                            </div>
-                            <div class="row my-2">
-                                <label for="form.apellidos" class="col-auto col-form-label my-1"><strong>Apellidos:</strong></label>
-                                <div class="col-2">
+                                <div class="col-auto"> 
+                                    <label for="form.apellidos" class="col-auto col-form-label my-1"><strong>Apellidos:</strong></label>
+                                </div>
+                                <div class="col-auto">
                                     {{form.apellidos|add_class:"form-control"}}
                                 </div>
                             </div>
-                            <div class="row my-2">
+                            <div class="row col-auto">
                                 <label for="form.fecha_nacimiento" class="col-auto col-form-label my-1"><strong>Fecha de nacimiento:</strong></label>
-                                <div class="col-2">
+                                <div class="col-auto">
                                     {% render_field form.fecha_nacimiento type="date" class="form-control" %}
                                 </div>
                             </div>
-                            <div class="row my-2">
-                                    <label for="form.correo_electronico" class="col-auto col-form-label my-1"><strong>Correo electrónico:</strong></label>
-                                <div class="col-3">
+                            <div class="row col-auto">
+                                <label for="form.correo_electronico" class="col-auto col-form-label my-1"><strong>Correo electrónico:</strong></label>
+                                <div class="col-auto">
                                     <div class="input-group">
                                         <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-at"></i></span>
                                         {{form.correo_electronico|add_class:"form-control"}}
                                     </div>
                                 </div>
                             </div>
-                            <div class="row my-2">
-                                <label for="form.proyecto" class="col-auto col-form-label my-1"><strong>Proyecto:</strong></label>
-                                <div class="col-3">
-                                    {{form.proyecto|add_class:"form-select"}}
+                            <div class="row row-cols-2 my-2">
+                                <div class="col">
+                                <div class="row">
+                                    <div class="col-auto">
+                                        <label for="form.proyecto" class="col-auto col-form-label my-1"><strong>Proyecto:</strong></label>
+                                    </div>
+                                    <div class="col-auto">
+                                        {{form.proyecto|add_class:"form-select"}}
+                                    </div>
+                                </div>
+                                </div>
+                                <div class="col">
+                                    <div class="col-auto">
+                                        <div class="selector input-group mb-3">
+                                            <label for="form.subproyecto" class="col-auto col-form-label my-1"><strong>Subproyecto:</strong></label>
+                                            <select class="form-select form-select-sm" style="font-size:1rem" id="subproyecto">
+                                                <option id="default_sel"></option>
+                                                {% for subproyecto in subproyectos %}
+                                                <option class="js" proyecto="{{subproyecto.proyecto.id}}">
+                                                {{subproyecto.subproyecto}}
+                                                </option>
+                                                {% endfor %}
+                                                </select>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-sm-6">
-                                <div class="selector input-group mb-3">
-                                    <label for="form.subproyecto" class="col-auto col-form-label my-1"><strong>Subproyecto:  </strong></label>
-                                    <select class="form-select form-select-sm" style="font-size:1rem" id="subproyecto">
-                                    <option id="default_sel">--------</option>
-                                    {% for subproyecto in subproyectos %}
-                                    <option class="js" proyecto="{{subproyecto.proyecto.id}}">
-                                    {{subproyecto.subproyecto}}
-                                    </option>
-                                    {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
                             <div class="row my-2">
-
                                 <div class="col-3 d-none">
                                     {{form.subproyecto|add_class:"form-select"}}
                                 </div>
@@ -127,11 +148,14 @@
                                 <span class="glyphicon glyphicon-ok"></span> Guardar
                             </button>
                             <a href="{% url 'Perfil' %}" class="btn btn">Cancelar</a>
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
+
+
 <script>
 document.getElementById("id_proyecto").addEventListener("change", function(element){
     var select = document.getElementById('id_proyecto');
@@ -156,3 +180,4 @@ document.getElementById("subproyecto").addEventListener("change", function(eleme
     });
 </script>
 {% endblock %}
+</body>

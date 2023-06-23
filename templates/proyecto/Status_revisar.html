@@ -1,6 +1,9 @@
 {% extends 'partials/base.html' %}
 {% load widget_tweaks %}
-
+<head>
+    {% block title %}Status info{% endblock %}
+</head>
+<body>
 {% block content %}
 <!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
 <div class="row my-4">
@@ -30,8 +33,6 @@
     </div>
 </div>
 
-<hr>
-<hr>
 {% if status_fijo.id == estado.id %}
     <div>
 {% elif usuario.tipo.admin == True and usuario.distrito == estado.perfil.distrito %}
@@ -48,11 +49,12 @@
     <a href="{% url 'index' %}" class="btn btn-outline-info"><i class="fa-solid fa-backward"></i>  Inicio</a>
     <div class="d-none">
 {% endif %}
- <div class="container">
-    <div class="row my-4">
-            <div class="col-md-4"></div>
-            <div class="col-md-8">
-                <div class="card">
+<div class="container card card-body" style="margin: 0 auto; width: 105vh;">
+    <div class="row">
+        <div>
+            <div class="col-12">
+                <!-- <div class="card card-body"> -->
+                <div class="row mt-2">
                     <div class="card-header text-black" style="background-color: #F5F5F5;">
                         <strong>
                             Información de Status
@@ -158,7 +160,8 @@
             </div>
         </div>
 </div>
-
+</div>
 
 
 {% endblock %}
+</body>

@@ -1,168 +1,209 @@
 {% extends 'partials/base.html' %}
 {% load widget_tweaks %}
-<html>
-<head>
-{% block title %}Perfil{% endblock %}
-</head>
-<body>
-{% block content %}
-<!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
-<div class="row my-4">
-    <div class="col-md-4">
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        {% if messages %}
-            {% for message in messages %}
-                {% if message.tags == "error" %}
-                <script>
-                Swal.fire({
-                    "title":"Error",
-                    "text":"{{message}}",
-                    "icon":"error",
-                })
-                </script>
-                {% else %}
-                <script>
-                Swal.fire({
-                    "title":"Excelente",
-                    "text":"{{message}}",
-                    "icon":"success",
-                })
-                </script>
+<!-- <html> -->
+    <head>
+    {% block title %}Perfil{% endblock %}
+    </head>
+    <body>
+        {% block content %}
+        <!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
+        <div class="row my-4">
+            <div class="col-md-4">
+            <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if message.tags == "error" %}
+                        <script>
+                        Swal.fire({
+                            "title":"Error",
+                            "text":"{{message}}",
+                            "icon":"error",
+                        })
+                        </script>
+                        {% else %}
+                        <script>
+                        Swal.fire({
+                            "title":"Excelente",
+                            "text":"{{message}}",
+                            "icon":"success",
+                        })
+                        </script>
+                        {% endif %}
+                    {% endfor %}
                 {% endif %}
-            {% endfor %}
-        {% endif %}
-    </div>
-</div>
-<hr>
-<hr>
- <!-- Aqui es el encabezado -->
-    <div class = "row mt-2 bg-white">
-        <form method=POST>
-        {% csrf_token %}
-        <div class="col-12">
-            <div class="card card-body">
-                <h5>Tabla Perfil de Empleado</h5>
-                 <div class = "row mt-2 bg-white">
-                    <hr>
-                    <ul class="nav nav-pills">
-                        <li class="nav-item mx-2">
-                            <button type="submit" name="Excel" class="btn btn-outline-success" value='Reporte Excel'>
-                                <i class="fa-solid fa-file-excel fa-2xl"></i>
-                            </button>
-                        </li>
-                    <!--    <li class="nav-item mx-2">
-                            <button type="button" class="btn btn-outline-danger">
-                               <i class="fa-solid fa-file-pdf fa-2xl"></i>
-                            </button>
-                        </li> -->
-                        <li class="nav-item mx-2">
-                            <a type="button" class="btn btn-outline-info" href="{% url 'Formulario_perfil' %}">
-                                <i class="fa-solid fa-user-plus"></i>
-                            </a>
-                        </li>
-                        <li class="nav-item mx-2">
-                            <a type="button" class="btn btn-outline-light" style="background-color:#9a9b9d" data-bs-toggle="modal" data-bs-target='#dialog' hx-target="#document" hx-get="{% url 'Upload_perfil' %}">
-                                <i class="fa-solid fa-file-arrow-up"> CARGA MASIVA</i>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
             </div>
         </div>
-        </form>
-    </div>
-<div class="card card-body">
-            <h5>Filtro de empleados</h5>
-            <hr>
-            <form method="GET" class="row g-3">
-                {% csrf_token %}
-                <label for="perfil_filter.form.numero_de_trabajador" class="col-sm-auto col-form-label text-right"><strong>No. Trabajador:</strong></label>
-                <div class="col-auto">
-                       {% render_field perfil_filter.form.numero_de_trabajador class="form-control" %}
-                </div>
-                <label for="perfil_filter.form.nombres" class="col-sm-auto col-form-label text-right"><strong>Nombre:</strong></label>
-                <div class="col-auto">
-                       {% render_field perfil_filter.form.nombres_apellidos class="form-control" %}
-                </div>
-                <label for="perfil_filter.form.empresa" class="col-sm-auto col-form-label text-right"><strong>Empresa:</strong></label>
-                <div class="col-auto">
-                       {% render_field perfil_filter.form.empresa class="form-control" %}
-                </div>
-                {% if usuario.distrito.distrito == "Matriz" %}
-                <label for="perfil_filter.form.distrito" class="col-sm-auto col-form-label text-right"><strong>Distrito:</strong></label>
-                <div class="col-auto">
-                       {% render_field perfil_filter.form.distrito class="form-control" %}
-                </div>
-                {% else %}
-                {% endif %}
-                <div class="col-auto">
-                <button class="btn btn-outline-success" type="submit" value="Buscar"><i class="fa-solid fa-magnifying-glass"></i></button>
-            </div>
-            </form>
-</div>
+        <!-- Aqui es el encabezado -->
+        <div class="body flex-grow-1 px-4">
+            <div class="row">
+                <div>
+                    <div class="col-12">
+                        <div class="card card-body">
+                            <div class="row row-cols-2 mt-2">
+                                <div>
+                                    <h5>Tabla Perfil de Empleado</h5>
+                                </div>
+                                <div class="align-items-center text-end">
+                                    <form method=POST>
+                                    {% csrf_token %}
+                                        <button type="submit" name="Excel" class="btn btn-outline-success" value='Reporte Excel'>
+                                            <i class="fa-solid fa-file-excel fa-2xl"></i>
+                                        </button>
+                                        <a type="button" class="btn btn-outline-info" href="{% url 'Formulario_perfil' %}">
+                                            <i class="fa-solid fa-user-plus"></i>
+                                        </a>
+                                        <a type="button" class="btn btn-outline-light" style="background-color:#9a9b9d" data-bs-toggle="modal" data-bs-target='#dialog' hx-target="#document" hx-get="{% url 'Upload_perfil' %}">
+                                            <i class="fa-solid fa-file-arrow-up"> CARGA MASIVA</i>
+                                        </a>
+                                    </form>
+                                </div>
+                            </div>
+                        
+                                <!-- <div class="row row-cols-4 mt-2">
+                                    <div class="row row-cols-4">
 
-<!-- Aquí empieza la generación de la tabla -->
-<div class = "row mt-2">
-    <div class="col-md-12">
-        <table class="table table-striped table-hover bg-white">
-            <thead class="text-black" style="background-color: #F5F5F5;">
-                <tr style="background-color:#2A628F;color:#ffffff;">
-                    <th scope="col">No. de trabajador</th>
-                    <th scope="col">Empresa</th>
-                    <th scope="col">Distrito</th>
-                    <th scope="col">Nombre</th>
-                    <th scope="col">Fecha de nacimiento</th>
-                    <th scope="col">Correo electrónico</th>
-                    <th scope="col">Proyecto</th>
-                    <th scope="col">Subproyecto</th>
-                    <th scope="col">Detalle</th>
-                    <th scope="col">Baja/Cambio Distrito</th>
-                    <th scope="col">Editar</th>
+                                        <div class="col-sm-auto">
+                                            <label for="perfil_filter.form.numero_de_trabajador" class="col-sm-auto col-form-label text-right"><strong>No. empleado:</strong></label>
+                                            {% render_field perfil_filter.form.numero_de_trabajador class="form-control" %}
+                                        </div>
+                                        <div class="col-sm-auto">
+                                            <label for="perfil_filter.form.nombres" class="col-sm-auto col-form-label text-right"><strong>Nombre:</strong></label>
+                                            {% render_field perfil_filter.form.nombres_apellidos class="form-control" %}
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="perfil_filter.form.empresa" class="col-sm-auto col-form-label text-right"><strong>Empresa:</strong></label>
+                                            {% render_field perfil_filter.form.empresa class="form-control" %}
+                                        </div>
+                                        
+                                        <div class="col-md-3">
+                                            {% if usuario.distrito.distrito == "Matriz" %}
+                                                <label for="perfil_filter.form.distrito" class="col-sm-auto col-form-label text-right"><strong>Distrito:</strong></label>
+                                                {% render_field perfil_filter.form.distrito class="form-control" %}
+                                            {% endif %}
+                                        </div>
+                                        <button class="btn btn-outline-success" type="submit" value="Buscar"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                    </div>
+                                <div class="col-auto">
+                                    <button class="btn btn-outline-success" type="submit" value="Buscar"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                </div>
+                                </div> -->
+                            <form method="GET">
+                            {% csrf_token %}
+                                <div class="col-12 justify-content-center">
+                                    <div class="row mt-1">
+                                        <div class="col">
+                                            <label for="perfil_filter.form.numero_de_trabajador" class="col-form-label text-right"><strong>No. empleado:</strong></label>
+                                            {% render_field perfil_filter.form.numero_de_trabajador class="form-control" %}
+                                        </div>
+                                        <div class="col">
+                                            <label for="perfil_filter.form.nombres" class="col-form-label text-right"><strong>Nombre:</strong></label>
+                                            {% render_field perfil_filter.form.nombres_apellidos class="form-control" %}
+                                        </div>
+                                        <div class="col">
+                                            <label for="perfil_filter.form.empresa" class="col-form-label text-right"><strong>Empresa:</strong></label>
+                                            {% render_field perfil_filter.form.empresa class="form-control" %}
+                                        </div>
+                                        {% if usuario.distrito.distrito == "Matriz" %}
+                                        <div class="col">
+                                            <label for="perfil_filter.form.distrito" class="col-form-label text-right"><strong>Distrito:</strong></label>
+                                            {% render_field perfil_filter.form.distrito class="form-control" %}
+                                        </div>
+                                        {% endif %}
+                                        <div class="col mt-4 pt-1">
+                                            <button class="btn btn-outline-success btn-lg" type="submit" value="Buscar"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                        </div>
+                                    </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                                
+                                <!-- </div> -->
+                                <!-- <h5>Filtro de empleados</h5> -->
+                                    <!-- <form method="GET">
+                                    {% csrf_token %}
+                                    <div class="row">
+                                        <label for="perfil_filter.form.numero_de_trabajador" class="col-sm-auto col-form-label text-right"><strong>No. Trabajador:</strong></label>
+                                        <div class="col-auto">
+                                                {% render_field perfil_filter.form.numero_de_trabajador class="form-control" %}
+                                        </div>
+                                        <label for="perfil_filter.form.nombres" class="col-sm-auto col-form-label text-right"><strong>Nombre:</strong></label>
+                                        <div class="col-auto">
+                                                {% render_field perfil_filter.form.nombres_apellidos class="form-control" %}
+                                        </div>
+                                        <label for="perfil_filter.form.empresa" class="col-sm-auto col-form-label text-right"><strong>Empresa:</strong></label>
+                                        <div class="col-auto">
+                                                {% render_field perfil_filter.form.empresa class="form-control" %}
+                                        </div>
+                                        {% if usuario.distrito.distrito == "Matriz" %}
+                                            <label for="perfil_filter.form.distrito" class="col-sm-auto col-form-label text-right"><strong>Distrito:</strong></label>
+                                            <div class="col-auto">
+                                                {% render_field perfil_filter.form.distrito class="form-control" %}
+                                            </div>
+                                        {% endif %}
+                                        <div class="col-auto">
+                                            <button class="btn btn-outline-success" type="submit" value="Buscar"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                        </div>
+                                    </div>
+                                </form> -->
+                                
+                    <!-- Aquí empieza la generación de la tabla -->
+                    <!-- <div class = "row mt-2"> -->
+                    <div class="col-12">
+                        <table class="table table-striped table-hover bg-white">
+                            <thead class="text-black" style="background-color: #F5F5F5;">
+                                <tr style="background-color:#2A628F;color:#ffffff;">
+                                    <th scope="col">No. de trabajador</th>
+                                    <th scope="col">Empresa</th>
+                                    <th scope="col">Distrito</th>
+                                    <th scope="col">Nombre</th>
+                                    <th scope="col">Fecha de nacimiento</th>
+                                    <th scope="col">Correo electrónico</th>
+                                    <th scope="col">Proyecto</th>
+                                    <th scope="col">Subproyecto</th>
+                                    <th scope="col">Detalle</th>
+                                    <th scope="col">Editar</th>
 
-                </tr>
-            </thead>
-            <tbody>
-                {% for perfil in perfiles %}
-                <tr>
-                    <td>{{perfil.numero_de_trabajador}}</td>
-                    <td>{{perfil.empresa}}</td>
-                    <td>{{perfil.distrito}} {{perfil.division}}</td>
-                    <td>{{perfil.nombres}} {{perfil.apellidos}}</td>
-                    <td>{{perfil.fecha_nacimiento}}</td>
-                    <td>{{perfil.correo_electronico}}</td> 
-                    <td>{{perfil.proyecto}}</td>
-                    <td>{{perfil.subproyecto}}</td>
-                    <td><a class="btn btn-outline-info" id="btnRevisar" type="button" href="{% url 'Perfil_revisar' perfil.id %}"><i class="fa-solid fa-address-card"></i></a>
-                    <td><a type="button" class="btn btn-outline-light" style="background-color:#9a9b9d" data-bs-toggle="modal" data-bs-target='#dialog' hx-target="#document" hx-get="{% url 'Cambio_baja_empleado' perfil.id %}"><i class="fa-solid fa-pen-to-square"></i></a>
-                    <td><a class="btn btn-outline-info" id="btnActualizar" type="button" href="{% url 'Perfil_update' perfil.id %}"><i class="fa-solid fa-pen-to-square"></i></a>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<!--Este es el modal-->
-        <div class="modal fade" id ="dialog" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-lg modal-dialog-centered" id="document" role="document" hx-target="this">
-
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for perfil in perfiles %}
+                                <tr>
+                                    <td>{{perfil.numero_de_trabajador}}</td>
+                                    <td>{{perfil.empresa}}</td>
+                                    <td>{{perfil.distrito}} {{perfil.division}}</td>
+                                    <td>{{perfil.nombres}} {{perfil.apellidos}}</td>
+                                    <td>{{perfil.fecha_nacimiento}}</td>
+                                    <td>{{perfil.correo_electronico}}</td>
+                                    <td>{{perfil.proyecto}}</td>
+                                    <td>{{perfil.subproyecto}}</td>
+                                    <td><a class="btn btn-outline-info" id="btnRevisar" type="button" href="{% url 'Perfil_revisar' perfil.id %}"><i class="fa-solid fa-address-card"></i></a>
+                                    <td><a class="btn btn-outline-info" id="btnActualizar" type="button" href="{% url 'Perfil_update' perfil.id %}"><i class="fa-solid fa-pen-to-square"></i></a>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                <!-- </div> -->
+                </div>
+                <!-- </div> -->
             </div>
         </div>
 
-<script>
+            <!--Este es el modal-->
+            <div class="modal fade" id ="dialog" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg modal-dialog-centered" id="document" role="document" hx-target="this">
 
+                </div>
+            </div>
 
-
-
-
-
-    var myModal = document.getElementById('dialog')
-
-    myModal.addEventListener('hidden.bs.modal', function (event) {
-    //    location.reload();
-    })
-</script>
-{% endblock %}
-
-</body>
-</html>
+            <script>
+                var myModal = document.getElementById('dialog')
+                myModal.addEventListener('hidden.bs.modal', function (event) {
+                //    location.reload();
+                })
+            </script>
+        {% endblock %}
+        </body>
+<!-- </html> -->

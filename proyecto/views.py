@@ -1386,6 +1386,7 @@ def FormularioVacaciones(request):
 
             if descanso.dias_disfrutados > descanso.dias_de_vacaciones:
                 messages.error(request, f'(Dias disfrutados) La cantidad total capturada debe ser menor a {descanso.dias_de_vacaciones} ')
+                messages.error(request, f'(Dias disfrutados) La cantidad total capturada debe ser menor a {descanso.dias_de_vacaciones} ')
             else:
                 periodofecha = descanso.created_at.year
                 str(periodo)
