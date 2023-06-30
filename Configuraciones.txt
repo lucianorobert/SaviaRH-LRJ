@@ -25,3 +25,18 @@ Sin fecha = 01/01/6003
 fecha_planta
 Sin fecha = HONORARIOS = 01/01/6004
 
+
+26/06/2023
+Formulario Solicitud vacaciones
+Puede fallar si se borra el dato de economicos y vacaciones
+
+
+27/06/2023
+Cambios a:
+-solicitud_vacaciones_update.html
+
+
+-proyecto.models.py
+agregar campo
+razon_no_autorizado = models.TextField(null=True)
+

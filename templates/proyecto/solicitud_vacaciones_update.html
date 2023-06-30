@@ -1,80 +1,152 @@
 {% extends 'partials/base.html' %}
-{% load widget_tweaks %}
-<html>
+{% load widget_tweaks %} 
 <head>
-{% block title %}Solicitud Vacacion{% endblock %}
+    {% block title %}Solicitud Vacacion{% endblock %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
 </head>
 <body>
-{% block content %}
-<!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
-<div class="row my-4">
-    <div class="col-md-4">
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        {% if messages %}
-            {% for message in messages %}
-                {% if message.tags == "error" %}
-                <script>
-                Swal.fire({
-                    "title":"Error",
-                    "text":"{{message}}",
-                    "icon":"error",
-                })
-                </script>
-                {% else %}
-                <script>
-                Swal.fire({
-                    "title":"Excelente",
-                    "text":"{{message}}",
-                    "icon":"success",
-                })
-                </script>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
+    {% block content %}
+    <!-- Esta es la zona donde se crean los mensajes perrones con sweet alert -->
+    <div class="row my-4">
+        <div class="col-md-4">
+            <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.tags == "error" %}
+                        <script>
+                        Swal.fire({
+                            "title":"Error",
+                            "text":"{{message}}",
+                            "icon":"error",
+                        })
+                        </script>
+                    {% else %}
+                        <script>
+                        Swal.fire({
+                            "title":"Excelente",
+                            "text":"{{message}}",
+                            "icon":"success",
+                        })
+                        </script>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
     </div>
-</div>
 
-<div class="container card card-body">
-        <div class="columns is-mobile">
-            <div class="column is-half is-offset-one-quarter">
-                <h3 class="title is-size-3">Solicitud Vacaciones</h3>
-                <hr>
-                <form method="POST">
-                    {% csrf_token %}
-                        <label for="form.solicitud" class="col-auto col-form-label"><strong>Solicitud: #{{solicitud.id}}</strong></label>
-                        <br>
-                        <label for="form.nombre" class="col-auto col-form-label"><strong>Empleado: {{solicitud.status.perfil.nombres}} {{solicitud.status.perfil.apellidos}}</strong></label>
-                        <br>
+    <div class="container card card-body" style="margin: 0 auto; width: 145vh;">
+        <div class="row">
+            <div>
+                <div class="col-12">
+                    <div class="row mt-2">
+                        <div>
+                            <h3 class="title is-size-3">Autorización de solicitud de vacaciones</h3>
+                        </div>
+                        <hr>
+                        <form method="POST">
+                            {% csrf_token %}
+                            <label for="form.solicitud" class="col-auto col-form-label"><strong>Solicitud: #{{solicitud.id}}</strong></label>
+                            <br>
+                            <label for="form.nombre" class="col-auto col-form-label"><strong>Empleado: {{solicitud.status.perfil.nombres}} {{solicitud.status.perfil.apellidos}}</strong></label>
+                            <br>
                             <div class="row my-2">
                                 <label for="form.fecha_inicio" class="col-auto col-form-label my-1"><strong>Primer día de vacaciones:</strong></label>
-                                <div class="col-2">
+                                <!-- <div class="col-2"> -->
+                                <div class="col-auto">
+                                
                                     <div class="input-group mb-3">
                                     <span class="input-group-text"><i class="fa-solid fa-calendar-plus"></i></span>
-                                    {% render_field form.fecha_inicio type="date" class="form-control" %}
+                                        {% render_field form.fecha_inicio type="date" class="form-control" %}
+                                    <!-- <input type="date" name="fecha_inicio" class="form-control" readonly> -->
+
                                     </div>
                                 </div>
-                                <label for="form.fecha_fin" class="col-auto col-form-label my-1"><strong>Ultimo día de vacaciones:</strong></label>
-                                <div class="col-2">
+                                <label for="form.fecha_fin" class="col-auto col-form-label my-1"><strong>Último día de vacaciones:</strong></label>
+                                <div class="col-auto">
                                     <div class="input-group mb-3">
                                     <span class="input-group-text"><i class="fa-solid fa-calendar-plus"></i></span>
-                                    {% render_field form.fecha_fin type="date" class="form-control" %}
+                                    <!-- <input type="date" name="fecha_fin" class="form-control" value="{{ solicitud.fecha_fin }}" readonly> -->
+                                        {% render_field form.fecha_fin type="date" class="form-control" %}
                                     </div>
                                 </div>
                             </div>
-                            <div class="row my-2">
-                                <label for="form.dia_inhabil" class="col-auto col-form-label my-1"><strong>Día de la semana que no labora:</strong></label>
-                                <div class="col-3">
+                            <div class="col">
+                                <!-- <div class="col-auto"> -->
+                                    <div class="form-group">
+                                        <label for="form.dia_inhabil" class="col-auto col-form-label ml-1"><strong>Día de la semana que no labora:</strong></label>
+                                        <!-- <div class="col-auto"> -->
+                                            <!-- {{form.dia_inhabil|add_class:"form-control" }} -->
+                                                                                        {% if form.dia_inhabil.value == 1 %} Lunes
+                                                                                        {% elif form.dia_inhabil.value == 2 %} Martes
+                                                                                        {% elif form.dia_inhabil.value == 3 %} Miercoles
+                                                                                        {% elif form.dia_inhabil.value == 4 %} Jueves
+                                                                                        {% elif form.dia_inhabil.value == 5 %} Viernes
+                                                                                        {% elif form.dia_inhabil.value == 6 %} Sabado
+                                                                                        {% elif form.dia_inhabil.value == 7 %} Domingo
+                                                                                        {% endif %}
+                                    </div>
+                                    <!-- </div> -->
+
+                                       
+                                
+                            </div>
+                        </div>
+                            <div class="col">
+
+                                <!-- <div class="col-3">
                                     {{form.dia_inhabil|add_class:"form-control"}}
-                                </div>
-                                <label for="id_autorizar" class="col-auto col-form-label my-1"><strong>Autorizar:</strong></label>
+                                </div> -->
+
+
+                                <!--<label for="id_autorizar" class="col-auto col-form-label my-1"><strong>Autorizar:</strong></label>
                                 <div class="col-3">
                                     {{ form.autorizar|add_class:"form-control"|attr:"id:id_autorizar"}}
+                                </div> -->
+
+                                <div class="form-group mt-3">
+                                    <button type="submit" class="btn btn-primary btn-lg"  name="btnSend">Autorizar</button>
+                                    <button type="button" class="btn btn-danger btn-lg" data-toggle="modal" data-target="#notAuthorizeModal">No Autorizar</button>
+                                    <a href="{% url 'Solicitudes_vacaciones' %}" class="btn btn">Cancelar</a>
                                 </div>
                             </div>
                             <br>
-                            <!--Si son mas de 3 días de vacaciones-->
+
+                            <!-- Not Authorize Modal -->
+                            <div class="modal fade" id="notAuthorizeModal" tabindex="-1" role="dialog" aria-labelledby="notAuthorizeModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="notAuthorizeModalLabel">Razón para no autorizar</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <textarea class="form-control" name="reason" rows="4" placeholder="La razón por la que no se autorizá la solicitud es"></textarea>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                            <button type="submit" class="btn btn-danger" name = "btnSave">Guardar</button>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                            
+
+                                    
+                        <!-- Mostrar detalles -->
+                        <div class="form-check form-switch col-auto mx-2 mt-2" id="detalles">
+                            <input class="form-check-input" type="checkbox" role="switch" id="SwitchDetalles">
+                            <label class="form-check-label" for="flexSwitchCheckDefault"><strong>Mostrar detalles</strong></label>
+                        </div>
+                        
+                        <!--Detalles-->
+                        <div class="container mt-3" id="detallesContainer" style="display: none;">
+                            <hr>
                             <div class="row my-2 hide-me">
-                            <h5 class="title is-size-3">Recepción de puesto</h5>
+                                <h5 class="title is-size-3">Recepción de puesto</h5>
                                 <label for="form.dia_inhabil" class="col-auto col-form-label my-1"><strong>Recibe:</strong></label>
                                 <div class="col-3">
                                     <input type="" name="recibe" value="{{solicitud.recibe_nombre|default:''}}" id="recibe_id" class="form-control" maxlength="20" disabled>
@@ -214,15 +286,17 @@
                                     <input type="text" name="anexos" value="{{solicitud.anexos|default:''}}" id="anexos_id" class="form-control" maxlength="20" disabled>
                                 </div>
                             </div>
-                        <hr>
-                    <button type="submit" name="btnSend" class="btn btn-success">
-                        <span class="glyphicon glyphicon-ok"></span> Guardar
-                    </button>
-                        <a href="{% url 'Solicitudes_vacaciones' %}" class="btn btn">Cancelar</a>
-                </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                <!-- <hr> -->
+                <!-- <button type="submit" name="btnSend" class="btn btn-success">
+                    <span class="glyphicon glyphicon-ok"></span> Guardar
+                </button>
+                    <a href="{% url 'Solicitudes_vacaciones' %}" class="btn btn">Cancelar</a> -->
          </div>
     </div>
-</div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(function() {
@@ -260,8 +334,86 @@ $(function() {
 
     // manejar el cambio en los campos de fecha cuando se cambian
     $('#id_fecha_inicio, #id_fecha_fin').change(handleDateChange);
+
+    
 });
+
 </script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#other_radio').click(function() {
+                $('#other_day_inputs').toggle();
+            });
+
+            $('#sunday_radio').click(function() {
+                if ($('#other_day_inputs').is(':visible')) {
+                    $('#other_day_inputs').hide();
+                }
+            });
+        });
+    </script>
+
+<script>
+    $(document).ready(function() {
+        $('#SwitchDetalles').click(function() {
+            $('#detallesContainer').toggle();
+        });
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 {% endblock %}
 </body>
-</html>
+
+<!-- In the following django snippet modify the form.fecha_inicio widget_tweaks in order to not allow modify the date, only show it -->
+
+<!-- <!DOCTYPE html>
+<html>
+<body>
+    <div class="container">
+        <h1>Day of the Week Form</h1>
+        <form method="POST" action="{% url 'submit_form' %}">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary btn-lg">Authorize</button>
+                <button type="button" class="btn btn-danger btn-lg" data-toggle="modal" data-target="#notAuthorizeModal">Not Authorize</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Not Authorize Modal -->
+    <!-- <div class="modal fade" id="notAuthorizeModal" tabindex="-1" role="dialog" aria-labelledby="notAuthorizeModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="notAuthorizeModalLabel">Reason for Not Authorization</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <textarea class="form-control" name="reason" rows="4" placeholder="Enter reason for not authorizing"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#SwitchDetalles').click(function() {
+                $('#detallesContainer').toggle();
+            });
+        });
+    </script>
+</body>
+</html> -->

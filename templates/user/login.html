@@ -1,58 +1,90 @@
-{% extends 'partials/base.html' %} 
-{% load widget_tweaks %}
-{% load static %} 
-{% block title %}Login Page{% endblock %} 
+{% extends 'partials/base.html' %}
+{% block title %} Login Page {% endblock %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+<body>
+    
 {% block content %}
-<div class="container">
-  <div
-    class="row justify-content-center align-items-center"
-    style="min-height: 100vh"
-  >
-    {% if user.is_authenticated %}
-    <div class="col-md-6">
-      <div class="border p-3 bg-white">
-        <h3>Login Page</h3>
-        <hr />
-        <h6>
-          En este momento ya estás activo en el sistema como: {{ user.username}}
-        </h6>
-      </div>
-    </div>
-    {% else %}
-    <div class="col-md-6">
-      <div class="border p-3 bg-white">
-        <h3>Login Page</h3>
-        <hr />
-        <form method="POST">
-          {% csrf_token %}
-          <div class="container">
-            <div class="row">
-              <div class="col">
-                {% for field in form %}
-                  <div class="form-group">
-                    {{ field.label_tag }}
-                    {% render_field field class="form-control" %}
-                  </div>
-                {% endfor %}
-                <div class="row mt-4">
-                  <input class="btn btn-success btn-primary btn-block" type="submit" value="Log in" />
+
+{% if user.is_authenticated %}
+  <div class='container'>
+        <div class='row mt-5'>
+            <div class='col-md-6 offset-md-3'>
+                <div class='border p-3 bg-white'>
+                    <h3>Login Page</h3>
+                    <hr>
+                    <h6>En este momento ya estás activo en el sistema como: {{user.first_name}} {{user.last_name}}</h6>
                 </div>
-              </div>
-              <div class="col">
-                <div
-                  class="border p-3 bg-white" style="width: 235px; height: 185px;">
-                  <img src="{% static 'images/logo/logo_vordcab-50.png' %}" width="225" height="160">
-                </div>
-              </div>
             </div>
+        </div>
+    </div>
+{%else%}
+<!-- Section: Design Block -->
+<section class="text-center text-lg-start">
+  <style>
+    .cascading-right {
+      margin-right: -50px;
+    }
+
+    @media (max-width: 991.98px) {
+      .cascading-right {
+        margin-right: 0;
+      }
+    }
+  </style>
+
+  <!-- Jumbotron -->
+  <div class="container py-4">
+    <div class="row g-0 align-items-center">
+      <div class="col-lg-6 mb-5 mb-lg-0">
+        <div class="card cascading-right" style="
+            background: hsla(0, 0%, 100%, 0.55);
+            backdrop-filter: blur(30px);
+            ">
+          <div class="card-body p-5 shadow-5 text-center">
+            <h2 class="fw-bold mb-5">LOGIN</h2>
+            <form method='POST'>
+              <!-- 2 column grid layout with text inputs for the first and last names -->
+              <form method='POST'>
+              <div class="row">
+                    {% csrf_token %}
+                    {{form|crispy}} 
+              </div>
+
+             
+
+              
+              <div class="form-check d-flex justify-content-center mb-4">
+                <label class="form-check-label" for="form2Example33">
+                    <a class='btn' style="color:rgb(84, 118, 150)" href="/reset-password">Cambiar contraseña</a>
+                </label>
+              </div>
+
+              <!-- Submit button -->
+              <input class='btn btn-primary btn-block mb-4' type='submit' value='Log in'>
+              </form>
+
+              <!-- Register buttons -->
+              <!-- <div class="text-center">
+                
+              </div> -->
+            </form>
           </div>
-        </form>
-        <div class="d-flex justify-content-center">
-            <a href="/reset-password">Olvide mi contraseña</a>
         </div>
       </div>
+
+      <div class="col-lg-6 mb-5 mb-lg-0">
+        <img src="{% static 'images/logo/junio.png' %}" class="w-100 rounded-3 shadow-4" style="height: 500px;"
+          alt="" />
+      </div>
     </div>
-    {% endif %}
   </div>
+
+  <!-- Jumbotron -->
+</section>
 </div>
-{% endblock %}
+<!-- Section: Design Block -->
+{% endif%}
+{% endblock%}
+</body>

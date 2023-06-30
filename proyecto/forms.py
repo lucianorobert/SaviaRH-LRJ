@@ -94,21 +94,31 @@ class SolicitudVacacionesForm(forms.ModelForm):
         model = Solicitud_vacaciones
         fields = ['fecha_inicio','fecha_fin', 'dia_inhabil',]
 
-class SolicitudVacacionesUpdateForm(forms.ModelForm):
-    AUTORIZACION_CHOICES = (
-        ('Yes', 'Si'),
-        ('No', 'No'),
-    )
+# De Victor
+# class SolicitudVacacionesUpdateForm(forms.ModelForm):
+#     AUTORIZACION_CHOICES = (
+#         ('Yes', 'Si'),
+#         ('No', 'No'),
+#     )
 
-    autorizar = forms.TypedChoiceField( #definir como TypedChoiceField en vez de ChoiceField, 
-        choices=AUTORIZACION_CHOICES, #lo que permite agregar un argumento adicional llamado coerce 
-        coerce=lambda x: x == 'Yes', #para realizar la conversión deseada del valor del campo.
-        widget=forms.Select(attrs={'class': 'form-control'})
-    ) #selecciona 'Yes', se convierte en True, y cuando selecciona 'No', se convierte en False.
+#     autorizar = forms.TypedChoiceField( #definir como TypedChoiceField en vez de ChoiceField, 
+#         choices=AUTORIZACION_CHOICES, #lo que permite agregar un argumento adicional llamado coerce 
+#         coerce=lambda x: x == 'Yes', #para realizar la conversión deseada del valor del campo.
+#         widget=forms.Select(attrs={'class': 'form-control'})
+#     ) #selecciona 'Yes', se convierte en True, y cuando selecciona 'No', se convierte en False.
+    
+#     class Meta:
+#         model = Solicitud_vacaciones
+#         fields = ['fecha_inicio','fecha_fin', 'dia_inhabil','autorizar',]
+
+# De Victor modificado by LRJ
+class SolicitudVacacionesUpdateForm(forms.ModelForm):
     
     class Meta:
         model = Solicitud_vacaciones
-        fields = ['fecha_inicio','fecha_fin', 'dia_inhabil','autorizar',]
+        fields = ['fecha_inicio','fecha_fin', 'dia_inhabil','autorizar']
+
+
 
 class VacacionesUpdateForm(forms.ModelForm):
     class Meta:

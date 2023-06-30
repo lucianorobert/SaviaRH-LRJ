@@ -141,3 +141,4 @@ class SolicitudesEconomicosFilter(django_filters.FilterSet):
         
     def nombres_filter(self, queryset, name, value):
         return queryset.filter(Q(status__perfil__nombres__icontains = value) | Q(status__perfil__apellidos__icontains = value))
+    

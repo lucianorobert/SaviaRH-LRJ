@@ -84,6 +84,43 @@
                                 <div class="col-3">
                                     {{form.dia_inhabil|add_class:"form-control"}}
                                 </div>
+                                
+                                <div>
+                                    <!-- Unicamente para realizar solicitud de vacaciones -->
+                                    <label class="mr-3">
+                                        <input type="radio" name="day" value="Domingo" id="sunday_radio"> Domingo
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="day" value="other" id="other_radio"> Otro día
+                                    </label>
+                                </div>
+                            
+                                <!-- empieza collapse -->
+                                
+                                <div class="container">
+                                    
+                                    <div class="form-group" id="other_day_inputs" style="display: none;">
+                                        <label class="mr-3">
+                                            <input type="radio" name="day" value="Lunes"> Lunes
+                                        </label>
+                                        <label class="mr-3">
+                                            <input type="radio" name="day" value="Martes"> Martes
+                                        </label>
+                                        <label class="mr-3">
+                                            <input type="radio" name="day" value="Miércoles"> Miercoles
+                                        </label>
+                                        <label class="mr-3">
+                                            <input type="radio" name="day" value="Jueves"> Jueves
+                                        </label>
+                                        <label class="mr-3">
+                                            <input type="radio" name="day" value="Viernes"> Viernes
+                                        </label>
+                                        <label>
+                                            <input type="radio" name="day" value="Sábado"> Sabado
+                                        </label>
+                                    </div>
+                                </div>
+                                <!-- termina collapse -->
                             </div>
                             <br>
                             <!--Si son mas de 3 días de vacaciones-->
@@ -274,4 +311,21 @@ $(function() {
     $('#id_fecha_inicio, #id_fecha_fin').change(handleDateChange);
 });
 </script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#other_radio').click(function() {
+                $('#other_day_inputs').toggle();
+            });
+
+            $('#sunday_radio').click(function() {
+                if ($('#other_day_inputs').is(':visible')) {
+                    $('#other_day_inputs').hide();
+                }
+            });
+        });
+    </script>
+
+
 {% endblock %}
